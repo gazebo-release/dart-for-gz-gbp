@@ -1,3 +1,9 @@
+dart (6.16.0+ds1-1~osrf1~jammy) jammy; urgency=medium
+
+  * New upstream version 6.16.0+ds1
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Mon, 10 Nov 2025 16:50:56 +0100
+
 dart (6.13.2+ds1-1~osrf1~jammy) jammy; urgency=medium
 
   * New upstream version 6.13.2+ds1
