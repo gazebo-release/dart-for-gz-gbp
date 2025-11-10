@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,9 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
 #include <dart/gui/osg/osg.hpp>
+
+#include <dart/dart.hpp>
 
 class WamWorld;
 
@@ -66,7 +67,7 @@ protected:
 
   std::vector<std::size_t> mEndEffectorIndex;
 
-  std::vector<std::pair<Eigen::Vector6d, Eigen::Vector6d> > mDefaultBounds;
+  std::vector<std::pair<Eigen::Vector6d, Eigen::Vector6d>> mDefaultBounds;
 
   dart::common::aligned_vector<Eigen::Isometry3d> mDefaultTargetTf;
 };

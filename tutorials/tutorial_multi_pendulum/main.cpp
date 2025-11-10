@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,11 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
+#include "dart/common/Macros.hpp"
+
 #include <dart/gui/gui.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_height = 1.0; // m
 const double default_width = 0.2;  // m
@@ -66,7 +69,7 @@ public:
     mPendulum = world->getSkeleton("pendulum");
 
     // Make sure that the pendulum was found in the World
-    assert(mPendulum != nullptr);
+    DART_ASSERT(mPendulum != nullptr);
 
     mForceCountDown.resize(mPendulum->getNumDofs(), 0);
 
@@ -82,14 +85,11 @@ public:
   void changeDirection()
   {
     mPositiveSign = !mPositiveSign;
-    if (mPositiveSign)
-    {
+    if (mPositiveSign) {
       mArrow->setPositions(
           Eigen::Vector3d(-default_height, 0.0, default_height / 2.0),
           Eigen::Vector3d(-default_width / 2.0, 0.0, default_height / 2.0));
-    }
-    else
-    {
+    } else {
       mArrow->setPositions(
           Eigen::Vector3d(default_height, 0.0, default_height / 2.0),
           Eigen::Vector3d(default_width / 2.0, 0.0, default_height / 2.0));
@@ -132,8 +132,7 @@ public:
   /// Handle keyboard input
   void keyboard(unsigned char key, int x, int y) override
   {
-    switch (key)
-    {
+    switch (key) {
       case '-':
         changeDirection();
         break;
@@ -212,26 +211,19 @@ public:
     // Reset all the shapes to be Blue
     // Lesson 1a
 
-    if (!mBodyForce)
-    {
+    if (!mBodyForce) {
       // Apply joint torques based on user input, and color the Joint shape red
-      for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i)
-      {
-        if (mForceCountDown[i] > 0)
-        {
+      for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i) {
+        if (mForceCountDown[i] > 0) {
           // Lesson 1b
 
           --mForceCountDown[i];
         }
       }
-    }
-    else
-    {
+    } else {
       // Apply body forces based on user input, and color the body shape red
-      for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i)
-      {
-        if (mForceCountDown[i] > 0)
-        {
+      for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i) {
+        if (mForceCountDown[i] > 0) {
           // Lesson 1c
 
           --mForceCountDown[i];

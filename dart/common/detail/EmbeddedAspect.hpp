@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,10 @@
 #ifndef DART_COMMON_DETAIL_EMBEDDEDASPECT_HPP_
 #define DART_COMMON_DETAIL_EMBEDDEDASPECT_HPP_
 
-#include "dart/common/Aspect.hpp"
-#include "dart/common/StlHelpers.hpp"
+#include "dart/common/Macros.hpp"
+
+#include <dart/common/Aspect.hpp>
+#include <dart/common/StlHelpers.hpp>
 
 namespace dart {
 namespace common {
@@ -78,7 +80,7 @@ template <
     void (*setEmbeddedState)(DerivedT*, const StateT&)
     = &DefaultSetEmbeddedState<DerivedT, StateT>,
     const StateT& (*getEmbeddedState)(const DerivedT*)
-    = &DefaultGetEmbeddedState<DerivedT, StateT> >
+    = &DefaultGetEmbeddedState<DerivedT, StateT>>
 class EmbeddedStateAspect : public BaseT
 {
 public:
@@ -148,8 +150,7 @@ public:
   /// Set the State of this Aspect
   void setState(const State& state)
   {
-    if (this->hasComposite())
-    {
+    if (this->hasComposite()) {
       SetEmbeddedState(static_cast<Derived*>(this), state);
       return;
     }
@@ -168,18 +169,16 @@ public:
   /// Get the State of this Aspect
   const State& getState() const
   {
-    if (this->hasComposite())
-    {
+    if (this->hasComposite()) {
       return GetEmbeddedState(static_cast<const Derived*>(this));
     }
 
-    if (!mTemporaryState)
-    {
+    if (!mTemporaryState) {
       dterr << "[detail::EmbeddedStateAspect::getState] This Aspect is not in "
             << "a Composite, but it also does not have a temporary State "
             << "available. This should not happen! Please report this as a "
             << "bug!\n";
-      assert(false);
+      DART_ASSERT(false);
     }
 
     return *mTemporaryState;
@@ -215,7 +214,7 @@ protected:
   /// Pass the temporary State of this Aspect into the new Composite
   void setComposite(Composite* newComposite) override
   {
-    assert(nullptr == this->getComposite());
+    DART_ASSERT(nullptr == this->getComposite());
 
     Base::setComposite(newComposite);
     if (mTemporaryState)
@@ -248,7 +247,7 @@ template <
     void (*setEmbeddedProperties)(DerivedT*, const PropertiesT&)
     = &DefaultSetEmbeddedProperties<DerivedT, PropertiesT>,
     const PropertiesT& (*getEmbeddedProperties)(const DerivedT*)
-    = &DefaultGetEmbeddedProperties<DerivedT, PropertiesT> >
+    = &DefaultGetEmbeddedProperties<DerivedT, PropertiesT>>
 class EmbeddedPropertiesAspect : public BaseT
 {
 protected:
@@ -321,8 +320,7 @@ public:
   // Documentation inherited
   void setProperties(const Properties& properties)
   {
-    if (this->hasComposite())
-    {
+    if (this->hasComposite()) {
       SetEmbeddedProperties(static_cast<Derived*>(this), properties);
       return;
     }
@@ -341,18 +339,16 @@ public:
   // Documentation inherited
   const Properties& getProperties() const
   {
-    if (this->hasComposite())
-    {
+    if (this->hasComposite()) {
       return GetEmbeddedProperties(static_cast<const Derived*>(this));
     }
 
-    if (!mTemporaryProperties)
-    {
+    if (!mTemporaryProperties) {
       dterr << "[detail::EmbeddedPropertiesAspect::getProperties] This Aspect "
             << "is not in a Composite, but it also does not have temporary "
             << "Properties available. This should not happen! Please report "
             << "this as a bug!\n";
-      assert(false);
+      DART_ASSERT(false);
     }
 
     return *mTemporaryProperties;
@@ -389,7 +385,7 @@ protected:
   /// Pass the temporary Properties of this Aspect into the new Composite
   void setComposite(Composite* newComposite) override
   {
-    assert(nullptr == this->getComposite());
+    DART_ASSERT(nullptr == this->getComposite());
 
     Base::setComposite(newComposite);
     if (mTemporaryProperties)

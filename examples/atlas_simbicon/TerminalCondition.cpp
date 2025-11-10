@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "TerminalCondition.hpp"
 
 #include "State.hpp"
+#include "dart/common/Macros.hpp"
 
 // Macro for functions not implemented yet
 #define NOT_YET(FUNCTION)                                                      \
@@ -46,7 +47,7 @@ using namespace dart::constraint;
 //==============================================================================
 TerminalCondition::TerminalCondition(State* _state) : mState(_state)
 {
-  assert(_state != nullptr);
+  DART_ASSERT(_state != nullptr);
 }
 
 //==============================================================================
@@ -74,8 +75,8 @@ bool TimerCondition::isSatisfied()
 BodyContactCondition::BodyContactCondition(State* _state, BodyNode* _body)
   : TerminalCondition(_state), mBodyNode(_body)
 {
-  assert(_state != nullptr);
-  assert(_body != nullptr);
+  DART_ASSERT(_state != nullptr);
+  DART_ASSERT(_body != nullptr);
 }
 
 //==============================================================================
@@ -85,10 +86,8 @@ BodyContactCondition::~BodyContactCondition() {}
 bool BodyContactCondition::isSatisfied()
 {
   SoftBodyNode* soft = dynamic_cast<SoftBodyNode*>(mBodyNode);
-  if (soft)
-  {
-    for (std::size_t i = 0; i < soft->getNumPointMasses(); ++i)
-    {
+  if (soft) {
+    for (std::size_t i = 0; i < soft->getNumPointMasses(); ++i) {
       PointMass* pm = soft->getPointMass(i);
       if (pm->isColliding())
         return true;
@@ -104,8 +103,7 @@ bool BodyContactCondition::isSatisfied()
       //          << std::endl;
       return true;
     }
-  else
-  {
+  else {
     //    dtmsg << "Waiting for BodyNode [" << mBodyNode->getName()
     //          << "] is in contact."
     //          << std::endl;

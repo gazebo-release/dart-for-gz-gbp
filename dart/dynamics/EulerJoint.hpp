@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_EULERJOINT_HPP_
 #define DART_DYNAMICS_EULERJOINT_HPP_
 
-#include "dart/dynamics/detail/EulerJointAspect.hpp"
+#include <dart/dynamics/detail/EulerJointAspect.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -105,8 +105,7 @@ public:
   static Eigen::Vector3d convertToPositions(
       const RotationType& _rotation, AxisOrder _ordering)
   {
-    switch (_ordering)
-    {
+    switch (_ordering) {
       case AxisOrder::XYZ:
         return math::matrixToEulerXYZ(_rotation);
       case AxisOrder::ZYX:

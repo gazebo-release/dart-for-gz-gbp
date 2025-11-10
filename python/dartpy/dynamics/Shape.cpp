@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,12 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
 #include "eigen_geometry_pybind.h"
 #include "eigen_pybind.h"
+
+#include <dart/dart.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -398,10 +399,13 @@ void Shape(py::module& m)
           })
       .def(
           "setScale",
-          +[](dart::dynamics::MeshShape* self, const Eigen::Vector3d& scale) {
-            self->setScale(scale);
-          },
-          ::py::arg("scale"))
+          py::overload_cast<const Eigen::Vector3d&>(
+              &dart::dynamics::MeshShape::setScale),
+          py::arg("scale"))
+      .def(
+          "setScale",
+          py::overload_cast<double>(&dart::dynamics::MeshShape::setScale),
+          py::arg("scale"))
       .def(
           "getScale",
           +[](const dart::dynamics::MeshShape* self) -> const Eigen::Vector3d& {

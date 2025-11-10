@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,9 +32,9 @@
 
 #include "Helpers.hpp"
 
-#include <sstream>
-
 #include <dart/utils/urdf/urdf.hpp>
+
+#include <sstream>
 
 //==============================================================================
 dart::dynamics::SkeletonPtr createGround()
@@ -109,7 +109,7 @@ void setupEndEffectors(const dart::dynamics::SkeletonPtr& wam)
 
   std::stringstream ss;
   ss << DART_SHARED_LIB_PREFIX << "wamIk";
-#if (DART_OS_LINUX || DART_OS_MACOS) && !NDEBUG
+#if (DART_OS_LINUX || DART_OS_MACOS) && DART_BUILD_MODE_DEBUG
   ss << "d";
 #endif
   ss << "." << DART_SHARED_LIB_EXTENSION;
@@ -132,8 +132,7 @@ void enableDragAndDrops(
   for (std::size_t i = 0; i < wam->getNumBodyNodes(); ++i)
     viewer.enableDragAndDrop(wam->getBodyNode(i), false, false);
 
-  for (std::size_t i = 0; i < wam->getNumEndEffectors(); ++i)
-  {
+  for (std::size_t i = 0; i < wam->getNumEndEffectors(); ++i) {
     dart::dynamics::EndEffector* ee = wam->getEndEffector(i);
     if (!ee->getIK())
       continue;

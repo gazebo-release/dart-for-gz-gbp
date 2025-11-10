@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/constraint/DantzigBoxedLcpSolver.hpp"
 
+#include "dart/common/Profile.hpp"
 #include "dart/external/odelcpsolver/lcp.h"
 
 namespace dart {
@@ -62,11 +63,12 @@ bool DantzigBoxedLcpSolver::solve(
     int* findex,
     bool earlyTermination)
 {
+  DART_PROFILE_SCOPED;
   return external::ode::dSolveLCP(
       n, A, x, b, nullptr, 0, lo, hi, findex, earlyTermination);
 }
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
 //==============================================================================
 bool DantzigBoxedLcpSolver::canSolve(int /*n*/, const double* /*A*/)
 {

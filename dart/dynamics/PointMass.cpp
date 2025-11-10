@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/dynamics/PointMass.hpp"
 
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/EllipsoidShape.hpp"
 #include "dart/dynamics/SoftBodyNode.hpp"
 #include "dart/math/Geometry.hpp"
@@ -170,7 +171,7 @@ PointMass::PointMass(SoftBodyNode* _softBodyNode)
     mImpF(Eigen::Vector3d::Zero()),
     mNotifier(_softBodyNode->mNotifier)
 {
-  assert(mParentSoftBodyNode != nullptr);
+  DART_ASSERT(mParentSoftBodyNode != nullptr);
   mNotifier->dirtyTransform();
 }
 
@@ -201,7 +202,7 @@ std::size_t PointMass::getIndexInSoftBodyNode() const
 //==============================================================================
 void PointMass::setMass(double _mass)
 {
-  assert(0.0 < _mass);
+  DART_ASSERT(0.0 < _mass);
   double& mMass
       = mParentSoftBodyNode->mAspectProperties.mPointProps[mIndex].mMass;
   if (_mass == mMass)
@@ -248,7 +249,7 @@ double PointMass::getImplicitPi() const
 //==============================================================================
 void PointMass::addConnectedPointMass(PointMass* _pointMass)
 {
-  assert(_pointMass != nullptr);
+  DART_ASSERT(_pointMass != nullptr);
 
   mParentSoftBodyNode->mAspectProperties.mPointProps[mIndex]
       .mConnectedPointMassIndices.push_back(_pointMass->mIndex);
@@ -265,7 +266,7 @@ std::size_t PointMass::getNumConnectedPointMasses() const
 //==============================================================================
 PointMass* PointMass::getConnectedPointMass(std::size_t _idx)
 {
-  assert(_idx < getNumConnectedPointMasses());
+  DART_ASSERT(_idx < getNumConnectedPointMasses());
 
   return mParentSoftBodyNode
       ->mPointMasses[mParentSoftBodyNode->mAspectProperties.mPointProps[mIndex]
@@ -300,7 +301,7 @@ std::size_t PointMass::getNumDofs() const
 // void PointMass::setIndexInSkeleton(std::size_t _index, std::size_t
 // _indexInSkeleton)
 //{
-//  assert(_index < 3);
+//  DART_ASSERT(_index < 3);
 
 //  mIndexInSkeleton[_index] = _indexInSkeleton;
 //}
@@ -308,7 +309,7 @@ std::size_t PointMass::getNumDofs() const
 ////==============================================================================
 // std::size_t PointMass::getIndexInSkeleton(std::size_t _index) const
 //{
-//  assert(_index < 3);
+//  DART_ASSERT(_index < 3);
 
 //  return mIndexInSkeleton[_index];
 //}
@@ -316,7 +317,7 @@ std::size_t PointMass::getNumDofs() const
 //==============================================================================
 void PointMass::setPosition(std::size_t _index, double _position)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   getState().mPositions[_index] = _position;
   mNotifier->dirtyTransform();
@@ -325,7 +326,7 @@ void PointMass::setPosition(std::size_t _index, double _position)
 //==============================================================================
 double PointMass::getPosition(std::size_t _index) const
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return getState().mPositions[_index];
 }
@@ -353,7 +354,7 @@ void PointMass::resetPositions()
 //==============================================================================
 void PointMass::setVelocity(std::size_t _index, double _velocity)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   getState().mVelocities[_index] = _velocity;
   mNotifier->dirtyVelocity();
@@ -362,7 +363,7 @@ void PointMass::setVelocity(std::size_t _index, double _velocity)
 //==============================================================================
 double PointMass::getVelocity(std::size_t _index) const
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return getState().mVelocities[_index];
 }
@@ -390,7 +391,7 @@ void PointMass::resetVelocities()
 //==============================================================================
 void PointMass::setAcceleration(std::size_t _index, double _acceleration)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   getState().mAccelerations[_index] = _acceleration;
   mNotifier->dirtyAcceleration();
@@ -399,7 +400,7 @@ void PointMass::setAcceleration(std::size_t _index, double _acceleration)
 //==============================================================================
 double PointMass::getAcceleration(std::size_t _index) const
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return getState().mAccelerations[_index];
 }
@@ -435,7 +436,7 @@ void PointMass::resetAccelerations()
 //==============================================================================
 void PointMass::setForce(std::size_t _index, double _force)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   getState().mForces[_index] = _force;
 }
@@ -443,7 +444,7 @@ void PointMass::setForce(std::size_t _index, double _force)
 //==============================================================================
 double PointMass::getForce(std::size_t _index)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return getState().mForces[_index];
 }
@@ -469,7 +470,7 @@ void PointMass::resetForces()
 //==============================================================================
 void PointMass::setVelocityChange(std::size_t _index, double _velocityChange)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   mVelocityChanges[_index] = _velocityChange;
 }
@@ -477,7 +478,7 @@ void PointMass::setVelocityChange(std::size_t _index, double _velocityChange)
 //==============================================================================
 double PointMass::getVelocityChange(std::size_t _index)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return mVelocityChanges[_index];
 }
@@ -491,7 +492,7 @@ void PointMass::resetVelocityChanges()
 //==============================================================================
 void PointMass::setConstraintImpulse(std::size_t _index, double _impulse)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   mConstraintImpulses[_index] = _impulse;
 }
@@ -499,7 +500,7 @@ void PointMass::setConstraintImpulse(std::size_t _index, double _impulse)
 //==============================================================================
 double PointMass::getConstraintImpulse(std::size_t _index)
 {
-  assert(_index < 3);
+  DART_ASSERT(_index < 3);
 
   return mConstraintImpulses[_index];
 }
@@ -525,12 +526,9 @@ void PointMass::integrateVelocities(double _dt)
 //==============================================================================
 void PointMass::addExtForce(const Eigen::Vector3d& _force, bool _isForceLocal)
 {
-  if (_isForceLocal)
-  {
+  if (_isForceLocal) {
     mFext += _force;
-  }
-  else
-  {
+  } else {
     mFext += mParentSoftBodyNode->getWorldTransform().linear().transpose()
              * _force;
   }
@@ -546,12 +544,9 @@ void PointMass::clearExtForce()
 void PointMass::setConstraintImpulse(
     const Eigen::Vector3d& _constImp, bool _isLocal)
 {
-  if (_isLocal)
-  {
+  if (_isLocal) {
     mConstraintImpulses = _constImp;
-  }
-  else
-  {
+  } else {
     const Matrix3d Rt
         = mParentSoftBodyNode->getWorldTransform().linear().transpose();
     mConstraintImpulses = Rt * _constImp;
@@ -562,12 +557,9 @@ void PointMass::setConstraintImpulse(
 void PointMass::addConstraintImpulse(
     const Eigen::Vector3d& _constImp, bool _isLocal)
 {
-  if (_isLocal)
-  {
+  if (_isLocal) {
     mConstraintImpulses += _constImp;
-  }
-  else
-  {
+  } else {
     const Matrix3d Rt
         = mParentSoftBodyNode->getWorldTransform().linear().transpose();
     mConstraintImpulses.noalias() += Rt * _constImp;
@@ -583,7 +575,7 @@ Eigen::Vector3d PointMass::getConstraintImpulses() const
 //==============================================================================
 void PointMass::clearConstraintImpulse()
 {
-  assert(getNumDofs() == 3);
+  DART_ASSERT(getNumDofs() == 3);
   mConstraintImpulses.setZero();
   mDelV.setZero();
   mImpB.setZero();
@@ -630,7 +622,7 @@ const Eigen::Vector3d& PointMass::getWorldPosition() const
 //==============================================================================
 Eigen::Matrix<double, 3, Eigen::Dynamic> PointMass::getBodyJacobian()
 {
-  assert(mParentSoftBodyNode != nullptr);
+  DART_ASSERT(mParentSoftBodyNode != nullptr);
 
   int dof = mParentSoftBodyNode->getNumDependentGenCoords();
   int totalDof = mParentSoftBodyNode->getNumDependentGenCoords() + 3;
@@ -681,8 +673,9 @@ const SoftBodyNode* PointMass::getParentSoftBodyNode() const
 //==============================================================================
 // int PointMass::getDependentGenCoord(int _arrayIndex) const
 //{
-//  assert(0 <= _arrayIndex && _arrayIndex < mDependentGenCoordIndices.size());
-//  return mDependentGenCoordIndices[_arrayIndex];
+//  DART_ASSERT(0 <= _arrayIndex && _arrayIndex <
+//  mDependentGenCoordIndices.size()); return
+//  mDependentGenCoordIndices[_arrayIndex];
 //}
 
 //==============================================================================
@@ -726,12 +719,12 @@ void PointMass::updateTransform() const
 {
   // Local translation
   mX = getPositions() + getRestingPosition();
-  assert(!math::isNan(mX));
+  DART_ASSERT(!math::isNan(mX));
 
   // World translation
   const Eigen::Isometry3d& parentW = mParentSoftBodyNode->getWorldTransform();
   mW = parentW.translation() + parentW.linear() * mX;
-  assert(!math::isNan(mW));
+  DART_ASSERT(!math::isNan(mW));
 }
 
 //==============================================================================
@@ -741,7 +734,7 @@ void PointMass::updateVelocity() const
   const Eigen::Vector6d& v_parent = mParentSoftBodyNode->getSpatialVelocity();
   mV = v_parent.head<3>().cross(getLocalPosition()) + v_parent.tail<3>()
        + getVelocities();
-  assert(!math::isNan(mV));
+  DART_ASSERT(!math::isNan(mV));
 }
 
 //==============================================================================
@@ -750,7 +743,7 @@ void PointMass::updatePartialAcceleration() const
   // eta = w(parent) x dq
   const Eigen::Vector3d& dq = getVelocities();
   mEta = mParentSoftBodyNode->getSpatialVelocity().head<3>().cross(dq);
-  assert(!math::isNan(mEta));
+  DART_ASSERT(!math::isNan(mEta));
 }
 
 //==============================================================================
@@ -761,7 +754,7 @@ void PointMass::updateAccelerationID() const
       = mParentSoftBodyNode->getSpatialAcceleration();
   mA = a_parent.head<3>().cross(getLocalPosition()) + a_parent.tail<3>()
        + getPartialAccelerations() + getAccelerations();
-  assert(!math::isNan(mA));
+  DART_ASSERT(!math::isNan(mA));
 }
 
 //==============================================================================
@@ -773,13 +766,12 @@ void PointMass::updateTransmittedForceID(
   mF += mParentSoftBodyNode->getSpatialVelocity().head<3>().cross(
             getMass() * getBodyVelocity())
         - mFext;
-  if (mParentSoftBodyNode->getGravityMode() == true)
-  {
+  if (mParentSoftBodyNode->getGravityMode() == true) {
     mF -= getMass()
           * (mParentSoftBodyNode->getWorldTransform().linear().transpose()
              * _gravity);
   }
-  assert(!math::isNan(mF));
+  DART_ASSERT(!math::isNan(mF));
 }
 
 //==============================================================================
@@ -795,7 +787,7 @@ void PointMass::updateArtInertiaFD(double _timeStep) const
         / (getMass() + _timeStep * mParentSoftBodyNode->getDampingCoefficient()
            + _timeStep * _timeStep
                  * mParentSoftBodyNode->getVertexSpringStiffness());
-  assert(!math::isNan(mImplicitPsi));
+  DART_ASSERT(!math::isNan(mImplicitPsi));
 
   // Cache data: AI_S_Psi
   // - Do nothing
@@ -803,8 +795,8 @@ void PointMass::updateArtInertiaFD(double _timeStep) const
   // Cache data: Pi
   mPi = getMass() - getMass() * getMass() * mPsi;
   mImplicitPi = getMass() - getMass() * getMass() * mImplicitPsi;
-  assert(!math::isNan(mPi));
-  assert(!math::isNan(mImplicitPi));
+  DART_ASSERT(!math::isNan(mPi));
+  DART_ASSERT(!math::isNan(mImplicitPi));
 }
 
 //==============================================================================
@@ -827,13 +819,12 @@ void PointMass::updateBiasForceFD(double _dt, const Eigen::Vector3d& _gravity)
            getMass() * getBodyVelocity())
        - mFext;
   // - fgravity
-  if (mParentSoftBodyNode->getGravityMode() == true)
-  {
+  if (mParentSoftBodyNode->getGravityMode() == true) {
     mB -= getMass()
           * (mParentSoftBodyNode->getWorldTransform().linear().transpose()
              * _gravity);
   }
-  assert(!math::isNan(mB));
+  DART_ASSERT(!math::isNan(mB));
 
   const State& state = getState();
 
@@ -845,18 +836,17 @@ void PointMass::updateBiasForceFD(double _dt, const Eigen::Vector3d& _gravity)
   mAlpha = state.mForces - (kv + nN * ke) * getPositions()
            - (_dt * (kv + nN * ke) + kd) * getVelocities()
            - getMass() * getPartialAccelerations() - mB;
-  for (std::size_t i = 0; i < getNumConnectedPointMasses(); ++i)
-  {
+  for (std::size_t i = 0; i < getNumConnectedPointMasses(); ++i) {
     const State& i_state = getConnectedPointMass(i)->getState();
     mAlpha += ke * (i_state.mPositions + _dt * i_state.mVelocities);
   }
-  assert(!math::isNan(mAlpha));
+  DART_ASSERT(!math::isNan(mAlpha));
 
   // Cache data: beta
   mBeta = mB;
   mBeta.noalias()
       += getMass() * (getPartialAccelerations() + getImplicitPsi() * mAlpha);
-  assert(!math::isNan(mBeta));
+  DART_ASSERT(!math::isNan(mBeta));
 }
 
 //==============================================================================
@@ -871,12 +861,12 @@ void PointMass::updateAccelerationFD()
         * (mAlpha
            - getMass() * (a_parent.head<3>().cross(X) + a_parent.tail<3>()));
   setAccelerations(ddq);
-  assert(!math::isNan(ddq));
+  DART_ASSERT(!math::isNan(ddq));
 
   // dv = dw(parent) x mX + dv(parent) + eata + ddq
   mA = a_parent.head<3>().cross(X) + a_parent.tail<3>()
        + getPartialAccelerations() + getAccelerations();
-  assert(!math::isNan(mA));
+  DART_ASSERT(!math::isNan(mA));
 }
 
 //==============================================================================
@@ -885,7 +875,7 @@ void PointMass::updateTransmittedForce()
   // f = m*dv + B
   mF = mB;
   mF.noalias() += getMass() * getBodyAcceleration();
-  assert(!math::isNan(mF));
+  DART_ASSERT(!math::isNan(mF));
 }
 
 //==============================================================================
@@ -894,22 +884,22 @@ void PointMass::updateMassMatrix()
   mM_dV = getAccelerations()
           + mParentSoftBodyNode->mM_dV.head<3>().cross(getLocalPosition())
           + mParentSoftBodyNode->mM_dV.tail<3>();
-  assert(!math::isNan(mM_dV));
+  DART_ASSERT(!math::isNan(mM_dV));
 }
 
 //==============================================================================
 void PointMass::updateBiasImpulseFD()
 {
   mImpB = -mConstraintImpulses;
-  assert(!math::isNan(mImpB));
+  DART_ASSERT(!math::isNan(mImpB));
 
   // Cache data: alpha
   mImpAlpha = -mImpB;
-  assert(!math::isNan(mImpAlpha));
+  DART_ASSERT(!math::isNan(mImpAlpha));
 
   // Cache data: beta
   mImpBeta.setZero();
-  assert(!math::isNan(mImpBeta));
+  DART_ASSERT(!math::isNan(mImpBeta));
 }
 
 //==============================================================================
@@ -931,12 +921,12 @@ void PointMass::updateVelocityChangeFD()
   //  del_dq = Eigen::Vector3d::Zero();
 
   mVelocityChanges = del_dq;
-  assert(!math::isNan(del_dq));
+  DART_ASSERT(!math::isNan(del_dq));
 
   mDelV = mParentSoftBodyNode->getBodyVelocityChange().head<3>().cross(X)
           + mParentSoftBodyNode->getBodyVelocityChange().tail<3>()
           + mVelocityChanges;
-  assert(!math::isNan(mDelV));
+  DART_ASSERT(!math::isNan(mDelV));
 }
 
 //==============================================================================
@@ -944,7 +934,7 @@ void PointMass::updateTransmittedImpulse()
 {
   mImpF = mImpB;
   mImpF.noalias() += getMass() * mDelV;
-  assert(!math::isNan(mImpF));
+  DART_ASSERT(!math::isNan(mImpF));
 }
 
 //==============================================================================

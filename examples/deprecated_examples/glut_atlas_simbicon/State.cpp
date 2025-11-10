@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "State.hpp"
 
 #include "TerminalCondition.hpp"
+#include "dart/common/Macros.hpp"
 
 // Macro for functions not implemented yet
 #define NOT_YET(FUNCTION)                                                      \
@@ -71,8 +72,7 @@ State::State(SkeletonPtr _skeleton, const std::string& _name)
   mCoronalCv = Eigen::VectorXd::Zero(dof);
   mTorque = Eigen::VectorXd::Zero(dof);
 
-  for (int i = 0; i < dof; ++i)
-  {
+  for (int i = 0; i < dof; ++i) {
     mKp[i] = ATLAS_DEFAULT_KP;
     mKd[i] = ATLAS_DEFAULT_KD;
   }
@@ -84,12 +84,12 @@ State::State(SkeletonPtr _skeleton, const std::string& _name)
   mRightThigh = mSkeleton->getBodyNode("r_uleg");
   mStanceFoot = nullptr;
 
-  assert(mPelvis != nullptr);
-  assert(mLeftFoot != nullptr);
-  assert(mRightFoot != nullptr);
-  assert(mLeftThigh != nullptr);
-  assert(mRightThigh != nullptr);
-  //  assert(mStanceFoot != nullptr);
+  DART_ASSERT(mPelvis != nullptr);
+  DART_ASSERT(mLeftFoot != nullptr);
+  DART_ASSERT(mRightFoot != nullptr);
+  DART_ASSERT(mLeftThigh != nullptr);
+  DART_ASSERT(mRightThigh != nullptr);
+  //  DART_ASSERT(mStanceFoot != nullptr);
 
   mCoronalLeftHip = mSkeleton->getDof("l_leg_hpx")->getIndexInSkeleton();  // 10
   mCoronalRightHip = mSkeleton->getDof("r_leg_hpx")->getIndexInSkeleton(); // 11
@@ -121,7 +121,7 @@ void State::setNextState(State* _nextState)
 //==============================================================================
 void State::setTerminalCondition(TerminalCondition* _condition)
 {
-  assert(_condition != nullptr);
+  DART_ASSERT(_condition != nullptr);
 
   mTerminalCondition = _condition;
 }
@@ -137,7 +137,7 @@ void State::begin(double _currentTime)
 //==============================================================================
 void State::computeControlForce(double _timestep)
 {
-  assert(mNextState != nullptr && "Next state should be set.");
+  DART_ASSERT(mNextState != nullptr && "Next state should be set.");
 
   int dof = mSkeleton->getNumDofs();
   VectorXd q = mSkeleton->getPositions();
@@ -175,8 +175,7 @@ void State::computeControlForce(double _timestep)
   // Compute torques for all the joints except for hip (standing and swing)
   // joints. The first 6 dof is for base body force so it is set to zero.
   mTorque.head<6>() = Vector6d::Zero();
-  for (int i = 6; i < dof; ++i)
-  {
+  for (int i = 6; i < dof; ++i) {
     mTorque[i]
         = -mKp[i] * (q[i] - mDesiredJointPositionsBalance[i]) - mKd[i] * dq[i];
   }
@@ -200,7 +199,7 @@ void State::computeControlForce(double _timestep)
 //==============================================================================
 bool State::isTerminalConditionSatisfied() const
 {
-  assert(mTerminalCondition != nullptr && "Invalid terminal condition.");
+  DART_ASSERT(mTerminalCondition != nullptr && "Invalid terminal condition.");
 
   return mTerminalCondition->isSatisfied();
 }
@@ -441,8 +440,7 @@ double State::_getAngleBetweenTwoVectors(
 void State::_updateTorqueForStanceLeg()
 {
   // Stance leg is left leg
-  if (mStanceFoot == mLeftFoot)
-  {
+  if (mStanceFoot == mLeftFoot) {
     //    std::cout << "Sagital Pelvis Angle: " << DART_DEGREE *
     //    getSagitalPelvisAngle() << std::endl;
 
@@ -473,8 +471,7 @@ void State::_updateTorqueForStanceLeg()
     //    cout << "Stance foot: Left foot" << endl;
   }
   // Stance leg is right leg
-  else if (mStanceFoot == mRightFoot)
-  {
+  else if (mStanceFoot == mRightFoot) {
     //    cout << "Stance foot: Right foot" << endl;
 
     // Torso control on sagital plane
@@ -500,9 +497,7 @@ void State::_updateTorqueForStanceLeg()
     //    << endl; cout << "Torque[mCoronalRightHip]     : " <<
     //    mTorque[mCoronalRightHip] << endl; cout << "tauTorsoCoronal: " <<
     //    tauTorsoCoronal << endl; cout << endl;
-  }
-  else
-  {
+  } else {
     // No foot is toching the ground
   }
 }
@@ -529,7 +524,7 @@ void State::setDesiredJointPosition(const string& _jointName, double _val)
 //==============================================================================
 double State::getDesiredJointPosition(int _idx) const
 {
-  assert(
+  DART_ASSERT(
       0 <= _idx && _idx <= mDesiredJointPositions.size()
       && "Invalid joint index.");
 
@@ -542,7 +537,7 @@ double State::getDesiredJointPosition(const string& _jointName) const
   // TODO(JS)
   NOT_YET(State::getDesiredJointPosition());
 
-  assert(mSkeleton->getJoint(_jointName) != nullptr);
+  DART_ASSERT(mSkeleton->getJoint(_jointName) != nullptr);
 
   return mDesiredJointPositions[mJointMap.at(_jointName)];
 }
@@ -574,7 +569,7 @@ void State::setDesiredPelvisGlobalAngleOnCoronal(double _val)
 //==============================================================================
 void State::setProportionalGain(int _idx, double _val)
 {
-  assert(0 <= _idx && _idx <= mKp.size() && "Invalid joint index.");
+  DART_ASSERT(0 <= _idx && _idx <= mKp.size() && "Invalid joint index.");
 
   mKd[_idx] = _val;
 }
@@ -589,7 +584,7 @@ void State::setProportionalGain(const string& /*_jointName*/, double /*_val*/)
 //==============================================================================
 double State::getProportionalGain(int _idx) const
 {
-  assert(0 <= _idx && _idx <= mKp.size() && "Invalid joint index.");
+  DART_ASSERT(0 <= _idx && _idx <= mKp.size() && "Invalid joint index.");
 
   return mKp[_idx];
 }
@@ -600,7 +595,7 @@ double State::getProportionalGain(const string& _jointName) const
   // TODO(JS)
   NOT_YET(State::getProportionalGain());
 
-  assert(mSkeleton->getJoint(_jointName) != nullptr);
+  DART_ASSERT(mSkeleton->getJoint(_jointName) != nullptr);
 
   return mKp[mJointMap.at(_jointName)];
 }
@@ -608,7 +603,7 @@ double State::getProportionalGain(const string& _jointName) const
 //==============================================================================
 void State::setDerivativeGain(int _idx, double _val)
 {
-  assert(0 <= _idx && _idx <= mKd.size() && "Invalid joint index.");
+  DART_ASSERT(0 <= _idx && _idx <= mKd.size() && "Invalid joint index.");
 
   mKd[_idx] = _val;
 }
@@ -623,7 +618,7 @@ void State::setDerivativeGain(const string& /*_jointName*/, double /*_val*/)
 //==============================================================================
 double State::getDerivativeGain(int _idx) const
 {
-  assert(0 <= _idx && _idx <= mKd.size() && "Invalid joint index.");
+  DART_ASSERT(0 <= _idx && _idx <= mKd.size() && "Invalid joint index.");
 
   return mKd[_idx];
 }
@@ -638,7 +633,8 @@ double State::getDerivativeGain(int _idx) const
 //==============================================================================
 void State::setFeedbackSagitalCOMDistance(std::size_t _index, double _val)
 {
-  assert(static_cast<int>(_index) <= mSagitalCd.size() && "Invalid index.");
+  DART_ASSERT(
+      static_cast<int>(_index) <= mSagitalCd.size() && "Invalid index.");
 
   mSagitalCd[_index] = _val;
 }
@@ -646,7 +642,8 @@ void State::setFeedbackSagitalCOMDistance(std::size_t _index, double _val)
 //==============================================================================
 void State::setFeedbackSagitalCOMVelocity(std::size_t _index, double _val)
 {
-  assert(static_cast<int>(_index) <= mSagitalCv.size() && "Invalid index.");
+  DART_ASSERT(
+      static_cast<int>(_index) <= mSagitalCv.size() && "Invalid index.");
 
   mSagitalCv[_index] = _val;
 }
@@ -654,7 +651,8 @@ void State::setFeedbackSagitalCOMVelocity(std::size_t _index, double _val)
 //==============================================================================
 void State::setFeedbackCoronalCOMDistance(std::size_t _index, double _val)
 {
-  assert(static_cast<int>(_index) <= mCoronalCd.size() && "Invalid index.");
+  DART_ASSERT(
+      static_cast<int>(_index) <= mCoronalCd.size() && "Invalid index.");
 
   mCoronalCd[_index] = _val;
 }
@@ -662,7 +660,8 @@ void State::setFeedbackCoronalCOMDistance(std::size_t _index, double _val)
 //==============================================================================
 void State::setFeedbackCoronalCOMVelocity(std::size_t _index, double _val)
 {
-  assert(static_cast<int>(_index) <= mCoronalCv.size() && "Invalid index.");
+  DART_ASSERT(
+      static_cast<int>(_index) <= mCoronalCv.size() && "Invalid index.");
 
   mCoronalCv[_index] = _val;
 }

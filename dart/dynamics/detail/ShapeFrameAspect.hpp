@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,11 @@
 #ifndef DART_DYNAMICS_DETAIL_SHAPEFRAMEASPECT_HPP_
 #define DART_DYNAMICS_DETAIL_SHAPEFRAMEASPECT_HPP_
 
-#include <Eigen/Core>
+#include <dart/dynamics/SmartPointer.hpp>
 
-#include "dart/common/EmbeddedAspect.hpp"
-#include "dart/dynamics/SmartPointer.hpp"
+#include <dart/common/EmbeddedAspect.hpp>
+
+#include <Eigen/Core>
 
 namespace dart {
 namespace dynamics {
@@ -159,7 +160,7 @@ using ShapeFrameCompositeBase = common::EmbedPropertiesOnTopOf<
     ShapeFrame,
     ShapeFrameProperties,
     common::
-        SpecializedForAspect<VisualAspect, CollisionAspect, DynamicsAspect> >;
+        SpecializedForAspect<VisualAspect, CollisionAspect, DynamicsAspect>>;
 
 } // namespace detail
 } // namespace dynamics

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_DETAIL_NODEPTR_HPP_
 #define DART_DYNAMICS_DETAIL_NODEPTR_HPP_
 
-#include "dart/dynamics/detail/BodyNodePtr.hpp"
+#include <dart/dynamics/detail/BodyNodePtr.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -114,8 +114,7 @@ public:
   /// Set the Node for this NodePtr
   void set(NodeT* _ptr)
   {
-    if (nullptr == _ptr)
-    {
+    if (nullptr == _ptr) {
       mBodyNodePtr = nullptr;
       mDestructor = nullptr;
       mNode = nullptr;
@@ -222,8 +221,7 @@ public:
   /// Set the Node for this WeakNodePtr
   void set(NodeT* _ptr)
   {
-    if (nullptr == _ptr)
-    {
+    if (nullptr == _ptr) {
       mNode = nullptr;
       mWeakDestructor.reset();
       mWeakBodyNodePtr = nullptr;

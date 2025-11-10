@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,13 @@
 
 #include "dart/dynamics/TranslationalJoint2D.hpp"
 
-#include <string>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -228,21 +229,21 @@ void TranslationalJoint2D::updateRelativeTransform() const
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
   // Verification
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
 void TranslationalJoint2D::updateRelativeJacobian(bool mandatory) const
 {
-  if (mandatory)
-  {
+  if (mandatory) {
     mJacobian.bottomRows<3>()
         = Joint::mAspectProperties.mT_ChildBodyToJoint.linear()
           * mAspectProperties.getTranslationalAxes();
 
     // Verification
-    assert(mJacobian.topRows<3>() == (Eigen::Matrix<double, 3, 2>::Zero()));
-    assert(!math::isNan(mJacobian.bottomRows<3>()));
+    DART_ASSERT(
+        mJacobian.topRows<3>() == (Eigen::Matrix<double, 3, 2>::Zero()));
+    DART_ASSERT(!math::isNan(mJacobian.bottomRows<3>()));
   }
 }
 
@@ -250,7 +251,7 @@ void TranslationalJoint2D::updateRelativeJacobian(bool mandatory) const
 void TranslationalJoint2D::updateRelativeJacobianTimeDeriv() const
 {
   // Time derivative of translational joint is always zero
-  assert(mJacobianDeriv == (Eigen::Matrix<double, 6, 2>::Zero()));
+  DART_ASSERT(mJacobianDeriv == (Eigen::Matrix<double, 6, 2>::Zero()));
 }
 
 } // namespace dynamics

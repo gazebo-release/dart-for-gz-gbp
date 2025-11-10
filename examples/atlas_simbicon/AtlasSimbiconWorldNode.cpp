@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,8 @@
 
 #include "AtlasSimbiconWorldNode.hpp"
 
+#include "dart/common/Macros.hpp"
+
 #include <osgShadow/ShadowMap>
 
 //==============================================================================
@@ -42,8 +44,8 @@ AtlasSimbiconWorldNode::AtlasSimbiconWorldNode(
     mExternalForce(Eigen::Vector3d::Zero()),
     mForceDuration(0.0)
 {
-  assert(world);
-  assert(atlas);
+  DART_ASSERT(world);
+  DART_ASSERT(atlas);
 
   mController.reset(new Controller(atlas, world->getConstraintSolver()));
 }
@@ -119,8 +121,7 @@ void AtlasSimbiconWorldNode::showShadow()
 {
   auto shadow
       = dart::gui::osg::WorldNode::createDefaultShadowTechnique(mViewer);
-  if (auto sm = dynamic_cast<::osgShadow::ShadowMap*>(shadow.get()))
-  {
+  if (auto sm = dynamic_cast<::osgShadow::ShadowMap*>(shadow.get())) {
     auto mapResolution = static_cast<short>(std::pow(2, 12));
     sm->setTextureSize(::osg::Vec2s(mapResolution, mapResolution));
   }

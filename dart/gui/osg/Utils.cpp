@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -73,16 +73,14 @@ Eigen::Vector4d osgToEigVec4(const ::osg::Vec4d& vec)
   camera->setRenderTargetImplementation(::osg::Camera::FRAME_BUFFER_OBJECT);
   camera->setRenderOrder(::osg::Camera::PRE_RENDER);
 
-  if (tex)
-  {
+  if (tex) {
     tex->setFilter(::osg::Texture2D::MIN_FILTER, ::osg::Texture2D::LINEAR);
     tex->setFilter(::osg::Texture2D::MAG_FILTER, ::osg::Texture2D::LINEAR);
     camera->setViewport(0, 0, tex->getTextureWidth(), tex->getTextureHeight());
     camera->attach(buffer, tex);
   }
 
-  if (isAbsolute)
-  {
+  if (isAbsolute) {
     camera->setReferenceFrame(::osg::Transform::ABSOLUTE_RF);
     camera->setProjectionMatrix(::osg::Matrix::ortho2D(0.0, 1.0, 0.0, 1.0));
     camera->setViewMatrix(::osg::Matrix::identity());

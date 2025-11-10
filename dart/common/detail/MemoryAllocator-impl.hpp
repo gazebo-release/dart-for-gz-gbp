@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_COMMON_DETAIL_MEMORYALLOCATOR_HPP_
 #define DART_COMMON_DETAIL_MEMORYALLOCATOR_HPP_
 
-#include "dart/common/MemoryAllocator.hpp"
+#include <dart/common/MemoryAllocator.hpp>
 
 namespace dart::common {
 
@@ -50,18 +50,14 @@ T* MemoryAllocator::construct(Args&&... args) noexcept
 {
   // Allocate new memory for a new object (without calling the constructor)
   void* object = allocate(sizeof(T));
-  if (!object)
-  {
+  if (!object) {
     return nullptr;
   }
 
   // Call constructor. Return nullptr if failed.
-  try
-  {
+  try {
     new (object) T(std::forward<Args>(args)...);
-  }
-  catch (...)
-  {
+  } catch (...) {
     deallocate(object, sizeof(T));
     return nullptr;
   }
@@ -89,8 +85,7 @@ T* MemoryAllocator::constructAt(T* pointer, Args&&... args)
 template <typename T>
 void MemoryAllocator::destroy(T* object) noexcept
 {
-  if (!object)
-  {
+  if (!object) {
     return;
   }
   object->~T();

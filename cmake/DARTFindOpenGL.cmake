@@ -1,8 +1,8 @@
-# Copyright (c) 2011-2022, The DART development contributors
+# Copyright (c) 2011-2025, The DART development contributors
 # All rights reserved.
 #
 # The list of contributors can be found at:
-#   https://github.com/dartsim/dart/blob/master/LICENSE
+#   https://github.com/dartsim/dart/blob/main/LICENSE
 #
 # This file is provided under the "BSD-style" License
 
@@ -10,7 +10,11 @@ cmake_policy(PUSH)
 
 # Use GLVND over the legacy OpenGL libraries
 if(POLICY CMP0072)
-  cmake_policy(SET CMP0072 NEW)
+  if(DART_BUILD_WHEELS)
+    cmake_policy(SET CMP0072 OLD)
+  else()
+    cmake_policy(SET CMP0072 NEW)
+  endif()
 endif()
 
 # Use OpenGL config if available

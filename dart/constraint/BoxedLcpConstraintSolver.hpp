@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,8 @@
 #ifndef DART_CONSTRAINT_BOXEDLCPCONSTRAINTSOLVER_HPP_
 #define DART_CONSTRAINT_BOXEDLCPCONSTRAINTSOLVER_HPP_
 
-#include "dart/constraint/ConstraintSolver.hpp"
-#include "dart/constraint/SmartPointer.hpp"
+#include <dart/constraint/ConstraintSolver.hpp>
+#include <dart/constraint/SmartPointer.hpp>
 
 namespace dart {
 namespace constraint {
@@ -61,7 +61,7 @@ public:
       BoxedLcpSolverPtr boxedLcpSolver = nullptr,
       BoxedLcpSolverPtr secondaryBoxedLcpSolver = nullptr);
 
-  /// Constructos with default primary and secondary LCP solvers, which are
+  /// Constructs with default primary and secondary LCP solvers, which are
   /// Dantzig and PGS, respectively.
   BoxedLcpConstraintSolver();
 
@@ -154,12 +154,12 @@ protected:
   /// Cache data for boxed LCP formulation
   Eigen::VectorXi mOffset;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
 private:
   /// Return true if the matrix is symmetric
   bool isSymmetric(std::size_t n, double* A);
 
-  /// Return true if the diagonla block of matrix is symmetric
+  /// Return true if the diagonal block of matrix is symmetric
   bool isSymmetric(
       std::size_t n, double* A, std::size_t begin, std::size_t end);
 

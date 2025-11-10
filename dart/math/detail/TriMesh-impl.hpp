@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,10 @@
 #ifndef DART_MATH_DETAIL_TRIMESH_IMPL_HPP_
 #define DART_MATH_DETAIL_TRIMESH_IMPL_HPP_
 
-#include <Eigen/Geometry>
+#include <dart/math/Geometry.hpp>
+#include <dart/math/TriMesh.hpp>
 
-#include "dart/math/Geometry.hpp"
-#include "dart/math/TriMesh.hpp"
+#include <Eigen/Geometry>
 
 namespace dart {
 namespace math {
@@ -68,8 +68,7 @@ void TriMesh<S>::computeVertexNormals()
   this->mVertexNormals.clear();
   this->mVertexNormals.resize(this->mVertices.size(), Vector3::Zero());
 
-  for (auto i = 0u; i < mTriangles.size(); ++i)
-  {
+  for (auto i = 0u; i < mTriangles.size(); ++i) {
     auto& triangle = mTriangles[i];
     this->mVertexNormals[triangle[0]] += mTriangleNormals[i];
     this->mVertexNormals[triangle[1]] += mTriangleNormals[i];
@@ -137,22 +136,18 @@ TriMesh<S>& TriMesh<S>::operator+=(const TriMesh& other)
 
   // Insert triangle normals if both meshes have normals. Otherwise, clean the
   // triangle normals.
-  if ((!hasTriangles() || hasTriangleNormals()) && other.hasTriangleNormals())
-  {
+  if ((!hasTriangles() || hasTriangleNormals()) && other.hasTriangleNormals()) {
     mTriangleNormals.insert(
         mTriangleNormals.end(),
         other.mTriangleNormals.begin(),
         other.mTriangleNormals.end());
-  }
-  else
-  {
+  } else {
     mTriangleNormals.clear();
   }
 
   const Triangle offset = Triangle::Constant(oldNumVertices);
   mTriangles.resize(mTriangles.size() + other.mTriangles.size());
-  for (auto i = 0u; i < other.mTriangles.size(); ++i)
-  {
+  for (auto i = 0u; i < other.mTriangles.size(); ++i) {
     mTriangles[i + oldNumTriangles] = other.mTriangles[i] + offset;
   }
 
@@ -180,8 +175,7 @@ void TriMesh<S>::computeTriangleNormals()
 {
   mTriangleNormals.resize(mTriangles.size());
 
-  for (auto i = 0u; i < mTriangles.size(); ++i)
-  {
+  for (auto i = 0u; i < mTriangles.size(); ++i) {
     auto& triangle = mTriangles[i];
     const Vector3 v01
         = this->mVertices[triangle[1]] - this->mVertices[triangle[0]];
@@ -197,8 +191,7 @@ void TriMesh<S>::computeTriangleNormals()
 template <typename S>
 void TriMesh<S>::normalizeTriangleNormals()
 {
-  for (auto& normal : mTriangleNormals)
-  {
+  for (auto& normal : mTriangleNormals) {
     normal.normalize();
   }
 }

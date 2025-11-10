@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -106,8 +106,7 @@ void RealTimeWorldNode::refresh()
   customPreRefresh();
   clearChildUtilizationFlags();
 
-  if (mNumStepsPerCycle != 1)
-  {
+  if (mNumStepsPerCycle != 1) {
     dtwarn << "[RealTimeWorldNode] The number of steps per cycle has been set "
            << "to [" << mNumStepsPerCycle << "], but this value is ignored by "
            << "the RealTimeWorldNode::refresh() function. Use the function "
@@ -116,10 +115,8 @@ void RealTimeWorldNode::refresh()
     mNumStepsPerCycle = 1;
   }
 
-  if (mWorld && mSimulating)
-  {
-    if (mFirstRefresh)
-    {
+  if (mWorld && mSimulating) {
+    if (mFirstRefresh) {
       mRefreshTimer.setStartTick();
       mFirstRefresh = false;
     }
@@ -127,13 +124,11 @@ void RealTimeWorldNode::refresh()
     const double startSimTime = mWorld->getTime();
     const double simTimeStep = mWorld->getTimeStep();
 
-    while (mRefreshTimer.time_s() < mTargetRealTimeLapse)
-    {
+    while (mRefreshTimer.time_s() < mTargetRealTimeLapse) {
       const double nextSimTimeLapse
           = mWorld->getTime() - startSimTime + simTimeStep;
 
-      if (nextSimTimeLapse <= mTargetSimTimeLapse)
-      {
+      if (nextSimTimeLapse <= mTargetSimTimeLapse) {
         customPreStep();
         mWorld->step();
         customPostStep();
@@ -148,9 +143,7 @@ void RealTimeWorldNode::refresh()
         = std::max(mLastRealTimeFactor, mHighestRealTimeFactor);
 
     mRefreshTimer.setStartTick();
-  }
-  else
-  {
+  } else {
     mFirstRefresh = true;
   }
 

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,12 @@
 
 #include "dart/dynamics/FreeJoint.hpp"
 
-#include <string>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -95,8 +96,7 @@ void FreeJoint::setTransformOf(
 
   FreeJoint* freeJoint = dynamic_cast<FreeJoint*>(joint);
 
-  if (nullptr == freeJoint)
-  {
+  if (nullptr == freeJoint) {
     dtwarn << "[FreeJoint::setTransform] Invalid joint type. Setting transform "
            << "is only allowed to FreeJoint. The joint type of given joint ["
            << joint->getName() << "] is [" << joint->getType() << "].\n";
@@ -148,8 +148,7 @@ void FreeJoint::setTransformOf(
   if (0 == numTrees)
     return;
 
-  if (!applyToAllRootBodies)
-  {
+  if (!applyToAllRootBodies) {
     setTransformOf(skeleton->getRootBodyNode(), tf, withRespectTo);
     return;
   }
@@ -175,8 +174,7 @@ void FreeJoint::setSpatialMotion(
   if (newSpatialVelocity)
     setSpatialVelocity(*newSpatialVelocity, velRelativeTo, velInCoordinatesOf);
 
-  if (newSpatialAcceleration)
-  {
+  if (newSpatialAcceleration) {
     setSpatialAcceleration(
         *newSpatialAcceleration, accRelativeTo, accInCoordinatesOf);
   }
@@ -194,7 +192,7 @@ void FreeJoint::setRelativeTransform(const Eigen::Isometry3d& newTransform)
 void FreeJoint::setTransform(
     const Eigen::Isometry3d& newTransform, const Frame* withRespectTo)
 {
-  assert(nullptr != withRespectTo);
+  DART_ASSERT(nullptr != withRespectTo);
 
   setRelativeTransform(
       withRespectTo->getTransform(getChildBodyNode()->getParentFrame())
@@ -213,14 +211,11 @@ void FreeJoint::setRelativeSpatialVelocity(
 void FreeJoint::setRelativeSpatialVelocity(
     const Eigen::Vector6d& newSpatialVelocity, const Frame* inCoordinatesOf)
 {
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
-  if (getChildBodyNode() == inCoordinatesOf)
-  {
+  if (getChildBodyNode() == inCoordinatesOf) {
     setRelativeSpatialVelocity(newSpatialVelocity);
-  }
-  else
-  {
+  } else {
     setRelativeSpatialVelocity(math::AdR(
         inCoordinatesOf->getTransform(getChildBodyNode()), newSpatialVelocity));
   }
@@ -232,11 +227,10 @@ void FreeJoint::setSpatialVelocity(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
-  if (getChildBodyNode() == relativeTo)
-  {
+  if (getChildBodyNode() == relativeTo) {
     dtwarn << "[FreeJoint::setSpatialVelocity] Invalid reference frame "
               "for newSpatialVelocity. It shouldn't be the child BodyNode.\n";
     return;
@@ -245,26 +239,21 @@ void FreeJoint::setSpatialVelocity(
   // Change the reference frame of "newSpatialVelocity" to the child body node
   // frame.
   Eigen::Vector6d targetRelSpatialVel = newSpatialVelocity;
-  if (getChildBodyNode() != inCoordinatesOf)
-  {
+  if (getChildBodyNode() != inCoordinatesOf) {
     targetRelSpatialVel = math::AdR(
         inCoordinatesOf->getTransform(getChildBodyNode()), newSpatialVelocity);
   }
 
   // Compute the target relative spatial velocity from the parent body node to
   // the child body node.
-  if (getChildBodyNode()->getParentFrame() != relativeTo)
-  {
-    if (relativeTo->isWorld())
-    {
+  if (getChildBodyNode()->getParentFrame() != relativeTo) {
+    if (relativeTo->isWorld()) {
       const Eigen::Vector6d parentVelocity = math::AdInvT(
           getRelativeTransform(),
           getChildBodyNode()->getParentFrame()->getSpatialVelocity());
 
       targetRelSpatialVel -= parentVelocity;
-    }
-    else
-    {
+    } else {
       const Eigen::Vector6d parentVelocity = math::AdInvT(
           getRelativeTransform(),
           getChildBodyNode()->getParentFrame()->getSpatialVelocity());
@@ -285,18 +274,15 @@ void FreeJoint::setLinearVelocity(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
   Eigen::Vector6d targetSpatialVelocity;
 
-  if (Frame::World() == relativeTo)
-  {
+  if (Frame::World() == relativeTo) {
     targetSpatialVelocity.head<3>()
         = getChildBodyNode()->getSpatialVelocity().head<3>();
-  }
-  else
-  {
+  } else {
     targetSpatialVelocity.head<3>()
         = getChildBodyNode()
               ->getSpatialVelocity(relativeTo, getChildBodyNode())
@@ -322,8 +308,8 @@ void FreeJoint::setAngularVelocity(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
   Eigen::Vector6d targetSpatialVelocity;
 
@@ -337,13 +323,10 @@ void FreeJoint::setAngularVelocity(
   //       * newAngularVelocity;
   // but faster.
 
-  if (Frame::World() == relativeTo)
-  {
+  if (Frame::World() == relativeTo) {
     targetSpatialVelocity.tail<3>()
         = getChildBodyNode()->getSpatialVelocity().tail<3>();
-  }
-  else
-  {
+  } else {
     targetSpatialVelocity.tail<3>()
         = getChildBodyNode()
               ->getSpatialVelocity(relativeTo, getChildBodyNode())
@@ -368,14 +351,11 @@ void FreeJoint::setRelativeSpatialAcceleration(
 void FreeJoint::setRelativeSpatialAcceleration(
     const Eigen::Vector6d& newSpatialAcceleration, const Frame* inCoordinatesOf)
 {
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
-  if (getChildBodyNode() == inCoordinatesOf)
-  {
+  if (getChildBodyNode() == inCoordinatesOf) {
     setRelativeSpatialAcceleration(newSpatialAcceleration);
-  }
-  else
-  {
+  } else {
     setRelativeSpatialAcceleration(math::AdR(
         inCoordinatesOf->getTransform(getChildBodyNode()),
         newSpatialAcceleration));
@@ -388,11 +368,10 @@ void FreeJoint::setSpatialAcceleration(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
-  if (getChildBodyNode() == relativeTo)
-  {
+  if (getChildBodyNode() == relativeTo) {
     dtwarn << "[FreeJoint::setSpatialAcceleration] Invalid reference "
            << "frame for newSpatialAcceleration. It shouldn't be the child "
            << "BodyNode.\n";
@@ -402,8 +381,7 @@ void FreeJoint::setSpatialAcceleration(
   // Change the reference frame of "newSpatialAcceleration" to the child body
   // node frame.
   Eigen::Vector6d targetRelSpatialAcc = newSpatialAcceleration;
-  if (getChildBodyNode() != inCoordinatesOf)
-  {
+  if (getChildBodyNode() != inCoordinatesOf) {
     targetRelSpatialAcc = math::AdR(
         inCoordinatesOf->getTransform(getChildBodyNode()),
         newSpatialAcceleration);
@@ -411,10 +389,8 @@ void FreeJoint::setSpatialAcceleration(
 
   // Compute the target relative spatial acceleration from the parent body node
   // to the child body node.
-  if (getChildBodyNode()->getParentFrame() != relativeTo)
-  {
-    if (relativeTo->isWorld())
-    {
+  if (getChildBodyNode()->getParentFrame() != relativeTo) {
+    if (relativeTo->isWorld()) {
       const Eigen::Vector6d parentAcceleration
           = math::AdInvT(
                 getRelativeTransform(),
@@ -424,9 +400,7 @@ void FreeJoint::setSpatialAcceleration(
                 getRelativeJacobianStatic() * getVelocitiesStatic());
 
       targetRelSpatialAcc -= parentAcceleration;
-    }
-    else
-    {
+    } else {
       const Eigen::Vector6d parentAcceleration
           = math::AdInvT(
                 getRelativeTransform(),
@@ -457,18 +431,15 @@ void FreeJoint::setLinearAcceleration(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
   Eigen::Vector6d targetSpatialAcceleration;
 
-  if (Frame::World() == relativeTo)
-  {
+  if (Frame::World() == relativeTo) {
     targetSpatialAcceleration.head<3>()
         = getChildBodyNode()->getSpatialAcceleration().head<3>();
-  }
-  else
-  {
+  } else {
     targetSpatialAcceleration.head<3>()
         = getChildBodyNode()
               ->getSpatialAcceleration(relativeTo, getChildBodyNode())
@@ -498,8 +469,8 @@ void FreeJoint::setAngularAcceleration(
     const Frame* relativeTo,
     const Frame* inCoordinatesOf)
 {
-  assert(nullptr != relativeTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != relativeTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
   Eigen::Vector6d targetSpatialAcceleration;
 
@@ -514,13 +485,10 @@ void FreeJoint::setAngularAcceleration(
   //       * newAngularAcceleration;
   // but faster.
 
-  if (Frame::World() == relativeTo)
-  {
+  if (Frame::World() == relativeTo) {
     targetSpatialAcceleration.tail<3>()
         = getChildBodyNode()->getSpatialAcceleration().tail<3>();
-  }
-  else
-  {
+  } else {
     targetSpatialAcceleration.tail<3>()
         = getChildBodyNode()
               ->getSpatialAcceleration(relativeTo, getChildBodyNode())
@@ -667,7 +635,7 @@ void FreeJoint::updateRelativeTransform() const
   mT = Joint::mAspectProperties.mT_ParentBodyToJoint * mQ
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -681,14 +649,13 @@ void FreeJoint::updateRelativeJacobian(bool _mandatory) const
 //==============================================================================
 void FreeJoint::updateRelativeJacobianTimeDeriv() const
 {
-  assert(Eigen::Matrix6d::Zero() == mJacobianDeriv);
+  DART_ASSERT(Eigen::Matrix6d::Zero() == mJacobianDeriv);
 }
 
 //==============================================================================
 const Eigen::Isometry3d& FreeJoint::getQ() const
 {
-  if (mNeedTransformUpdate)
-  {
+  if (mNeedTransformUpdate) {
     updateRelativeTransform();
     mNeedTransformUpdate = false;
   }

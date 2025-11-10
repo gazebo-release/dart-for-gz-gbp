@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,25 +33,28 @@
 #ifndef DART_DYNAMICS_BODYNODE_HPP_
 #define DART_DYNAMICS_BODYNODE_HPP_
 
-#include <string>
-#include <vector>
+#include <dart/config.hpp>
+
+#include <dart/dynamics/EndEffector.hpp>
+#include <dart/dynamics/Frame.hpp>
+#include <dart/dynamics/Marker.hpp>
+#include <dart/dynamics/Node.hpp>
+#include <dart/dynamics/SmartPointer.hpp>
+#include <dart/dynamics/SpecializedNodeManager.hpp>
+#include <dart/dynamics/TemplatedJacobianNode.hpp>
+#include <dart/dynamics/detail/BodyNodeAspect.hpp>
+
+#include <dart/math/Geometry.hpp>
+
+#include <dart/common/Deprecated.hpp>
+#include <dart/common/EmbeddedAspect.hpp>
+#include <dart/common/Signal.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/common/EmbeddedAspect.hpp"
-#include "dart/common/Signal.hpp"
-#include "dart/config.hpp"
-#include "dart/dynamics/EndEffector.hpp"
-#include "dart/dynamics/Frame.hpp"
-#include "dart/dynamics/Marker.hpp"
-#include "dart/dynamics/Node.hpp"
-#include "dart/dynamics/SmartPointer.hpp"
-#include "dart/dynamics/SpecializedNodeManager.hpp"
-#include "dart/dynamics/TemplatedJacobianNode.hpp"
-#include "dart/dynamics/detail/BodyNodeAspect.hpp"
-#include "dart/math/Geometry.hpp"
+#include <string>
+#include <vector>
 
 namespace dart {
 namespace dynamics {
@@ -1271,6 +1274,6 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_END
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/BodyNode.hpp"
+#include <dart/dynamics/detail/BodyNode.hpp>
 
 #endif // DART_DYNAMICS_BODYNODE_HPP_

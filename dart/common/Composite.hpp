@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,8 @@
 #ifndef DART_COMMON_COMPOSITE_HPP_
 #define DART_COMMON_COMPOSITE_HPP_
 
-#include "dart/common/ClassWithVirtualBase.hpp"
-#include "dart/common/detail/CompositeData.hpp"
+#include <dart/common/ClassWithVirtualBase.hpp>
+#include <dart/common/detail/CompositeData.hpp>
 
 namespace dart {
 namespace common {
@@ -55,7 +55,7 @@ public:
   using State = detail::CompositeState;
   using Properties = detail::CompositeProperties;
 
-  using AspectMap = std::map<std::type_index, std::unique_ptr<Aspect> >;
+  using AspectMap = std::map<std::type_index, std::unique_ptr<Aspect>>;
   using RequiredAspectSet = std::unordered_set<std::type_index>;
 
   template <typename... Aspects>
@@ -200,6 +200,6 @@ void createAspects(T* comp);
 } // namespace common
 } // namespace dart
 
-#include "dart/common/detail/Composite.hpp"
+#include <dart/common/detail/Composite.hpp>
 
 #endif // DART_COMMON_COMPOSITE_HPP_

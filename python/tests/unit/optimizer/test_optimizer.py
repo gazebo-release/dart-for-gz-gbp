@@ -1,6 +1,7 @@
-import pytest
 import math
+
 import dartpy as dart
+import pytest
 
 
 # Problem reference: http://ab-initio.mit.edu/wiki/index.php/NLopt_Tutorial
@@ -20,16 +21,18 @@ class SampleConstFunc(dart.optimizer.Function):
         self.b = b
 
     def eval(self, x):
-        return (self.a*x[0] + self.b) * (self.a*x[0] + self.b) * (self.a*x[0] + self.b) - x[1];
+        return (self.a * x[0] + self.b) * (self.a * x[0] + self.b) * (
+            self.a * x[0] + self.b
+        ) - x[1]
 
     def evalGradient(self, x, grad):
-        grad[0] = 3 * self.a * (self.a*x[0] + self.b) * (self.a*x[0] + self.b);
-        grad[1] = -1.0;
+        grad[0] = 3 * self.a * (self.a * x[0] + self.b) * (self.a * x[0] + self.b)
+        grad[1] = -1.0
 
 
 def test_gradient_descent_solver():
     prob = dart.optimizer.Problem(2)
-    assert prob.getDimension() is 2
+    assert prob.getDimension() == 2
 
     prob.setLowerBounds([-1e100, 0])
     prob.setInitialGuess([1.234, 5.678])
@@ -53,11 +56,11 @@ def test_gradient_descent_solver():
 
 
 def test_nlopt_solver():
-    if not hasattr(dart.optimizer, 'NloptSolver'):
+    if not hasattr(dart.optimizer, "NloptSolver"):
         return
 
     prob = dart.optimizer.Problem(2)
-    assert prob.getDimension() is 2
+    assert prob.getDimension() == 2
 
     prob.setLowerBounds([-1e100, 0])
     prob.setInitialGuess([1.234, 5.678])

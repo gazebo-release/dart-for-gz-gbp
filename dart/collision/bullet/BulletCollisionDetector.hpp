@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,14 +33,14 @@
 #ifndef DART_COLLISION_BULLET_BULLETCOLLISIONDETECTOR_HPP_
 #define DART_COLLISION_BULLET_BULLETCOLLISIONDETECTOR_HPP_
 
-#include <vector>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/bullet/BulletCollisionGroup.hpp>
+#include <dart/collision/bullet/BulletCollisionShape.hpp>
+#include <dart/collision/bullet/BulletInclude.hpp>
 
 #include <assimp/scene.h>
 
-#include "dart/collision/CollisionDetector.hpp"
-#include "dart/collision/bullet/BulletCollisionGroup.hpp"
-#include "dart/collision/bullet/BulletCollisionShape.hpp"
-#include "dart/collision/bullet/BulletInclude.hpp"
+#include <vector>
 
 namespace dart {
 namespace collision {
@@ -127,7 +127,7 @@ private:
   std::unique_ptr<BulletCollisionShape> createBulletCollisionShape(
       const dynamics::ConstShapePtr& shape);
 
-  /// This deleter is responsible for deleting BulletCollsionShape objects and
+  /// This deleter is responsible for deleting BulletCollisionShape objects and
   /// removing them from mShapeMap when they are not shared by any
   /// CollisionObjects.
   class BulletCollisionShapeDeleter final

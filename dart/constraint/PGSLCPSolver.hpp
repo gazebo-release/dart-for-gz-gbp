@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,16 +33,17 @@
 #ifndef DART_CONSTRAINT_PGSLCPSOLVER_HPP_
 #define DART_CONSTRAINT_PGSLCPSOLVER_HPP_
 
-#include <cstddef>
+#include <dart/config.hpp>
 
-#include "dart/config.hpp"
-#include "dart/constraint/LCPSolver.hpp"
+#include <dart/constraint/LCPSolver.hpp>
+
+#include <cstddef>
 
 namespace dart {
 namespace constraint {
 
 /// \deprecated This header has been deprecated in DART 6.7. Please include
-/// PgsBoxedLcpSolver.hpp intead.
+/// PgsBoxedLcpSolver.hpp instead.
 ///
 /// PGSLCPSolver
 class PGSLCPSolver : public LCPSolver
@@ -57,12 +58,12 @@ public:
   // Documentation inherited
   void solve(ConstrainedGroup* _group) override;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
 private:
   /// Return true if the matrix is symmetric
   bool isSymmetric(std::size_t _n, double* _A);
 
-  /// Return true if the diagonla block of matrix is symmetric
+  /// Return true if the diagonal block of matrix is symmetric
   bool isSymmetric(
       std::size_t _n, double* _A, std::size_t _begin, std::size_t _end);
 

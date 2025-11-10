@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/utils/PackageResourceRetriever.hpp"
 
-#include <cassert>
-#include <iostream>
-#include <sstream>
-
 #include "dart/common/Console.hpp"
 #include "dart/common/LocalResourceRetriever.hpp"
 #include "dart/common/Uri.hpp"
+
+#include <iostream>
+#include <sstream>
+
+#include <cassert>
 
 namespace dart {
 namespace utils {
@@ -75,8 +76,7 @@ bool PackageResourceRetriever::exists(const common::Uri& _uri)
   if (!resolvePackageUri(_uri, packageName, relativePath))
     return false;
 
-  for (const std::string& packagePath : getPackagePaths(packageName))
-  {
+  for (const std::string& packagePath : getPackagePaths(packageName)) {
     common::Uri fileUri;
     fileUri.fromPath(packagePath + relativePath);
 
@@ -94,8 +94,7 @@ common::ResourcePtr PackageResourceRetriever::retrieve(const common::Uri& _uri)
   if (!resolvePackageUri(_uri, packageName, relativePath))
     return nullptr;
 
-  for (const std::string& packagePath : getPackagePaths(packageName))
-  {
+  for (const std::string& packagePath : getPackagePaths(packageName)) {
     common::Uri fileUri;
     fileUri.fromPath(packagePath + relativePath);
 
@@ -112,8 +111,7 @@ std::string PackageResourceRetriever::getFilePath(const common::Uri& uri)
   if (!resolvePackageUri(uri, packageName, relativePath))
     return "";
 
-  for (const std::string& packagePath : getPackagePaths(packageName))
-  {
+  for (const std::string& packagePath : getPackagePaths(packageName)) {
     common::Uri fileUri;
     fileUri.fromPath(packagePath + relativePath);
 
@@ -137,8 +135,7 @@ const std::vector<std::string>& PackageResourceRetriever::getPackagePaths(
   const auto it = mPackageMap.find(_packageName);
   if (it != std::end(mPackageMap))
     return it->second;
-  else
-  {
+  else {
     dtwarn << "[PackageResourceResolver::getPackagePaths] Unable to resolve"
               "path to package '"
            << _packageName
@@ -157,8 +154,7 @@ bool PackageResourceRetriever::resolvePackageUri(
   if (_uri.mScheme.get_value_or("file") != "package")
     return false;
 
-  if (!_uri.mAuthority)
-  {
+  if (!_uri.mAuthority) {
     dtwarn << "[PackageResourceRetriever::resolvePackageUri] Failed extracting"
               " package name from URI '"
            << _uri.toString() << "'.\n";
@@ -166,8 +162,7 @@ bool PackageResourceRetriever::resolvePackageUri(
   }
   _packageName = *_uri.mAuthority;
 
-  if (!_uri.mPath)
-  {
+  if (!_uri.mPath) {
     dtwarn << "[PackageResourceRetriever::resolvePackageUri] Failed extracting"
               " relative path from URI '"
            << _uri.toString() << "'.\n";

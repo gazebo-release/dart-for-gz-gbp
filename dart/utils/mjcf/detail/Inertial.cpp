@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/utils/mjcf/detail/Inertial.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/utils/XmlHelpers.hpp"
 #include "dart/utils/mjcf/detail/Utils.hpp"
 
@@ -45,8 +46,7 @@ Errors Inertial::read(tinyxml2::XMLElement* element)
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "inertial")
-  {
+  if (std::string(element->Name()) != "inertial") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <inertial> from the provided element");
@@ -54,8 +54,7 @@ Errors Inertial::read(tinyxml2::XMLElement* element)
   }
 
   // (required) pos
-  if (!hasAttribute(element, "pos"))
-  {
+  if (!hasAttribute(element, "pos")) {
     errors.emplace_back(
         ErrorCode::ATTRIBUTE_MISSING,
         "Failed to find required attribute 'pos' in <inertial>");
@@ -69,8 +68,7 @@ Errors Inertial::read(tinyxml2::XMLElement* element)
       errors.end(), orientationErrors.begin(), orientationErrors.end());
 
   // quat
-  if (hasAttribute(element, "quat"))
-  {
+  if (hasAttribute(element, "quat")) {
     const Eigen::Vector4d vec4d = getAttributeVector4d(element, "quat");
     mData.mQuat.w() = vec4d[0];
     mData.mQuat.x() = vec4d[1];
@@ -79,32 +77,27 @@ Errors Inertial::read(tinyxml2::XMLElement* element)
   }
 
   // axisangle
-  if (hasAttribute(element, "axisangle"))
-  {
+  if (hasAttribute(element, "axisangle")) {
     mData.mAxisAngle = getAttributeVector4d(element, "axisangle");
   }
 
   // euler
-  if (hasAttribute(element, "euler"))
-  {
+  if (hasAttribute(element, "euler")) {
     mData.mEuler = getAttributeVector3d(element, "euler");
   }
 
   // xyaxes
-  if (hasAttribute(element, "xyaxes"))
-  {
+  if (hasAttribute(element, "xyaxes")) {
     mData.mXYAxes = getAttributeVector6d(element, "xyaxes");
   }
 
   // zaxis
-  if (hasAttribute(element, "zaxis"))
-  {
+  if (hasAttribute(element, "zaxis")) {
     mData.mZAxis = getAttributeVector3d(element, "zaxis");
   }
 
   // (required) mass
-  if (!hasAttribute(element, "mass"))
-  {
+  if (!hasAttribute(element, "mass")) {
     errors.emplace_back(
         ErrorCode::ATTRIBUTE_MISSING,
         "Failed to find required attribute 'mass' in <inertial>");
@@ -113,24 +106,19 @@ Errors Inertial::read(tinyxml2::XMLElement* element)
   mData.mMass = getAttributeDouble(element, "mass");
 
   // (optional) diaginertia, fullinertia
-  if (hasAttribute(element, "diaginertia"))
-  {
+  if (hasAttribute(element, "diaginertia")) {
     mData.mDiagInertia = getAttributeVector3d(element, "diaginertia");
 
-    if (hasAttribute(element, "fullinertia"))
-    {
+    if (hasAttribute(element, "fullinertia")) {
       errors.emplace_back(
           ErrorCode::ATTRIBUTE_CONFLICT,
           "Not allowed to set both of 'diaginertia' and 'fullinertia' in "
           "<inertial>");
       return errors;
     }
-  }
-  else
-  {
+  } else {
     // If diaginertia is omitted, the next attribute becomes required.
-    if (!hasAttribute(element, "fullinertia"))
-    {
+    if (!hasAttribute(element, "fullinertia")) {
       errors.emplace_back(
           ErrorCode::ATTRIBUTE_MISSING,
           "Failed to find required attribute 'diaginertia' or 'fullinertia' in "
@@ -151,8 +139,7 @@ Errors Inertial::compile(const Compiler& compiler)
 
   mPos = mData.mPos;
 
-  if (compiler.getCoordinate() == Coordinate::LOCAL)
-  {
+  if (compiler.getCoordinate() == Coordinate::LOCAL) {
     mRelativeTransform.translation() = mData.mPos;
     mRelativeTransform.linear() = compileRotation(
         mData.mQuat,
@@ -161,9 +148,7 @@ Errors Inertial::compile(const Compiler& compiler)
         mData.mXYAxes,
         mData.mZAxis,
         compiler);
-  }
-  else
-  {
+  } else {
     mWorldTransform.translation() = mData.mPos;
     mWorldTransform.linear() = compileRotation(
         mData.mQuat,
@@ -176,14 +161,11 @@ Errors Inertial::compile(const Compiler& compiler)
 
   mMass = mData.mMass;
 
-  if (mData.mDiagInertia)
-  {
+  if (mData.mDiagInertia) {
     mDiagonalInertia = *mData.mDiagInertia;
     mOffDiagonalInertia.setZero();
-  }
-  else
-  {
-    assert(mData.mFullInertia);
+  } else {
+    DART_ASSERT(mData.mFullInertia);
     mDiagonalInertia = mData.mFullInertia->head<3>();
     mOffDiagonalInertia = mData.mFullInertia->tail<3>();
   }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,11 @@
 #ifndef DART_DYNAMICS_DETAIL_GenericJointASPECT_HPP_
 #define DART_DYNAMICS_DETAIL_GenericJointASPECT_HPP_
 
-#include "dart/common/AspectWithVersion.hpp"
-#include "dart/dynamics/Joint.hpp"
-#include "dart/math/Helpers.hpp"
+#include <dart/dynamics/Joint.hpp>
+
+#include <dart/math/Helpers.hpp>
+
+#include <dart/common/AspectWithVersion.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -263,8 +265,7 @@ GenericJointUniqueProperties<ConfigSpaceT>::GenericJointUniqueProperties(
     mDampingCoefficients(dampingCoefficient),
     mFrictions(coulombFrictions)
 {
-  for (auto i = 0u; i < NumDofs; ++i)
-  {
+  for (auto i = 0u; i < NumDofs; ++i) {
     mPreserveDofNames[i] = false;
     mDofNames[i] = std::string();
   }
@@ -289,8 +290,7 @@ GenericJointUniqueProperties<ConfigSpaceT>::GenericJointUniqueProperties(
     mDampingCoefficients(_other.mDampingCoefficients),
     mFrictions(_other.mFrictions)
 {
-  for (auto i = 0u; i < NumDofs; ++i)
-  {
+  for (auto i = 0u; i < NumDofs; ++i) {
     mPreserveDofNames[i] = _other.mPreserveDofNames[i];
     mDofNames[i] = _other.mDofNames[i];
   }
@@ -302,8 +302,7 @@ GenericJointUniqueProperties<ConfigSpaceT>&
 GenericJointUniqueProperties<ConfigSpaceT>::operator=(
     const GenericJointUniqueProperties& other)
 {
-  if (this != &other)
-  {
+  if (this != &other) {
     mPositionLowerLimits = other.mPositionLowerLimits;
     mPositionUpperLimits = other.mPositionUpperLimits;
     mInitialPositions = other.mInitialPositions;
@@ -319,8 +318,7 @@ GenericJointUniqueProperties<ConfigSpaceT>::operator=(
     mDampingCoefficients = other.mDampingCoefficients;
     mFrictions = other.mFrictions;
 
-    for (auto i = 0u; i < NumDofs; ++i)
-    {
+    for (auto i = 0u; i < NumDofs; ++i) {
       mPreserveDofNames[i] = other.mPreserveDofNames[i];
       mDofNames[i] = other.mDofNames[i];
     }

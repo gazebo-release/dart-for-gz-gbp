@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,12 @@
 
 #include "dart/dynamics/ScrewJoint.hpp"
 
-#include <string>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -168,7 +169,7 @@ ScrewJoint::getRelativeJacobianStatic(
   GenericJoint<math::R1Space>::JacobianMatrix jacobian
       = math::AdT(Joint::mAspectProperties.mT_ChildBodyToJoint, S);
 
-  assert(!math::isNan(jacobian));
+  DART_ASSERT(!math::isNan(jacobian));
 
   return jacobian;
 }
@@ -209,7 +210,7 @@ void ScrewJoint::updateRelativeTransform() const
   mT = Joint::mAspectProperties.mT_ParentBodyToJoint
        * math::expMap(S * getPositionsStatic())
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -223,7 +224,7 @@ void ScrewJoint::updateRelativeJacobian(bool _mandatory) const
 void ScrewJoint::updateRelativeJacobianTimeDeriv() const
 {
   // Time derivative of screw joint is always zero
-  assert(mJacobianDeriv == Eigen::Vector6d::Zero());
+  DART_ASSERT(mJacobianDeriv == Eigen::Vector6d::Zero());
 }
 
 } // namespace dynamics

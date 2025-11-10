@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,15 +33,16 @@
 #ifndef DART_DYNAMICS_SHAPEFRAME_HPP_
 #define DART_DYNAMICS_SHAPEFRAME_HPP_
 
-#include <Eigen/Dense>
+#include <dart/dynamics/EllipsoidShape.hpp>
+#include <dart/dynamics/FixedFrame.hpp>
+#include <dart/dynamics/TemplatedJacobianNode.hpp>
+#include <dart/dynamics/detail/ShapeFrameAspect.hpp>
 
-#include "dart/common/AspectWithVersion.hpp"
-#include "dart/common/Signal.hpp"
-#include "dart/common/SpecializedForAspect.hpp"
-#include "dart/dynamics/EllipsoidShape.hpp"
-#include "dart/dynamics/FixedFrame.hpp"
-#include "dart/dynamics/TemplatedJacobianNode.hpp"
-#include "dart/dynamics/detail/ShapeFrameAspect.hpp"
+#include <dart/common/AspectWithVersion.hpp>
+#include <dart/common/Signal.hpp>
+#include <dart/common/SpecializedForAspect.hpp>
+
+#include <Eigen/Dense>
 
 namespace dart {
 namespace dynamics {

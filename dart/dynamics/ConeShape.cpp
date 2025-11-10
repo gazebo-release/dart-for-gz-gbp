@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,12 @@
 
 #include "dart/dynamics/ConeShape.hpp"
 
-#include <cmath>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/CylinderShape.hpp"
 #include "dart/dynamics/SphereShape.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <cmath>
 
 namespace dart {
 namespace dynamics {
@@ -45,8 +46,8 @@ namespace dynamics {
 ConeShape::ConeShape(double radius, double height)
   : Shape(CONE), mRadius(radius), mHeight(height)
 {
-  assert(0.0 < radius);
-  assert(0.0 < height);
+  DART_ASSERT(0.0 < radius);
+  DART_ASSERT(0.0 < height);
 }
 
 //==============================================================================
@@ -71,7 +72,7 @@ double ConeShape::getRadius() const
 //==============================================================================
 void ConeShape::setRadius(double radius)
 {
-  assert(0.0 < radius);
+  DART_ASSERT(0.0 < radius);
   mRadius = radius;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
@@ -88,7 +89,7 @@ double ConeShape::getHeight() const
 //==============================================================================
 void ConeShape::setHeight(double height)
 {
-  assert(0.0 < height);
+  DART_ASSERT(0.0 < height);
   mHeight = height;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;

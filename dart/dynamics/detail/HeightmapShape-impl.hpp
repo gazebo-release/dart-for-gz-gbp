@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,13 +30,17 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "dart/common/Macros.hpp"
+
+#include <dart/dynamics/BoxShape.hpp>
+#include <dart/dynamics/HeightmapShape.hpp>
+
+#include <dart/common/Console.hpp>
+
 #include <algorithm>
-#include <cmath>
 #include <limits>
 
-#include "dart/common/Console.hpp"
-#include "dart/dynamics/BoxShape.hpp"
-#include "dart/dynamics/HeightmapShape.hpp"
+#include <cmath>
 
 namespace dart {
 namespace dynamics {
@@ -70,9 +74,9 @@ const std::string& HeightmapShape<S>::getStaticType()
 template <typename S>
 void HeightmapShape<S>::setScale(const Vector3& scale)
 {
-  assert(scale[0] > 0.0);
-  assert(scale[1] > 0.0);
-  assert(scale[2] > 0.0);
+  DART_ASSERT(scale[0] > 0.0);
+  DART_ASSERT(scale[1] > 0.0);
+  DART_ASSERT(scale[2] > 0.0);
   mScale = scale;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
@@ -94,15 +98,13 @@ void HeightmapShape<S>::setHeightField(
     const std::size_t& depth,
     const std::vector<S>& heights)
 {
-  assert(heights.size() == width * depth);
-  if ((width * depth) != heights.size())
-  {
+  DART_ASSERT(heights.size() == width * depth);
+  if ((width * depth) != heights.size()) {
     dterr << "[HeightmapShape] Size of height field needs to be width*depth="
           << width * depth << "\n";
     return;
   }
-  if (heights.empty())
-  {
+  if (heights.empty()) {
     dtwarn << "Empty height field makes no sense.\n";
     return;
   }
@@ -199,8 +201,7 @@ ShapePtr HeightmapShape<S>::clone() const
 template <typename S>
 Eigen::Matrix3d HeightmapShape<S>::computeInertia(double mass) const
 {
-  if (mIsBoundingBoxDirty)
-  {
+  if (mIsBoundingBoxDirty) {
     updateBoundingBox();
   }
   return BoxShape::computeInertia(getBoundingBox().computeFullExtents(), mass);

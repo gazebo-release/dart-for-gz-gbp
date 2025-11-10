@@ -1,7 +1,8 @@
 import math
-import pytest
-import numpy as np
+
 import dartpy as dart
+import numpy as np
+import pytest
 
 
 def kinematics_tester(joint):
@@ -123,23 +124,24 @@ def test_access_to_parent_child_transforms():
 
 def test_BallJoint_positions_conversion():
     assert np.allclose(
-        dart.dynamics.BallJoint.convertToPositions(np.eye(3)),
-        np.zeros((1, 3))
+        dart.dynamics.BallJoint.convertToPositions(np.eye(3)), np.zeros((1, 3))
     )
     assert np.allclose(
         dart.dynamics.BallJoint.convertToPositions(
-            np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])),
-        np.array([0, 0, -np.pi/2])
+            np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
+        ),
+        np.array([0, 0, -np.pi / 2]),
     )
 
     for i in range(30):
-        ballJointPos = np.random.uniform(-np.pi/2, np.pi/2, 3)
+        ballJointPos = np.random.uniform(-np.pi / 2, np.pi / 2, 3)
         assert np.allclose(
             dart.dynamics.BallJoint.convertToRotation(
                 dart.dynamics.BallJoint.convertToPositions(
                     dart.dynamics.BallJoint.convertToRotation(ballJointPos)
-                )),
-            dart.dynamics.BallJoint.convertToRotation(ballJointPos)
+                )
+            ),
+            dart.dynamics.BallJoint.convertToRotation(ballJointPos),
         )
 
 

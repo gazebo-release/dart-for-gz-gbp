@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_DETAIL_METASKELETON_IMPL_HPP_
 #define DART_DYNAMICS_DETAIL_METASKELETON_IMPL_HPP_
 
-#include "dart/dynamics/MetaSkeleton.hpp"
+#include <dart/dynamics/MetaSkeleton.hpp>
 
 namespace dart::dynamics {
 
@@ -43,18 +43,13 @@ void MetaSkeleton::eachBodyNode(Func func) const
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, const dynamics::BodyNode*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumBodyNodes(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumBodyNodes(); ++i) {
       if (!func(getBodyNode(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumBodyNodes(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumBodyNodes(); ++i) {
       func(getBodyNode(i));
     }
   }
@@ -66,18 +61,13 @@ void MetaSkeleton::eachBodyNode(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, dynamics::BodyNode*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumBodyNodes(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumBodyNodes(); ++i) {
       if (!func(getBodyNode(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumBodyNodes(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumBodyNodes(); ++i) {
       func(getBodyNode(i));
     }
   }
@@ -89,18 +79,13 @@ void MetaSkeleton::eachJoint(Func func) const
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, const dynamics::Joint*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumJoints(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumJoints(); ++i) {
       if (!func(getJoint(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumJoints(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumJoints(); ++i) {
       func(getJoint(i));
     }
   }
@@ -112,18 +97,13 @@ void MetaSkeleton::eachJoint(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, dynamics::Joint*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumJoints(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumJoints(); ++i) {
       if (!func(getJoint(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumJoints(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumJoints(); ++i) {
       func(getJoint(i));
     }
   }
@@ -136,18 +116,13 @@ void MetaSkeleton::eachDof(Func func) const
   if constexpr (std::is_same_v<
                     std::
                         invoke_result_t<Func, const dynamics::DegreeOfFreedom*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumDofs(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumDofs(); ++i) {
       if (!func(getDof(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumDofs(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumDofs(); ++i) {
       func(getDof(i));
     }
   }
@@ -159,18 +134,13 @@ void MetaSkeleton::eachDof(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, dynamics::DegreeOfFreedom*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumDofs(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumDofs(); ++i) {
       if (!func(getDof(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumDofs(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumDofs(); ++i) {
       func(getDof(i));
     }
   }

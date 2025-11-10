@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/collision/fcl/FCLCollisionObject.hpp"
 
 #include "dart/collision/fcl/FCLTypes.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/ShapeFrame.hpp"
 #include "dart/dynamics/SoftMeshShape.hpp"
 
@@ -74,9 +75,8 @@ void FCLCollisionObject::updateEngineData()
   auto shape = mShapeFrame->getShape().get();
 
   // Update soft-body's vertices
-  if (shape->getType() == dynamics::SoftMeshShape::getStaticType())
-  {
-    assert(dynamic_cast<const SoftMeshShape*>(shape));
+  if (shape->getType() == dynamics::SoftMeshShape::getStaticType()) {
+    DART_ASSERT(dynamic_cast<const SoftMeshShape*>(shape));
     auto softMeshShape = static_cast<const SoftMeshShape*>(shape);
 
     const aiMesh* mesh = softMeshShape->getAssimpMesh();
@@ -85,17 +85,15 @@ void FCLCollisionObject::updateEngineData()
 
     auto collGeom = const_cast<dart::collision::fcl::CollisionGeometry*>(
         mFCLCollisionObject->collisionGeometry().get());
-    assert(
+    DART_ASSERT(
         dynamic_cast<::fcl::BVHModel<dart::collision::fcl::OBBRSS>*>(collGeom));
     auto bvhModel
         = static_cast<::fcl::BVHModel<dart::collision::fcl::OBBRSS>*>(collGeom);
 
     bvhModel->beginUpdateModel();
-    for (auto i = 0u; i < mesh->mNumFaces; ++i)
-    {
+    for (auto i = 0u; i < mesh->mNumFaces; ++i) {
       dart::collision::fcl::Vector3 vertices[3];
-      for (auto j = 0u; j < 3; ++j)
-      {
+      for (auto j = 0u; j < 3; ++j) {
         const auto& vertex = mesh->mVertices[mesh->mFaces[i].mIndices[j]];
         vertices[j]
             = dart::collision::fcl::Vector3(vertex.x, vertex.y, vertex.z);

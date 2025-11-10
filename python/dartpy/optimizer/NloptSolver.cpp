@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,13 @@
 #include <dart/config.hpp>
 #if HAVE_NLOPT
 
-  #include <dart/dart.hpp>
-  #include <dart/optimizer/nlopt/nlopt.hpp>
-  #include <pybind11/pybind11.h>
-
   #include "eigen_pybind.h"
+
+  #include <dart/optimizer/nlopt/nlopt.hpp>
+
+  #include <dart/dart.hpp>
+
+  #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
@@ -121,7 +123,9 @@ void NloptSolver(py::module& m)
       DARTPY_DEFINE_ALGORITHM(GN_ORIG_DIRECT_L)
       DARTPY_DEFINE_ALGORITHM(GD_STOGO)
       DARTPY_DEFINE_ALGORITHM(GD_STOGO_RAND)
+#if !NLOPT_VERSION_GE(2, 9, 0)
       DARTPY_DEFINE_ALGORITHM(LD_LBFGS_NOCEDAL)
+#endif
       DARTPY_DEFINE_ALGORITHM(LD_LBFGS)
       DARTPY_DEFINE_ALGORITHM(LN_PRAXIS)
       DARTPY_DEFINE_ALGORITHM(LD_VAR1)

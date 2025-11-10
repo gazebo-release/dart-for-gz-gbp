@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,9 +30,11 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
 #include <dart/gui/gui.hpp>
+
 #include <dart/utils/urdf/urdf.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_domino_height = 0.3;
 const double default_domino_width = 0.4 * default_domino_height;
@@ -283,16 +285,13 @@ public:
     collisionGroup->addShapeFramesOf(mFloor.get());
 
     // If the new domino is not penetrating an existing one
-    if (!dominoCollision)
-    {
+    if (!dominoCollision) {
       mWorld->addSkeleton(newDomino);
       // Record the latest domino addition
       mAngles.push_back(angle);
       mDominoes.push_back(newDomino);
       mTotalAngle += angle;
-    }
-    else
-    {
+    } else {
       std::cout << "The new domino would penetrate something. I will not add"
                 << std::endl;
       std::cout << "it to the world. Remove some dominos with 'd' and try again"
@@ -304,8 +303,7 @@ public:
   // original domino)
   void deleteLastDomino()
   {
-    if (mDominoes.size() > 0)
-    {
+    if (mDominoes.size() > 0) {
       SkeletonPtr lastDomino = mDominoes.back();
       mDominoes.pop_back();
       mWorld->removeSkeleton(lastDomino);
@@ -317,10 +315,8 @@ public:
 
   void keyboard(unsigned char key, int x, int y) override
   {
-    if (!mHasEverRun)
-    {
-      switch (key)
-      {
+    if (!mHasEverRun) {
+      switch (key) {
         case 'q':
           attemptToCreateDomino(default_angle);
           break;
@@ -337,11 +333,8 @@ public:
           mHasEverRun = true;
           break;
       }
-    }
-    else
-    {
-      switch (key)
-      {
+    } else {
+      switch (key) {
         case 'f':
           mForceCountDown = default_force_duration;
           break;
@@ -359,8 +352,7 @@ public:
   {
     // If the user has pressed the 'f' key, apply a force to the first domino in
     // order to push it over
-    if (mForceCountDown > 0)
-    {
+    if (mForceCountDown > 0) {
       Eigen::Vector3d force = default_push_force * Eigen::Vector3d::UnitX();
       Eigen::Vector3d location
           = default_domino_height / 2.0 * Eigen::Vector3d::UnitZ();
@@ -370,13 +362,10 @@ public:
     }
 
     // Run the controller for the manipulator
-    if (mPushCountDown > 0)
-    {
+    if (mPushCountDown > 0) {
       mController->setOperationalSpaceForces();
       --mPushCountDown;
-    }
-    else
-    {
+    } else {
       mController->setPDForces();
     }
 

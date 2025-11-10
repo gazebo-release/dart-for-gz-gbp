@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,9 @@
 #ifndef DART_UTILS_DETAIL_XMLHELPERS_IMPL_HPP_
 #define DART_UTILS_DETAIL_XMLHELPERS_IMPL_HPP_
 
-#include "dart/common/String.hpp"
-#include "dart/utils/XmlHelpers.hpp"
+#include <dart/utils/XmlHelpers.hpp>
+
+#include <dart/common/String.hpp>
 
 namespace dart::utils {
 
@@ -54,16 +55,11 @@ std::string toString(
     const std::string& rotationType)
 {
   Eigen::Matrix<S, 3, 1> angles;
-  if (rotationType == "intrinsic")
-  {
+  if (rotationType == "intrinsic") {
     angles = math::matrixToEulerXYZ(v.rotation());
-  }
-  else if (rotationType == "extrinsic")
-  {
+  } else if (rotationType == "extrinsic") {
     angles = math::matrixToEulerZYX(v.rotation()).reverse();
-  }
-  else
-  {
+  } else {
     DART_ERROR(
         "Unsupported rotation type [{}]. Assuming intrinsic.", rotationType);
     angles = math::matrixToEulerXYZ(v.rotation());
@@ -83,29 +79,21 @@ Eigen::Matrix<double, N, 1> toVectorNd(const std::string& str)
 {
   const std::vector<std::string> pieces = common::split(common::trim(str));
   const std::size_t sizeToRead = std::min(N, pieces.size());
-  if (pieces.size() < N)
-  {
+  if (pieces.size() < N) {
     dterr << "Failed to read a vector because the dimension '" << pieces.size()
           << "' is less than the expectation '" << N << "'.\n";
-  }
-  else if (pieces.size() > N)
-  {
+  } else if (pieces.size() > N) {
     dterr << "Failed to read a vector because the dimension '" << pieces.size()
           << "' is greater than the expectation '" << N << "'.\n";
   }
 
   Eigen::Matrix<double, N, 1> ret = Eigen::Matrix<double, N, 1>::Zero();
 
-  for (std::size_t i = 0; i < sizeToRead; ++i)
-  {
-    if (pieces[i] != "")
-    {
-      try
-      {
+  for (std::size_t i = 0; i < sizeToRead; ++i) {
+    if (pieces[i] != "") {
+      try {
         ret[i] = toDouble(pieces[i]);
-      }
-      catch (std::exception& e)
-      {
+      } catch (std::exception& e) {
         dterr << "value [" << pieces[i]
               << "] is not a valid double for Eigen::Vector" << N << "d[" << i
               << "]: " << e.what() << "\n";
@@ -150,13 +138,10 @@ bool TemplatedElementEnumerator<ElementType>::next()
   if (!mParentElement)
     return false;
 
-  if (mCurrentElement)
-  {
+  if (mCurrentElement) {
     mCurrentElement
         = mCurrentElement->NextSiblingElement(mChildElementName.c_str());
-  }
-  else
-  {
+  } else {
     mCurrentElement
         = mParentElement->FirstChildElement(mChildElementName.c_str());
   }

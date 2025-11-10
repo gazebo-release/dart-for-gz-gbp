@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,10 @@
 #ifndef DART_COMMON_FREELISTALLOCATOR_HPP_
 #define DART_COMMON_FREELISTALLOCATOR_HPP_
 
-#include <mutex>
+#include <dart/common/MemoryAllocator.hpp>
+#include <dart/common/MemoryAllocatorDebugger.hpp>
 
-#include "dart/common/MemoryAllocator.hpp"
-#include "dart/common/MemoryAllocatorDebugger.hpp"
+#include <mutex>
 
 namespace dart::common {
 
@@ -126,7 +126,7 @@ private:
     /// Merges this memory block with the given memory block
     void merge(MemoryBlockHeader* other);
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
     /// [Debug only] Returns whether this memory block is valid
     bool isValid() const;
 #endif

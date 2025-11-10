@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,9 +32,10 @@
 
 #include "dart/dynamics/CylinderShape.hpp"
 
-#include <cmath>
-
+#include "dart/common/Macros.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <cmath>
 
 namespace dart {
 namespace dynamics {
@@ -43,8 +44,8 @@ namespace dynamics {
 CylinderShape::CylinderShape(double _radius, double _height)
   : Shape(CYLINDER), mRadius(_radius), mHeight(_height)
 {
-  assert(0.0 < _radius);
-  assert(0.0 < _height);
+  DART_ASSERT(0.0 < _radius);
+  DART_ASSERT(0.0 < _height);
 }
 
 //==============================================================================
@@ -69,7 +70,7 @@ double CylinderShape::getRadius() const
 //==============================================================================
 void CylinderShape::setRadius(double _radius)
 {
-  assert(0.0 < _radius);
+  DART_ASSERT(0.0 < _radius);
   mRadius = _radius;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
@@ -86,7 +87,7 @@ double CylinderShape::getHeight() const
 //==============================================================================
 void CylinderShape::setHeight(double _height)
 {
-  assert(0.0 < _height);
+  DART_ASSERT(0.0 < _height);
   mHeight = _height;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;

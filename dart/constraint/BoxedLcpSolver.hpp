@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,13 @@
 #ifndef DART_CONSTRAINT_BOXEDLCPSOLVER_HPP_
 #define DART_CONSTRAINT_BOXEDLCPSOLVER_HPP_
 
-#include <string>
+#include <dart/config.hpp>
+
+#include <dart/common/Castable.hpp>
 
 #include <Eigen/Core>
 
-#include "dart/common/Castable.hpp"
+#include <string>
 
 namespace dart {
 namespace constraint {
@@ -88,7 +90,7 @@ public:
       bool earlyTermination = false)
       = 0;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
   virtual bool canSolve(int n, const double* A) = 0;
 #endif
 };

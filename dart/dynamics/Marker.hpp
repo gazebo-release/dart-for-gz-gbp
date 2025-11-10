@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,12 @@
 #ifndef DART_DYNAMICS_MARKER_HPP_
 #define DART_DYNAMICS_MARKER_HPP_
 
-#include <Eigen/Dense>
+#include <dart/dynamics/FixedJacobianNode.hpp>
+#include <dart/dynamics/detail/MarkerAspect.hpp>
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/dynamics/FixedJacobianNode.hpp"
-#include "dart/dynamics/detail/MarkerAspect.hpp"
+#include <dart/common/Deprecated.hpp>
+
+#include <Eigen/Dense>
 
 namespace dart {
 namespace dynamics {

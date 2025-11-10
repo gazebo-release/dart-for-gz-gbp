@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -63,8 +63,7 @@ void MyWindow::timeStepping()
 
   // for perturbation test
   mImpulseDuration--;
-  if (mImpulseDuration <= 0)
-  {
+  if (mImpulseDuration <= 0) {
     mImpulseDuration = 0;
     mForceOnRigidBody.setZero();
   }
@@ -81,8 +80,7 @@ void MyWindow::drawWorld() const
   //  mWorld->getSkeleton(0)->draw(mRI, color, false);
 
   // draw arrow
-  if (mImpulseDuration > 0)
-  {
+  if (mImpulseDuration > 0) {
     dart::dynamics::SkeletonPtr Skeleton = mWorld->getSkeleton(1);
     dart::dynamics::SoftBodyNode* softBodyNode = Skeleton->getSoftBodyNode(3);
     softBodyNode->addExtForce(mForceOnRigidBody);
@@ -98,8 +96,7 @@ void MyWindow::drawWorld() const
 
 void MyWindow::keyboard(unsigned char key, int x, int y)
 {
-  switch (key)
-  {
+  switch (key) {
     case ' ': // use space key to play or stop the motion
       mSimulating = !mSimulating;
       if (mSimulating)
@@ -111,8 +108,7 @@ void MyWindow::keyboard(unsigned char key, int x, int y)
         mSimulating = false;
       break;
     case '[': // step backward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame--;
         if (mPlayFrame < 0)
           mPlayFrame = 0;
@@ -120,8 +116,7 @@ void MyWindow::keyboard(unsigned char key, int x, int y)
       }
       break;
     case ']': // step forwardward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame++;
         if (mPlayFrame >= mWorld->getRecording()->getNumFrames())
           mPlayFrame = 0;

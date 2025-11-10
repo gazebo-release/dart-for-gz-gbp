@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/PlanarJoint.hpp"
 
 namespace dart {
@@ -39,8 +40,7 @@ namespace detail {
 //==============================================================================
 PlanarJointUniqueProperties::PlanarJointUniqueProperties(PlaneType _planeType)
 {
-  switch (_planeType)
-  {
+  switch (_planeType) {
     case PlaneType::ARBITRARY:
     case PlaneType::XY:
       setXYPlane();
@@ -67,8 +67,7 @@ PlanarJointUniqueProperties::PlanarJointUniqueProperties(
 PlanarJointUniqueProperties::PlanarJointUniqueProperties(
     const PlanarJointUniqueProperties& other)
 {
-  switch (other.mPlaneType)
-  {
+  switch (other.mPlaneType) {
     case PlaneType::ARBITRARY:
       setArbitraryPlane(other.mTransAxis1, other.mTransAxis2);
       break;
@@ -88,10 +87,8 @@ PlanarJointUniqueProperties::PlanarJointUniqueProperties(
 PlanarJointUniqueProperties& PlanarJointUniqueProperties::operator=(
     const PlanarJointUniqueProperties& other)
 {
-  if (this != &other)
-  {
-    switch (other.mPlaneType)
-    {
+  if (this != &other) {
+    switch (other.mPlaneType) {
       case PlaneType::ARBITRARY:
         setArbitraryPlane(other.mTransAxis1, other.mTransAxis2);
         break;
@@ -152,7 +149,7 @@ void PlanarJointUniqueProperties::setArbitraryPlane(
 
   // Orthogonalize translational axes
   double dotProduct = mTransAxis1.dot(mTransAxis2);
-  assert(std::abs(dotProduct) < 1.0 - 1e-6);
+  DART_ASSERT(std::abs(dotProduct) < 1.0 - 1e-6);
   if (std::abs(dotProduct) > 1e-6)
     mTransAxis2 = (mTransAxis2 - dotProduct * mTransAxis1).normalized();
 

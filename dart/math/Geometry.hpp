@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,12 @@
 #ifndef DART_MATH_GEOMETRY_HPP_
 #define DART_MATH_GEOMETRY_HPP_
 
-#include <Eigen/Dense>
+#include <dart/math/Constants.hpp>
+#include <dart/math/MathTypes.hpp>
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/math/Constants.hpp"
-#include "dart/math/MathTypes.hpp"
+#include <dart/common/Deprecated.hpp>
+
+#include <Eigen/Dense>
 
 namespace dart {
 namespace math {
@@ -479,8 +480,7 @@ void extractNullSpace(const Eigen::JacobiSVD<MatrixType>& _SVD, ReturnType& _NS)
 {
   int rank = 0;
   // TODO(MXG): Replace this with _SVD.rank() once the latest Eigen is released
-  if (_SVD.nonzeroSingularValues() > 0)
-  {
+  if (_SVD.nonzeroSingularValues() > 0) {
     double thresh = std::max(
         _SVD.singularValues().coeff(0) * 1e-10,
         std::numeric_limits<double>::min());
@@ -654,6 +654,6 @@ protected:
 } // namespace math
 } // namespace dart
 
-#include "dart/math/detail/Geometry-impl.hpp"
+#include <dart/math/detail/Geometry-impl.hpp>
 
 #endif // DART_MATH_GEOMETRY_HPP_

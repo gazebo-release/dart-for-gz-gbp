@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_DETAIL_JOINTPTR_HPP_
 #define DART_DYNAMICS_DETAIL_JOINTPTR_HPP_
 
-#include "dart/dynamics/detail/BodyNodePtr.hpp"
+#include <dart/dynamics/detail/BodyNodePtr.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -122,8 +122,7 @@ public:
   /// Set the Joint for this JointPtr
   void set(JointT* _ptr)
   {
-    if (nullptr == _ptr)
-    {
+    if (nullptr == _ptr) {
       mBodyNodePtr = nullptr;
       return;
     }
@@ -268,8 +267,7 @@ public:
   /// Set the Joint for this WeakJointPtr
   void set(JointT* _ptr)
   {
-    if (nullptr == _ptr)
-    {
+    if (nullptr == _ptr) {
       mWeakBodyNode = nullptr;
       return;
     }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,10 @@
 #ifndef DART_DYNAMICS_SPECIALIZEDNODEMANAGER_HPP_
 #define DART_DYNAMICS_SPECIALIZEDNODEMANAGER_HPP_
 
-#include "dart/common/Virtual.hpp"
-#include "dart/dynamics/NodeManagerJoiner.hpp"
-#include "dart/dynamics/detail/BasicNodeManager.hpp"
+#include <dart/dynamics/NodeManagerJoiner.hpp>
+#include <dart/dynamics/detail/BasicNodeManager.hpp>
+
+#include <dart/common/Virtual.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -112,8 +113,8 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_END
 template <class SpecNode1, class... OtherSpecNodes>
 class BodyNodeSpecializedFor<SpecNode1, OtherSpecNodes...>
   : public NodeManagerJoinerForBodyNode<
-        common::Virtual<BodyNodeSpecializedFor<SpecNode1> >,
-        common::Virtual<BodyNodeSpecializedFor<OtherSpecNodes...> > >
+        common::Virtual<BodyNodeSpecializedFor<SpecNode1>>,
+        common::Virtual<BodyNodeSpecializedFor<OtherSpecNodes...>>>
 {
 };
 
@@ -216,14 +217,14 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_END
 template <class SpecNode1, class... OtherSpecNodes>
 class SkeletonSpecializedFor<SpecNode1, OtherSpecNodes...>
   : public NodeManagerJoinerForSkeleton<
-        common::Virtual<SkeletonSpecializedFor<SpecNode1> >,
-        common::Virtual<SkeletonSpecializedFor<OtherSpecNodes...> > >
+        common::Virtual<SkeletonSpecializedFor<SpecNode1>>,
+        common::Virtual<SkeletonSpecializedFor<OtherSpecNodes...>>>
 {
 };
 
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/SpecializedNodeManager.hpp"
+#include <dart/dynamics/detail/SpecializedNodeManager.hpp>
 
 #endif // DART_DYNAMICS_SPECIALIZEDNODEMANAGER_HPP_

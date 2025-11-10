@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,14 +32,14 @@
 
 #include "dart/gui/osg/render/CapsuleShapeNode.hpp"
 
+#include "dart/dynamics/CapsuleShape.hpp"
+#include "dart/dynamics/SimpleFrame.hpp"
+#include "dart/gui/osg/Utils.hpp"
+
 #include <osg/CullFace>
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/ShapeDrawable>
-
-#include "dart/dynamics/CapsuleShape.hpp"
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/gui/osg/Utils.hpp"
 
 namespace dart {
 namespace gui {
@@ -110,8 +110,7 @@ void CapsuleShapeNode::refresh()
 //==============================================================================
 void CapsuleShapeNode::extractData(bool /*firstTime*/)
 {
-  if (nullptr == mGeode)
-  {
+  if (nullptr == mGeode) {
     mGeode = new CapsuleShapeGeode(
         mCapsuleShape.get(), mParentShapeFrameNode, this);
     addChild(mGeode);
@@ -152,8 +151,7 @@ void CapsuleShapeGeode::refresh()
 //==============================================================================
 void CapsuleShapeGeode::extractData()
 {
-  if (nullptr == mDrawable)
-  {
+  if (nullptr == mDrawable) {
     mDrawable = new CapsuleShapeDrawable(mCapsuleShape, mVisualAspect, this);
     addDrawable(mDrawable);
     return;
@@ -187,8 +185,7 @@ void CapsuleShapeDrawable::refresh(bool firstTime)
     setDataVariance(::osg::Object::DYNAMIC);
 
   if (mCapsuleShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_PRIMITIVE)
-      || firstTime)
-  {
+      || firstTime) {
     double R = mCapsuleShape->getRadius();
     double h = mCapsuleShape->getHeight();
     ::osg::ref_ptr<::osg::Capsule> osg_shape
@@ -198,24 +195,20 @@ void CapsuleShapeDrawable::refresh(bool firstTime)
   }
 
   if (mCapsuleShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_COLOR)
-      || firstTime)
-  {
+      || firstTime) {
     // Set color
     const ::osg::Vec4d color = eigToOsgVec4d(mVisualAspect->getRGBA());
     setColor(color);
 
     // Set alpha specific properties
     ::osg::StateSet* ss = getOrCreateStateSet();
-    if (std::abs(color.a()) > 1 - getAlphaThreshold())
-    {
+    if (std::abs(color.a()) > 1 - getAlphaThreshold()) {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::OFF);
       ss->setRenderingHint(::osg::StateSet::OPAQUE_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;
       depth->setWriteMask(true);
       ss->setAttributeAndModes(depth, ::osg::StateAttribute::ON);
-    }
-    else
-    {
+    } else {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::ON);
       ss->setRenderingHint(::osg::StateSet::TRANSPARENT_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;

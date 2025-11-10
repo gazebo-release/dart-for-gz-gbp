@@ -5,7 +5,7 @@
 #===============================================================================
 macro(dart_append_to_cached_string _string _cacheDesc)
   foreach(newItem ${ARGN})
-    set(${_string} "${${_string}}${newItem}" CACHE INTERNAL ${_cacheDesc} FORCE)
+    set(${_string} "${${_string}}${newItem}")
   endforeach()
 endmacro()
 
@@ -15,7 +15,7 @@ endmacro()
 #   dart_get_filename_components(_var _cacheDesc [items...])
 #===============================================================================
 macro(dart_get_filename_components _var _cacheDesc)
-  set(${_var} "" CACHE INTERNAL ${_cacheDesc} FORCE)
+  set(${_var} "")
   foreach(header ${ARGN})
     get_filename_component(header ${header} NAME)
     dart_append_to_cached_string(
@@ -371,7 +371,7 @@ function(dart_build_tests)
     )
 
     # Link libraries
-    target_link_libraries(${target_name} PRIVATE gtest gtest_main)
+    target_link_libraries(${target_name} PRIVATE GTest::gtest GTest::gtest_main)
     target_link_libraries(
       ${target_name} PRIVATE ${_ARG_LINK_LIBRARIES}
     )

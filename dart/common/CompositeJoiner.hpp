@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,8 @@
 #ifndef DART_COMMON_COMPOSITEJOINER_HPP_
 #define DART_COMMON_COMPOSITEJOINER_HPP_
 
-#include "dart/common/Composite.hpp"
-#include "dart/common/Empty.hpp"
+#include <dart/common/Composite.hpp>
+#include <dart/common/Empty.hpp>
 
 namespace dart {
 namespace common {
@@ -130,7 +130,7 @@ public:
 /// you to include arbitrarily many base classes in the joining.
 template <class Base1, class Base2, class... OtherBases>
 class CompositeJoiner<Base1, Base2, OtherBases...>
-  : public CompositeJoiner<Base1, CompositeJoiner<Base2, OtherBases...> >
+  : public CompositeJoiner<Base1, CompositeJoiner<Base2, OtherBases...>>
 {
 public:
   /// Default constructor
@@ -155,6 +155,6 @@ public:
 } // namespace common
 } // namespace dart
 
-#include "dart/common/detail/CompositeJoiner.hpp"
+#include <dart/common/detail/CompositeJoiner.hpp>
 
 #endif // DART_COMMON_COMPOSITEJOINER_HPP_

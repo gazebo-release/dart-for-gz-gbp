@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,8 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "dart/common/Logging.hpp"
-#include "dart/common/StlAllocator.hpp"
+#include <dart/common/Logging.hpp>
+#include <dart/common/StlAllocator.hpp>
 
 namespace dart::common {
 
@@ -71,8 +71,7 @@ typename StlAllocator<T>::pointer StlAllocator<T>::allocate(
 
   // Throw std::bad_alloc to comply 23.10.9.1
   // Reference: https://stackoverflow.com/a/50326956/3122234
-  if (!ptr)
-  {
+  if (!ptr) {
     throw std::bad_alloc();
   }
 
@@ -90,8 +89,7 @@ void StlAllocator<T>::deallocate(pointer pointer, size_type n)
 template <typename T>
 void StlAllocator<T>::print(std::ostream& os, int indent) const
 {
-  if (indent == 0)
-  {
+  if (indent == 0) {
     os << "[StlAllocator]\n";
   }
   const std::string spaces(indent, ' ');

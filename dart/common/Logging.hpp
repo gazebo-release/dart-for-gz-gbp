@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -141,6 +141,6 @@ void fatal(const S& format_str, Args&&... args);
 
 } // namespace dart::common
 
-#include "dart/common/detail/Logging-impl.hpp"
+#include <dart/common/detail/Logging-impl.hpp>
 
 #endif // DART_COMMON_LOGGING_HPP_

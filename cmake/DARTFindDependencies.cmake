@@ -17,10 +17,6 @@ dart_check_required_package(fmt "libfmt")
 dart_find_package(Eigen3)
 dart_check_required_package(EIGEN3 "eigen3")
 
-# CCD
-dart_find_package(ccd)
-dart_check_required_package(ccd "libccd")
-
 # FCL
 dart_find_package(fcl)
 dart_check_required_package(fcl "fcl")
@@ -32,10 +28,10 @@ if(ASSIMP_FOUND)
   # Check for missing symbols in ASSIMP (see #451)
   include(CheckCXXSourceCompiles)
   set(CMAKE_REQUIRED_DEFINITIONS "")
-  if (NOT ASSIMP_VERSION VERSION_LESS 3.3.0 AND NOT MSVC)
-    set(CMAKE_REQUIRED_FLAGS "-std=c++11 -w")
-  else()
+  if (MSVC)
     set(CMAKE_REQUIRED_FLAGS "-w")
+  else()
+    set(CMAKE_REQUIRED_FLAGS "-std=c++11 -w")
   endif()
   set(CMAKE_REQUIRED_INCLUDES ${ASSIMP_INCLUDE_DIRS})
   set(CMAKE_REQUIRED_LIBRARIES ${ASSIMP_LIBRARIES})
@@ -113,6 +109,28 @@ endif()
 #=======================
 # Optional dependencies
 #=======================
+
+if(DART_BUILD_PROFILE)
+  if(DART_USE_SYSTEM_TRACY)
+    find_package(Tracy CONFIG REQUIRED)
+  else()
+    include(FetchContent)
+    FetchContent_Declare(tracy
+      GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+      GIT_TAG v0.11.1
+      GIT_SHALLOW TRUE
+      GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(tracy)
+    if(MSVC)
+      target_compile_options(TracyClient PRIVATE /W0)
+    else()
+      target_compile_options(TracyClient PRIVATE -w)
+    endif()
+  endif()
+endif()
+
+find_package(Python3 COMPONENTS Interpreter Development)
 
 option(DART_SKIP_spdlog "If ON, do not use spdlog even if it is found." OFF)
 mark_as_advanced(DART_SKIP_spdlog)

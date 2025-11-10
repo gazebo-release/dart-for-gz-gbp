@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_GUI_OSG_DETAIL_UTILS_IMPL_HPP_
 #define DART_GUI_OSG_DETAIL_UTILS_IMPL_HPP_
 
-#include "dart/gui/osg/Utils.hpp"
+#include <dart/gui/osg/Utils.hpp>
 
 namespace dart::gui::osg {
 
@@ -41,16 +41,11 @@ namespace dart::gui::osg {
 template <typename T>
 constexpr T getAlphaThreshold()
 {
-  if constexpr (std::is_same_v<T, float>)
-  {
+  if constexpr (std::is_same_v<T, float>) {
     return 1e-6;
-  }
-  else if constexpr (std::is_same_v<T, double>)
-  {
+  } else if constexpr (std::is_same_v<T, double>) {
     return 1e-9;
-  }
-  else
-  {
+  } else {
     return 1e-9;
   }
 }

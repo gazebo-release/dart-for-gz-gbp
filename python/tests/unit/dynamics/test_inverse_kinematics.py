@@ -1,15 +1,16 @@
-import platform
-import pytest
 import math
-import numpy as np
+import platform
+
 import dartpy as dart
+import numpy as np
+import pytest
 
 
 def test_solve_for_free_joint():
-    '''
+    """
     Very simple test of InverseKinematics module, applied to a FreeJoint to
     ensure that the target is reachable
-    '''
+    """
 
     skel = dart.dynamics.Skeleton()
     [joint0, body0] = skel.createFreeJointAndBodyNodePair()
@@ -23,10 +24,10 @@ def test_solve_for_free_joint():
     ik.getTarget().setTransform(tf)
 
     error_method = ik.getErrorMethod()
-    assert error_method.getMethodName() == 'TaskSpaceRegion'
+    assert error_method.getMethodName() == "TaskSpaceRegion"
     [lb, ub] = error_method.getBounds()
-    assert len(lb) is 6
-    assert len(ub) is 6
+    assert len(lb) == 6
+    assert len(ub) == 6
     error_method.setBounds(np.ones(6) * -1e-8, np.ones(6) * 1e-8)
     [lb, ub] = error_method.getBounds()
     assert lb == pytest.approx(-1e-8)
@@ -57,7 +58,9 @@ class FailingSolver(dart.optimizer.Solver):
     def solve(self):
         problem = self.getProblem()
         if problem is None:
-            print('[FailingSolver::solve] Attempting to solve a nullptr problem! We will return false.')
+            print(
+                "[FailingSolver::solve] Attempting to solve a nullptr problem! We will return false."
+            )
             return False
 
         dim = problem.getDimension()
@@ -67,7 +70,7 @@ class FailingSolver(dart.optimizer.Solver):
         return False
 
     def getType(self):
-        return 'FailingSolver'
+        return "FailingSolver"
 
     def clone(self):
         return FailingSolver(self.constant)
