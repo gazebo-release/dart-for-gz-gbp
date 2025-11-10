@@ -7,16 +7,14 @@ https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1028247
  dart/constraint/ContactConstraint.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/dart/constraint/ContactConstraint.cpp b/dart/constraint/ContactConstraint.cpp
-index 2e23cff..370c720 100644
 --- a/dart/constraint/ContactConstraint.cpp
 +++ b/dart/constraint/ContactConstraint.cpp
-@@ -163,7 +163,7 @@ ContactConstraint::ContactConstraint(
+@@ -160,7 +160,7 @@
  
-     assert(std::abs(ct.normal.dot(D.col(0))) < DART_EPSILON);
-     assert(std::abs(ct.normal.dot(D.col(1))) < DART_EPSILON);
--    assert(std::abs(D.col(0).dot(D.col(1))) < DART_EPSILON);
-+    //assert(std::abs(D.col(0).dot(D.col(1))) < DART_EPSILON);
+     DART_ASSERT(std::abs(ct.normal.dot(D.col(0))) < DART_EPSILON);
+     DART_ASSERT(std::abs(ct.normal.dot(D.col(1))) < DART_EPSILON);
+-    DART_ASSERT(std::abs(D.col(0).dot(D.col(1))) < DART_EPSILON);
++    // DART_ASSERT(std::abs(D.col(0).dot(D.col(1))) < DART_EPSILON);
  
      // Jacobian for normal contact
      bodyDirectionA.noalias()
