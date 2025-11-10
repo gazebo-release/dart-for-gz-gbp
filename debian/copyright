@@ -8,7 +8,8 @@ Files-Excluded: .devcontainers
                data/screencap/.KEEP
                data/mjcf/openai/robotics/stls/.get
                docker
-               docs
+               docs/readthedocs
+               docs/*.pdf
                paper
 
 Files: *
