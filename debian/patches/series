@@ -1,6 +1,7 @@
 disable-skeltest-for-armhf-mips-x86.patch
 fix-test_ForceDependentSlip-armel.patch
 0001-respect-ldflags.patch
+0002-disable-benchmark-tests.patch
 0005-build-type-none.patch
 0007-fix-ikfast.patch
 0006-Reduce-test-result-accuracy-to-fix-i386.patch
