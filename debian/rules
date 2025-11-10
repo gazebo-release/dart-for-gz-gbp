@@ -9,6 +9,7 @@ export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
 		-DDART_SKIP_FLANN=ON \
 		-DDART_SKIP_PAGMO=ON \
 		-DDART_VERBOSE=ON \
+		-DDART_USE_SYSTEM_GOOGLETEST=ON \
 		-DDARTPY_PYTHON_VERSION={version}
 
 ifneq (,$(filter $(DEB_HOST_ARCH),mips mipsel))
