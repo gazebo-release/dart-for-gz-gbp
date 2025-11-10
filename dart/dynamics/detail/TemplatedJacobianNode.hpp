@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_DETAIL_TEMPLATEDJACOBIAN_HPP_
 #define DART_DYNAMICS_DETAIL_TEMPLATEDJACOBIAN_HPP_
 
-#include "dart/dynamics/TemplatedJacobianNode.hpp"
+#include <dart/dynamics/TemplatedJacobianNode.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -97,14 +97,11 @@ template <class NodeType>
 math::LinearJacobian TemplatedJacobianNode<NodeType>::getLinearJacobian(
     const Frame* _inCoordinatesOf) const
 {
-  if (this == _inCoordinatesOf)
-  {
+  if (this == _inCoordinatesOf) {
     const math::Jacobian& J = static_cast<const NodeType*>(this)->getJacobian();
 
     return J.bottomRows<3>();
-  }
-  else if (_inCoordinatesOf->isWorld())
-  {
+  } else if (_inCoordinatesOf->isWorld()) {
     const math::Jacobian& JWorld
         = static_cast<const NodeType*>(this)->getWorldJacobian();
 
@@ -137,13 +134,10 @@ template <class NodeType>
 math::AngularJacobian TemplatedJacobianNode<NodeType>::getAngularJacobian(
     const Frame* _inCoordinatesOf) const
 {
-  if (this == _inCoordinatesOf)
-  {
+  if (this == _inCoordinatesOf) {
     const math::Jacobian& J = static_cast<const NodeType*>(this)->getJacobian();
     return J.topRows<3>();
-  }
-  else if (_inCoordinatesOf->isWorld())
-  {
+  } else if (_inCoordinatesOf->isWorld()) {
     const math::Jacobian& JWorld
         = static_cast<const NodeType*>(this)->getWorldJacobian();
     return JWorld.topRows<3>();

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/gui/osg/SupportPolygonVisual.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/SimpleFrame.hpp"
 #include "dart/dynamics/Skeleton.hpp"
@@ -247,12 +248,10 @@ void SupportPolygonVisual::refresh()
             : skel->getSupportAxes(mTreeIndex);
   const Eigen::Vector3d& up = axes.first.cross(axes.second);
 
-  if (mDisplayPolygon)
-  {
+  if (mDisplayPolygon) {
     mVertices->resize(poly.size());
     mFaces->resize(poly.size());
-    for (std::size_t i = 0; i < poly.size(); ++i)
-    {
+    for (std::size_t i = 0; i < poly.size(); ++i) {
       const Eigen::Vector3d& v = axes.first * poly[i][0]
                                  + axes.second * poly[i][1] + up * mElevation;
       (*mVertices)[i] = ::osg::Vec3(v[0], v[1], v[2]);
@@ -263,12 +262,10 @@ void SupportPolygonVisual::refresh()
     mPolygonGeom->setPrimitiveSet(0, mFaces);
   }
 
-  if (mDisplayCentroid)
-  {
+  if (mDisplayCentroid) {
     Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
 
-    if (poly.size() > 0)
-    {
+    if (poly.size() > 0) {
       const Eigen::Vector2d& Cp = (dart::dynamics::INVALID_INDEX == mTreeIndex)
                                       ? skel->getSupportCentroid()
                                       : skel->getSupportCentroid(mTreeIndex);
@@ -277,9 +274,7 @@ void SupportPolygonVisual::refresh()
           = Cp[0] * axes.first + Cp[1] * axes.second + up * mElevation;
 
       tf.translation() = C;
-    }
-    else
-    {
+    } else {
       // If there is no support polygon, then just lay the centroid over the
       // center of mass
       tf.translation() = skel->getCOM();
@@ -294,29 +289,24 @@ void SupportPolygonVisual::refresh()
         dart::dynamics::Shape::DYNAMIC_PRIMITIVE);
   }
 
-  if (mDisplayCOM)
-  {
+  if (mDisplayCOM) {
     Eigen::Vector3d com(Eigen::Vector3d::Zero());
-    if (dart::dynamics::INVALID_INDEX == mTreeIndex)
-    {
+    if (dart::dynamics::INVALID_INDEX == mTreeIndex) {
       com = skel->getCOM();
-    }
-    else
-    {
+    } else {
       // We need to calculate tree COM ourselves, because that is not provided
       // by the API (yet)
       const std::vector<dart::dynamics::BodyNode*>& bns
           = skel->getTreeBodyNodes(mTreeIndex);
 
       double mass = 0.0;
-      for (std::size_t i = 0; i < bns.size(); ++i)
-      {
+      for (std::size_t i = 0; i < bns.size(); ++i) {
         dart::dynamics::BodyNode* bn = bns[i];
         com += bn->getMass() * bn->getCOM();
         mass += bn->getMass();
       }
 
-      assert(mass != 0.0);
+      DART_ASSERT(mass != 0.0);
       com = com / mass;
     }
 

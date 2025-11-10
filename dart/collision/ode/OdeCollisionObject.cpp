@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,8 +32,6 @@
 
 #include "dart/collision/ode/OdeCollisionObject.hpp"
 
-#include <ode/ode.h>
-
 #include "dart/collision/ode/OdeTypes.hpp"
 #include "dart/collision/ode/detail/OdeBox.hpp"
 #include "dart/collision/ode/detail/OdeCapsule.hpp"
@@ -42,6 +40,7 @@
 #include "dart/collision/ode/detail/OdeMesh.hpp"
 #include "dart/collision/ode/detail/OdePlane.hpp"
 #include "dart/collision/ode/detail/OdeSphere.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BoxShape.hpp"
 #include "dart/dynamics/CapsuleShape.hpp"
 #include "dart/dynamics/ConeShape.hpp"
@@ -53,6 +52,8 @@
 #include "dart/dynamics/PlaneShape.hpp"
 #include "dart/dynamics/SoftMeshShape.hpp"
 #include "dart/dynamics/SphereShape.hpp"
+
+#include <ode/ode.h>
 
 namespace dart {
 namespace collision {
@@ -82,10 +83,9 @@ OdeCollisionObject::OdeCollisionObject(
   mOdeGeom.reset(createOdeGeom(this, shapeFrame));
 
   const auto geomId = mOdeGeom->getOdeGeomId();
-  assert(geomId);
+  DART_ASSERT(geomId);
 
-  if (mOdeGeom->isPlaceable())
-  {
+  if (mOdeGeom->isPlaceable()) {
     // if the geometry already has a pose, it is to be considered
     // a constant relative pose to the body.
     // Get the geometry pose to ensure this offset is set correctly.
@@ -94,7 +94,7 @@ OdeCollisionObject::OdeCollisionObject(
     dQuaternion geomRelRot;
     dGeomGetQuaternion(geomId, geomRelRot);
     const dReal* geomRelPos = dGeomGetPosition(geomId);
-    assert(geomRelPos);
+    DART_ASSERT(geomRelPos);
 
     // create the body
     mBodyId = dBodyCreate(collisionDetector->getOdeWorldId());
@@ -112,15 +112,15 @@ OdeCollisionObject& OdeCollisionObject::operator=(OdeCollisionObject&& other)
 {
   // This should only be used for refreshing the collision objects, so the
   // detector and the shape frame should never need to change
-  assert(mCollisionDetector == other.mCollisionDetector);
-  assert(mShapeFrame == other.mShapeFrame);
+  DART_ASSERT(mCollisionDetector == other.mCollisionDetector);
+  DART_ASSERT(mShapeFrame == other.mShapeFrame);
 
   // We should never be assigning a collision object to itself
-  assert(this != &other);
+  DART_ASSERT(this != &other);
 
   // There should never be duplicate body IDs or geometries
-  assert(!mBodyId || mBodyId != other.mBodyId);
-  assert(mOdeGeom.get() != other.mOdeGeom.get());
+  DART_ASSERT(!mBodyId || mBodyId != other.mBodyId);
+  DART_ASSERT(mOdeGeom.get() != other.mOdeGeom.get());
 
   mOdeGeom = std::move(other.mOdeGeom);
   std::swap(mBodyId, other.mBodyId);
@@ -185,56 +185,39 @@ detail::OdeGeom* createOdeGeom(
   detail::OdeGeom* geom = nullptr;
   const auto shape = shapeFrame->getShape().get();
 
-  if (const auto sphere = shape->as<SphereShape>())
-  {
+  if (const auto sphere = shape->as<SphereShape>()) {
     const auto radius = sphere->getRadius();
 
     geom = new detail::OdeSphere(collObj, radius);
-  }
-  else if (const auto box = shape->as<BoxShape>())
-  {
+  } else if (const auto box = shape->as<BoxShape>()) {
     const Eigen::Vector3d& size = box->getSize();
 
     geom = new detail::OdeBox(collObj, size);
-  }
-  else if (const auto capsule = shape->as<CapsuleShape>())
-  {
+  } else if (const auto capsule = shape->as<CapsuleShape>()) {
     const auto radius = capsule->getRadius();
     const auto height = capsule->getHeight();
 
     geom = new detail::OdeCapsule(collObj, radius, height);
-  }
-  else if (const auto cylinder = shape->as<CylinderShape>())
-  {
+  } else if (const auto cylinder = shape->as<CylinderShape>()) {
     const auto radius = cylinder->getRadius();
     const auto height = cylinder->getHeight();
 
     geom = new detail::OdeCylinder(collObj, radius, height);
-  }
-  else if (const auto plane = shape->as<PlaneShape>())
-  {
+  } else if (const auto plane = shape->as<PlaneShape>()) {
     const Eigen::Vector3d normal = plane->getNormal();
     const double offset = plane->getOffset();
 
     geom = new detail::OdePlane(collObj, normal, offset);
-  }
-  else if (const auto shapeMesh = shape->as<MeshShape>())
-  {
+  } else if (const auto shapeMesh = shape->as<MeshShape>()) {
     const Eigen::Vector3d& scale = shapeMesh->getScale();
     auto aiScene = shapeMesh->getMesh();
 
     geom = new detail::OdeMesh(collObj, aiScene, scale);
-  }
-  else if (const auto heightMap = shape->as<HeightmapShapef>())
-  {
+  } else if (const auto heightMap = shape->as<HeightmapShapef>()) {
     geom = new detail::OdeHeightmapf(collObj, heightMap);
-  }
-  else if (const auto heightMap = shape->as<HeightmapShaped>())
-  {
+  } else if (const auto heightMap = shape->as<HeightmapShaped>()) {
     geom = new detail::OdeHeightmapd(collObj, heightMap);
-  }
-  else
-  {
+  } else {
     dterr << "[OdeCollisionDetector] Attempting to create an unsupported shape "
           << "type '" << shape->getType() << "'. Creating a sphere with 0.01 "
           << "radius instead.\n";
@@ -244,7 +227,7 @@ detail::OdeGeom* createOdeGeom(
   // TODO(JS): not implemented for EllipsoidShape, ConeShape, MultiSphereShape,
   // and SoftMeshShape.
 
-  assert(geom);
+  DART_ASSERT(geom);
   const auto geomId = geom->getOdeGeomId();
   dGeomSetData(geomId, collObj);
 

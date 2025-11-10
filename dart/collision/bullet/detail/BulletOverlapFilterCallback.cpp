@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -35,6 +35,7 @@
 #include "dart/collision/CollisionFilter.hpp"
 #include "dart/collision/bullet/BulletCollisionGroup.hpp"
 #include "dart/collision/bullet/BulletCollisionObject.hpp"
+#include "dart/common/Macros.hpp"
 
 namespace dart {
 namespace collision {
@@ -61,7 +62,7 @@ bool BulletOverlapFilterCallback::needBroadphaseCollision(
   if (done)
     return false;
 
-  assert(
+  DART_ASSERT(
       (proxy0 != nullptr && proxy1 != nullptr)
       && "Bullet broadphase overlapping pair proxies are nullptr");
 
@@ -72,8 +73,7 @@ bool BulletOverlapFilterCallback::needBroadphaseCollision(
 
   bool collide = collide1 & collide2;
 
-  if (collide)
-  {
+  if (collide) {
     auto object0 = static_cast<btCollisionObject*>(proxy0->m_clientObject);
     auto object1 = static_cast<btCollisionObject*>(proxy1->m_clientObject);
 
@@ -84,8 +84,7 @@ bool BulletOverlapFilterCallback::needBroadphaseCollision(
     const auto collObj1 = static_cast<BulletCollisionObject*>(userPtr1);
 
     // Filter out if the two ShapeFrames are in the same group
-    if (group1 && group2)
-    {
+    if (group1 && group2) {
       const dynamics::ShapeFrame* shapeFrame0 = collObj0->getShapeFrame();
       const dynamics::ShapeFrame* shapeFrame1 = collObj1->getShapeFrame();
       if (group1->hasShapeFrame(shapeFrame0)
@@ -96,8 +95,7 @@ bool BulletOverlapFilterCallback::needBroadphaseCollision(
         return false;
     }
 
-    if (filter)
-    {
+    if (filter) {
       return !filter->ignoresCollision(collObj0, collObj1);
     }
   }

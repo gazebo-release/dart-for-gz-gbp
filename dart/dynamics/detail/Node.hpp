@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,13 @@
 #ifndef DART_DYNAMICS_DETAIL_NODE_HPP_
 #define DART_DYNAMICS_DETAIL_NODE_HPP_
 
-#include <cassert>
+#include "dart/common/Macros.hpp"
 
-#include "dart/common/StlHelpers.hpp"
-#include "dart/dynamics/Node.hpp"
+#include <dart/dynamics/Node.hpp>
+
+#include <dart/common/StlHelpers.hpp>
+
+#include <cassert>
 
 namespace dart {
 namespace dynamics {
@@ -293,13 +296,12 @@ public:                                                                        \
 
 //==============================================================================
 #define DETAIL_DART_WARN_TREE_INDEX(treeIts, treeIndex, func)                  \
-  if (treeIndex >= treeIts.size())                                             \
-  {                                                                            \
+  if (treeIndex >= treeIts.size()) {                                           \
     dterr << "[" << #func << "] Requesting an invalid tree (" << treeIndex     \
           << "). "                                                             \
           << "The number of trees in this Skeleton is: " << treeIts.size()     \
           << "\n";                                                             \
-    assert(false);                                                             \
+    DART_ASSERT(false);                                                        \
     return 0;                                                                  \
   }
 

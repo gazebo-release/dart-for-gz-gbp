@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -31,14 +31,14 @@
  */
 
 // clang-format off
-#include "dart/config.hpp"
-#include "dart/common/common.hpp"
-#include "dart/math/math.hpp"
-#include "dart/integration/integration.hpp"
-#include "dart/collision/collision.hpp"
-#include "dart/lcpsolver/lcpsolver.hpp"
-#include "dart/constraint/constraint.hpp"
-#include "dart/optimizer/optimizer.hpp"
-#include "dart/dynamics/dynamics.hpp"
-#include "dart/simulation/simulation.hpp"
+#include <dart/config.hpp>
+#include <dart/common/common.hpp>
+#include <dart/math/math.hpp>
+#include <dart/integration/integration.hpp>
+#include <dart/collision/collision.hpp>
+#include <dart/lcpsolver/lcpsolver.hpp>
+#include <dart/constraint/constraint.hpp>
+#include <dart/optimizer/optimizer.hpp>
+#include <dart/dynamics/dynamics.hpp>
+#include <dart/simulation/simulation.hpp>
 // clang-format on

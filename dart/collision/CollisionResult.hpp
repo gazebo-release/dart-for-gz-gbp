@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,10 @@
 #ifndef DART_COLLISION_COLLISIONRESULT_HPP_
 #define DART_COLLISION_COLLISIONRESULT_HPP_
 
+#include <dart/collision/Contact.hpp>
+
 #include <unordered_set>
 #include <vector>
-
-#include "dart/collision/Contact.hpp"
 
 namespace dart {
 

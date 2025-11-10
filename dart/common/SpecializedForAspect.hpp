@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_COMMON_SPECIALIZEDFORASPECT_HPP_
 #define DART_COMMON_SPECIALIZEDFORASPECT_HPP_
 
-#include "dart/common/Composite.hpp"
-#include "dart/common/CompositeJoiner.hpp"
-#include "dart/common/Virtual.hpp"
+#include <dart/common/Composite.hpp>
+#include <dart/common/CompositeJoiner.hpp>
+#include <dart/common/Virtual.hpp>
 
 namespace dart {
 namespace common {
@@ -192,8 +192,8 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_END
 template <class SpecAspect1, class... OtherSpecAspects>
 class SpecializedForAspect<SpecAspect1, OtherSpecAspects...>
   : public CompositeJoiner<
-        Virtual<SpecializedForAspect<SpecAspect1> >,
-        Virtual<SpecializedForAspect<OtherSpecAspects...> > >
+        Virtual<SpecializedForAspect<SpecAspect1>>,
+        Virtual<SpecializedForAspect<OtherSpecAspects...>>>
 {
 public:
   virtual ~SpecializedForAspect() = default;
@@ -202,6 +202,6 @@ public:
 } // namespace common
 } // namespace dart
 
-#include "dart/common/detail/SpecializedForAspect.hpp"
+#include <dart/common/detail/SpecializedForAspect.hpp>
 
 #endif // DART_COMMON_SPECIALIZEDFORASPECT_HPP_

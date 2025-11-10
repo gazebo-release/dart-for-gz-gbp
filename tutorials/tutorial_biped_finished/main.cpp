@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,9 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
+#include "dart/common/Macros.hpp"
+
 #include <dart/gui/gui.hpp>
+
 #include <dart/utils/utils.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_speed_increment = 0.5;
 
@@ -62,14 +66,12 @@ public:
     mKp = Eigen::MatrixXd::Identity(nDofs, nDofs);
     mKd = Eigen::MatrixXd::Identity(nDofs, nDofs);
 
-    for (std::size_t i = 0; i < 6; ++i)
-    {
+    for (std::size_t i = 0; i < 6; ++i) {
       mKp(i, i) = 0.0;
       mKd(i, i) = 0.0;
     }
 
-    for (std::size_t i = 6; i < mBiped->getNumDofs(); ++i)
-    {
+    for (std::size_t i = 6; i < mBiped->getNumDofs(); ++i) {
       mKp(i, i) = 1000;
       mKd(i, i) = 50;
     }
@@ -140,8 +142,7 @@ public:
     int rHeelIndex = mBiped->getDof("j_heel_right_1")->getIndexInSkeleton();
     int lToeIndex = mBiped->getDof("j_toe_left")->getIndexInSkeleton();
     int rToeIndex = mBiped->getDof("j_toe_right")->getIndexInSkeleton();
-    if (diff < 0.1 && diff >= 0.0)
-    {
+    if (diff < 0.1 && diff >= 0.0) {
       // Feedback rule for recovering forward push
       double k1 = 200.0;
       double k2 = 100.0;
@@ -150,9 +151,7 @@ public:
       mForces[lToeIndex] += -k2 * diff - kd * dDiff;
       mForces[rHeelIndex] += -k1 * diff - kd * dDiff;
       mForces[rToeIndex] += -k2 * diff - kd * dDiff;
-    }
-    else if (diff > -0.2 && diff < -0.05)
-    {
+    } else if (diff > -0.2 && diff < -0.05) {
       // Feedback rule for recovering backward push
       double k1 = 2000.0;
       double k2 = 100.0;
@@ -170,8 +169,7 @@ public:
   {
     int wheelFirstIndex
         = mBiped->getDof("joint_front_left_1")->getIndexInSkeleton();
-    for (std::size_t i = wheelFirstIndex; i < mBiped->getNumDofs(); ++i)
-    {
+    for (std::size_t i = wheelFirstIndex; i < mBiped->getNumDofs(); ++i) {
       mKp(i, i) = 0.0;
       mKd(i, i) = 0.0;
     }
@@ -226,8 +224,7 @@ public:
   /// Handle keyboard input
   void keyboard(unsigned char key, int x, int y) override
   {
-    switch (key)
-    {
+    switch (key) {
       case ',':
         mForceCountDown = default_countdown;
         mPositiveSign = false;
@@ -261,8 +258,7 @@ public:
     mController->setWheelCommands();
 
     // Apply body forces based on user input, and color the body shape red
-    if (mForceCountDown > 0)
-    {
+    if (mForceCountDown > 0) {
       BodyNode* bn = mWorld->getSkeleton("biped")->getBodyNode("h_abdomen");
       bn->setColor(dart::Color::Red());
 
@@ -302,7 +298,7 @@ SkeletonPtr loadBiped()
 {
   // Create the world with a skeleton
   WorldPtr world = SkelParser::readWorld("dart://sample/skel/biped.skel");
-  assert(world != nullptr);
+  DART_ASSERT(world != nullptr);
 
   SkeletonPtr biped = world->getSkeleton("biped");
 
@@ -349,7 +345,7 @@ void modifyBipedWithSkateboard(SkeletonPtr biped)
 }
 
 // Set the actuator type for four wheel joints to "VELOCITY" (Lesson 6 Answer)
-void setVelocityAccuators(SkeletonPtr biped)
+void setVelocityActuators(SkeletonPtr biped)
 {
   Joint* wheel1 = biped->getJoint("joint_front_left");
   Joint* wheel2 = biped->getJoint("joint_front_right");
@@ -376,8 +372,7 @@ Eigen::VectorXd solveIK(SkeletonPtr biped)
   BodyNodePtr leftToe = biped->getBodyNode("h_toe_left");
   double initialHeight = -0.8;
 
-  for (std::size_t i = 0; i < default_ik_iterations; ++i)
-  {
+  for (std::size_t i = 0; i < default_ik_iterations; ++i) {
     Eigen::Vector3d deviation = biped->getCOM() - leftHeel->getCOM();
     Eigen::Vector3d localCOM = leftHeel->getCOM(leftHeel);
     LinearJacobian jacobian = biped->getCOMLinearJacobian()
@@ -462,7 +457,7 @@ int main(int argc, char* argv[])
   modifyBipedWithSkateboard(biped);
 
   // Lesson 6
-  setVelocityAccuators(biped);
+  setVelocityActuators(biped);
 
   // Lesson 7
   Eigen::VectorXd balancedPose = solveIK(biped);
@@ -471,8 +466,7 @@ int main(int argc, char* argv[])
   WorldPtr world = std::make_shared<World>();
   world->setGravity(Eigen::Vector3d(0.0, -9.81, 0.0));
 
-  if (dart::collision::CollisionDetector::getFactory()->canCreate("bullet"))
-  {
+  if (dart::collision::CollisionDetector::getFactory()->canCreate("bullet")) {
     world->getConstraintSolver()->setCollisionDetector(
         dart::collision::CollisionDetector::getFactory()->create("bullet"));
   }

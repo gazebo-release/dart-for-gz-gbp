@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,19 +32,19 @@
 
 #include "dart/dynamics/MeshShape.hpp"
 
-#include <limits>
-#include <string>
-
-#include <assimp/Importer.hpp>
-#include <assimp/cimport.h>
-#include <assimp/postprocess.h>
-
 #include "dart/common/Console.hpp"
 #include "dart/common/LocalResourceRetriever.hpp"
 #include "dart/common/Uri.hpp"
 #include "dart/config.hpp"
 #include "dart/dynamics/AssimpInputResourceAdaptor.hpp"
 #include "dart/dynamics/BoxShape.hpp"
+
+#include <assimp/Importer.hpp>
+#include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+
+#include <limits>
+#include <string>
 
 #if !(ASSIMP_AISCENE_CTOR_DTOR_DEFINED)
 // We define our own constructor and destructor for aiScene, because it seems to
@@ -214,8 +214,7 @@ void MeshShape::setMesh(
 {
   mMesh = mesh;
 
-  if (!mMesh)
-  {
+  if (!mMesh) {
     mMeshUri.clear();
     mMeshPath.clear();
     mResourceRetriever = nullptr;
@@ -237,13 +236,17 @@ void MeshShape::setMesh(
 //==============================================================================
 void MeshShape::setScale(const Eigen::Vector3d& scale)
 {
-  assert((scale.array() > 0.0).all());
-
   mScale = scale;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
 
   incrementVersion();
+}
+
+//==============================================================================
+void MeshShape::setScale(const double scale)
+{
+  setScale(Eigen::Vector3d::Constant(scale));
 }
 
 //==============================================================================
@@ -326,43 +329,28 @@ ShapePtr MeshShape::clone() const
 //==============================================================================
 void MeshShape::updateBoundingBox() const
 {
-  if (!mMesh)
-  {
+  if (!mMesh) {
     mBoundingBox.setMin(Eigen::Vector3d::Zero());
     mBoundingBox.setMax(Eigen::Vector3d::Zero());
     mIsBoundingBoxDirty = false;
     return;
   }
 
-  double max_X = -std::numeric_limits<double>::infinity();
-  double max_Y = -std::numeric_limits<double>::infinity();
-  double max_Z = -std::numeric_limits<double>::infinity();
-  double min_X = std::numeric_limits<double>::infinity();
-  double min_Y = std::numeric_limits<double>::infinity();
-  double min_Z = std::numeric_limits<double>::infinity();
+  Eigen::Vector3d minPoint
+      = Eigen::Vector3d::Constant(std::numeric_limits<double>::infinity());
+  Eigen::Vector3d maxPoint = -minPoint;
 
-  for (unsigned int i = 0; i < mMesh->mNumMeshes; i++)
-  {
-    for (unsigned int j = 0; j < mMesh->mMeshes[i]->mNumVertices; j++)
-    {
-      if (mMesh->mMeshes[i]->mVertices[j].x > max_X)
-        max_X = mMesh->mMeshes[i]->mVertices[j].x;
-      if (mMesh->mMeshes[i]->mVertices[j].x < min_X)
-        min_X = mMesh->mMeshes[i]->mVertices[j].x;
-      if (mMesh->mMeshes[i]->mVertices[j].y > max_Y)
-        max_Y = mMesh->mMeshes[i]->mVertices[j].y;
-      if (mMesh->mMeshes[i]->mVertices[j].y < min_Y)
-        min_Y = mMesh->mMeshes[i]->mVertices[j].y;
-      if (mMesh->mMeshes[i]->mVertices[j].z > max_Z)
-        max_Z = mMesh->mMeshes[i]->mVertices[j].z;
-      if (mMesh->mMeshes[i]->mVertices[j].z < min_Z)
-        min_Z = mMesh->mMeshes[i]->mVertices[j].z;
+  for (unsigned i = 0u; i < mMesh->mNumMeshes; i++) {
+    for (unsigned j = 0u; j < mMesh->mMeshes[i]->mNumVertices; j++) {
+      const auto& vertex = mMesh->mMeshes[i]->mVertices[j];
+      const Eigen::Vector3d eigenVertex(vertex.x, vertex.y, vertex.z);
+      minPoint = minPoint.cwiseMin(eigenVertex.cwiseProduct(mScale));
+      maxPoint = maxPoint.cwiseMax(eigenVertex.cwiseProduct(mScale));
     }
   }
-  mBoundingBox.setMin(
-      Eigen::Vector3d(min_X * mScale[0], min_Y * mScale[1], min_Z * mScale[2]));
-  mBoundingBox.setMax(
-      Eigen::Vector3d(max_X * mScale[0], max_Y * mScale[1], max_Z * mScale[2]));
+
+  mBoundingBox.setMin(minPoint);
+  mBoundingBox.setMax(maxPoint);
 
   mIsBoundingBoxDirty = false;
 }
@@ -395,8 +383,7 @@ aiScene* MeshShape::cloneMesh() const
 
   // Copy materials
   new_scene->mMaterials = new aiMaterial*[new_scene->mNumMaterials];
-  for (unsigned int i = 0; i < new_scene->mNumMaterials; i++)
-  {
+  for (unsigned int i = 0; i < new_scene->mNumMaterials; i++) {
     new_scene->mMaterials[i] = new aiMaterial();
     new_scene->mMaterials[i]->mNumAllocated
         = mMesh->mMaterials[i]->mNumAllocated;
@@ -406,8 +393,8 @@ aiScene* MeshShape::cloneMesh() const
     new_scene->mMaterials[i]->mProperties
         = new aiMaterialProperty*[new_scene->mMaterials[i]->mNumProperties];
 
-    for (unsigned int j = 0; j < new_scene->mMaterials[i]->mNumProperties; j++)
-    {
+    for (unsigned int j = 0; j < new_scene->mMaterials[i]->mNumProperties;
+         j++) {
       new_scene->mMaterials[i]->mProperties[j] = new aiMaterialProperty();
       auto& prop = new_scene->mMaterials[i]->mProperties[j];
       auto& other = mMesh->mMaterials[i]->mProperties[j];
@@ -424,8 +411,7 @@ aiScene* MeshShape::cloneMesh() const
 
   // Copy textures
   new_scene->mTextures = new aiTexture*[new_scene->mNumTextures];
-  for (unsigned int i = 0; i < new_scene->mNumTextures; i++)
-  {
+  for (unsigned int i = 0; i < new_scene->mNumTextures; i++) {
     new_scene->mTextures[i] = new aiTexture();
     strcpy(
         new_scene->mTextures[i]->achFormatHint,
@@ -445,8 +431,7 @@ aiScene* MeshShape::cloneMesh() const
 
   // Copy meshes
   new_scene->mMeshes = new aiMesh*[new_scene->mNumMeshes];
-  for (unsigned int i = 0; i < new_scene->mNumMeshes; i++)
-  {
+  for (unsigned int i = 0; i < new_scene->mNumMeshes; i++) {
     new_scene->mMeshes[i] = new aiMesh();
     auto& mesh = new_scene->mMeshes[i];
     auto& other = mMesh->mMeshes[i];
@@ -466,8 +451,7 @@ aiScene* MeshShape::cloneMesh() const
     mesh->mNumVertices = other->mNumVertices;
     mesh->mPrimitiveTypes = other->mPrimitiveTypes;
 
-    if (mesh->mNumVertices > 0)
-    {
+    if (mesh->mNumVertices > 0) {
       // Copy verticies
       mesh->mVertices = new aiVector3D[mesh->mNumVertices];
       memcpy(
@@ -484,8 +468,7 @@ aiScene* MeshShape::cloneMesh() const
 
       // Copy faces
       mesh->mFaces = new aiFace[mesh->mNumFaces];
-      for (unsigned int a = 0; a < mesh->mNumFaces; a++)
-      {
+      for (unsigned int a = 0; a < mesh->mNumFaces; a++) {
         mesh->mFaces[a].mNumIndices = other->mFaces[a].mNumIndices;
         mesh->mFaces[a].mIndices
             = new unsigned int[mesh->mFaces[a].mNumIndices];
@@ -496,8 +479,7 @@ aiScene* MeshShape::cloneMesh() const
       }
 
       // Copy tangents
-      if (other->mTangents)
-      {
+      if (other->mTangents) {
         mesh->mTangents = new aiVector3D[mesh->mNumVertices];
         memcpy(
             mesh->mTangents,
@@ -505,8 +487,7 @@ aiScene* MeshShape::cloneMesh() const
             mesh->mNumVertices * sizeof(aiVector3D));
       }
       // Copy bi-tangents
-      if (other->mBitangents)
-      {
+      if (other->mBitangents) {
         mesh->mBitangents = new aiVector3D[mesh->mNumVertices];
         memcpy(
             mesh->mBitangents,
@@ -515,10 +496,8 @@ aiScene* MeshShape::cloneMesh() const
       }
 
       // Copy color sets
-      for (unsigned int a = 0; a < AI_MAX_NUMBER_OF_COLOR_SETS; a++)
-      {
-        if (other->mColors[a])
-        {
+      for (unsigned int a = 0; a < AI_MAX_NUMBER_OF_COLOR_SETS; a++) {
+        if (other->mColors[a]) {
           mesh->mColors[a] = new aiColor4D[mesh->mNumVertices];
           memcpy(
               mesh->mColors[a],
@@ -528,10 +507,8 @@ aiScene* MeshShape::cloneMesh() const
       }
 
       // Copy texture coordinates
-      for (unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++)
-      {
-        if (other->mTextureCoords[a])
-        {
+      for (unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++) {
+        if (other->mTextureCoords[a]) {
           mesh->mTextureCoords[a] = new aiVector3D[mesh->mNumVertices];
           memcpy(
               mesh->mTextureCoords[a],
@@ -558,15 +535,13 @@ aiScene* MeshShape::cloneMesh() const
               dest->mNumMeshes * sizeof(unsigned int));
 
           dest->mChildren = new aiNode*[dest->mNumChildren];
-          for (unsigned int i = 0; i < dest->mNumChildren; i++)
-          {
+          for (unsigned int i = 0; i < dest->mNumChildren; i++) {
             dest->mChildren[i] = new aiNode();
             aiNodeCopyRecursive(dest->mChildren[i], src->mChildren[i], dest);
           }
         };
 
-  if (mMesh->mRootNode)
-  {
+  if (mMesh->mRootNode) {
     new_scene->mRootNode = new aiNode();
     aiNodeCopyRecursive(new_scene->mRootNode, mMesh->mRootNode, nullptr);
   }
@@ -602,8 +577,7 @@ const aiScene* MeshShape::loadMesh(
 
   // If succeeded, store the importer in the scene to keep it alive. This is
   // necessary because the importer owns the memory that it allocates.
-  if (!scene)
-  {
+  if (!scene) {
     dtwarn << "[MeshShape::loadMesh] Failed loading mesh '" << _uri << "'.\n";
     aiReleasePropertyStore(propertyStore);
     return nullptr;

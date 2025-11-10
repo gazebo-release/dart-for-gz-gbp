@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_COMMON_EMBEDDEDASPECT_HPP_
 #define DART_COMMON_EMBEDDEDASPECT_HPP_
 
-#include "dart/common/CompositeJoiner.hpp"
-#include "dart/common/RequiresAspect.hpp"
-#include "dart/common/detail/EmbeddedAspect.hpp"
+#include <dart/common/CompositeJoiner.hpp>
+#include <dart/common/RequiresAspect.hpp>
+#include <dart/common/detail/EmbeddedAspect.hpp>
 
 namespace dart {
 namespace common {
@@ -89,7 +89,7 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_BEGIN
 
 template <class DerivedT, typename StateDataT>
 class EmbedState : public virtual common::RequiresAspect<
-                       common::EmbeddedStateAspect<DerivedT, StateDataT> >
+                       common::EmbeddedStateAspect<DerivedT, StateDataT>>
 {
 public:
   using Derived = DerivedT;
@@ -200,7 +200,7 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_BEGIN
 template <class DerivedT, typename PropertiesDataT>
 class EmbedProperties
   : public virtual common::RequiresAspect<
-        common::EmbeddedPropertiesAspect<DerivedT, PropertiesDataT> >
+        common::EmbeddedPropertiesAspect<DerivedT, PropertiesDataT>>
 {
 public:
   using Derived = DerivedT;
@@ -377,7 +377,7 @@ class EmbedStateAndProperties : public virtual common::RequiresAspect<
                                     common::EmbeddedStateAndPropertiesAspect<
                                         DerivedT,
                                         StateDataT,
-                                        PropertiesDataT> >
+                                        PropertiesDataT>>
 {
 public:
   using Derived = DerivedT;

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,13 +30,16 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
+#include "MyWindow.hpp"
+#include "dart/common/Macros.hpp"
 
-#include <dart/dart.hpp>
 #include <dart/gui/gui.hpp>
+
 #include <dart/utils/utils.hpp>
 
-#include "MyWindow.hpp"
+#include <dart/dart.hpp>
+
+#include <iostream>
 
 using namespace dart;
 using namespace dynamics;
@@ -48,7 +51,7 @@ int main(int argc, char* argv[])
   // create and initialize the world
   dart::simulation::WorldPtr myWorld
       = utils::SkelParser::readWorld("dart://sample/skel/fullbody1.skel");
-  assert(myWorld != nullptr);
+  DART_ASSERT(myWorld != nullptr);
 
   Eigen::Vector3d gravity(0.0, -9.81, 0.0);
   myWorld->setGravity(gravity);

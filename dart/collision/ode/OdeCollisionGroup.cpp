@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/collision/ode/OdeCollisionGroup.hpp"
 
 #include "dart/collision/ode/OdeCollisionObject.hpp"
+#include "dart/common/Macros.hpp"
 
 namespace dart {
 namespace collision {
@@ -52,7 +53,7 @@ OdeCollisionGroup::OdeCollisionGroup(
   // Source:
   // https://www.ode-wiki.org/wiki/index.php?title=Manual:_Collision_Detection#Space_functions
   mSpaceId = dHashSpaceCreate(0);
-  assert(mSpaceId);
+  DART_ASSERT(mSpaceId);
   dHashSpaceSetLevels(mSpaceId, -2, 8);
 }
 
@@ -85,8 +86,7 @@ void OdeCollisionGroup::addCollisionObjectToEngine(CollisionObject* object)
 void OdeCollisionGroup::addCollisionObjectsToEngine(
     const std::vector<CollisionObject*>& collObjects)
 {
-  for (auto collObj : collObjects)
-  {
+  for (auto collObj : collObjects) {
     auto casted = static_cast<OdeCollisionObject*>(collObj);
     auto geomId = casted->getOdeGeomId();
     dSpaceAdd(mSpaceId, geomId);

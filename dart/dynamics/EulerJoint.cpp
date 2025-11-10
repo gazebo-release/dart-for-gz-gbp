@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,12 @@
 
 #include "dart/dynamics/EulerJoint.hpp"
 
-#include <string>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/math/Geometry.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -153,8 +154,7 @@ Eigen::Isometry3d EulerJoint::convertToTransform(
 Eigen::Matrix3d EulerJoint::convertToRotation(
     const Eigen::Vector3d& _positions, AxisOrder _ordering)
 {
-  switch (_ordering)
-  {
+  switch (_ordering) {
     case AxisOrder::XYZ:
       return math::eulerXYZToMatrix(_positions);
     case AxisOrder::ZYX:
@@ -196,8 +196,7 @@ Eigen::Matrix<double, 6, 3> EulerJoint::getRelativeJacobianStatic(
   Eigen::Vector6d J1 = Eigen::Vector6d::Zero();
   Eigen::Vector6d J2 = Eigen::Vector6d::Zero();
 
-  switch (getAxisOrder())
-  {
+  switch (getAxisOrder()) {
     case AxisOrder::XYZ: {
       //------------------------------------------------------------------------
       // S = [    c1*c2, s2,  0
@@ -211,7 +210,7 @@ Eigen::Matrix<double, 6, 3> EulerJoint::getRelativeJacobianStatic(
       J1 << s2, c2, 0.0, 0.0, 0.0, 0.0;
       J2 << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
       if (std::abs(getPositionsStatic()[1]) == math::constantsd::pi() * 0.5)
         std::cout << "Singular configuration in ZYX-euler joint ["
                   << Joint::mAspectProperties.mName << "]. (" << _positions[0]
@@ -234,7 +233,7 @@ Eigen::Matrix<double, 6, 3> EulerJoint::getRelativeJacobianStatic(
       J1 << 0.0, c2, -s2, 0.0, 0.0, 0.0;
       J2 << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
       if (std::abs(_positions[1]) == math::constantsd::pi() * 0.5)
         std::cout << "Singular configuration in ZYX-euler joint ["
                   << Joint::mAspectProperties.mName << "]. (" << _positions[0]
@@ -254,15 +253,14 @@ Eigen::Matrix<double, 6, 3> EulerJoint::getRelativeJacobianStatic(
   J.col(1) = math::AdT(Joint::mAspectProperties.mT_ChildBodyToJoint, J1);
   J.col(2) = math::AdT(Joint::mAspectProperties.mT_ChildBodyToJoint, J2);
 
-  assert(!math::isNan(J));
+  DART_ASSERT(!math::isNan(J));
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
   Eigen::MatrixXd JTJ = J.transpose() * J;
   Eigen::FullPivLU<Eigen::MatrixXd> luJTJ(JTJ);
   //    Eigen::FullPivLU<Eigen::MatrixXd> luS(mS);
   double det = luJTJ.determinant();
-  if (det < 1e-5)
-  {
+  if (det < 1e-5) {
     std::cout << "ill-conditioned Jacobian in joint ["
               << Joint::mAspectProperties.mName << "]."
               << " The determinant of the Jacobian is (" << det << ")."
@@ -297,8 +295,7 @@ Joint* EulerJoint::clone() const
 void EulerJoint::updateDegreeOfFreedomNames()
 {
   std::vector<std::string> affixes;
-  switch (getAxisOrder())
-  {
+  switch (getAxisOrder()) {
     case AxisOrder::ZYX:
       affixes.push_back("_z");
       affixes.push_back("_y");
@@ -315,10 +312,8 @@ void EulerJoint::updateDegreeOfFreedomNames()
             << static_cast<int>(getAxisOrder()) << ")\n";
   }
 
-  if (affixes.size() == 3)
-  {
-    for (std::size_t i = 0; i < 3; ++i)
-    {
+  if (affixes.size() == 3) {
+    for (std::size_t i = 0; i < 3; ++i) {
       if (!mDofs[i]->isNamePreserved())
         mDofs[i]->setName(Joint::mAspectProperties.mName + affixes[i], false);
     }
@@ -332,7 +327,7 @@ void EulerJoint::updateRelativeTransform() const
        * convertToTransform(getPositionsStatic())
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -366,8 +361,7 @@ void EulerJoint::updateRelativeJacobianTimeDeriv() const
   Eigen::Vector6d dJ1 = Eigen::Vector6d::Zero();
   Eigen::Vector6d dJ2 = Eigen::Vector6d::Zero();
 
-  switch (getAxisOrder())
-  {
+  switch (getAxisOrder()) {
     case AxisOrder::XYZ: {
       //------------------------------------------------------------------------
       // dS = [  -(dq1*c2*s1) - dq2*c1*s2,    dq2*c2,  0
@@ -412,7 +406,7 @@ void EulerJoint::updateRelativeJacobianTimeDeriv() const
   mJacobianDeriv.col(2)
       = math::AdT(Joint::mAspectProperties.mT_ChildBodyToJoint, dJ2);
 
-  assert(!math::isNan(mJacobianDeriv));
+  DART_ASSERT(!math::isNan(mJacobianDeriv));
 }
 
 } // namespace dynamics

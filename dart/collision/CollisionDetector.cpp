@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/collision/CollisionDetector.hpp"
 
-#include <algorithm>
-
 #include "dart/collision/CollisionGroup.hpp"
 #include "dart/collision/CollisionObject.hpp"
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/Skeleton.hpp"
+
+#include <algorithm>
 
 namespace dart {
 namespace collision {
@@ -92,7 +93,7 @@ CollisionDetector::CollisionObjectManager::CollisionObjectManager(
     CollisionDetector* cd)
   : mCollisionDetector(cd)
 {
-  assert(cd);
+  DART_ASSERT(cd);
 }
 
 //==============================================================================
@@ -128,7 +129,7 @@ CollisionDetector::ManagerForUnsharableCollisionObjects::
         ManagerForUnsharableCollisionObjects* mgr)
   : mCollisionObjectManager(mgr)
 {
-  assert(mgr);
+  DART_ASSERT(mgr);
 }
 
 //==============================================================================
@@ -153,7 +154,7 @@ CollisionDetector::ManagerForSharableCollisionObjects::
 CollisionDetector::ManagerForSharableCollisionObjects::
     ~ManagerForSharableCollisionObjects()
 {
-  assert(mCollisionObjectMap.empty());
+  DART_ASSERT(mCollisionObjectMap.empty());
 }
 
 //==============================================================================
@@ -164,10 +165,9 @@ CollisionDetector::ManagerForSharableCollisionObjects::claimCollisionObject(
   const auto search = mCollisionObjectMap.find(shapeFrame);
 
   const auto found = mCollisionObjectMap.end() != search;
-  if (found)
-  {
+  if (found) {
     const auto& collObj = search->second;
-    assert(collObj.lock());
+    DART_ASSERT(collObj.lock());
     // Ensure all the collision objects in the map are valid pointers
 
     return collObj.lock();
@@ -187,7 +187,7 @@ CollisionDetector::ManagerForSharableCollisionObjects::CollisionObjectDeleter::
     CollisionObjectDeleter(ManagerForSharableCollisionObjects* mgr)
   : mCollisionObjectManager(mgr)
 {
-  assert(mgr);
+  DART_ASSERT(mgr);
 }
 
 //==============================================================================

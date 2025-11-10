@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,13 @@
 
 #include "dart/dynamics/PyramidShape.hpp"
 
-#include <cmath>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/CylinderShape.hpp"
 #include "dart/dynamics/SphereShape.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <cmath>
 
 namespace dart {
 namespace dynamics {
@@ -49,9 +50,9 @@ PyramidShape::PyramidShape(double baseWidth, double baseDepth, double height)
     mBaseDepth(baseDepth),
     mHeight(height)
 {
-  assert(0.0 < baseWidth);
-  assert(0.0 < baseDepth);
-  assert(0.0 < height);
+  DART_ASSERT(0.0 < baseWidth);
+  DART_ASSERT(0.0 < baseDepth);
+  DART_ASSERT(0.0 < height);
 }
 
 //==============================================================================
@@ -76,7 +77,7 @@ double PyramidShape::getBaseWidth() const
 //==============================================================================
 void PyramidShape::setBaseWidth(double width)
 {
-  assert(0.0 < width);
+  DART_ASSERT(0.0 < width);
   mBaseWidth = width;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
@@ -93,7 +94,7 @@ double PyramidShape::getBaseDepth() const
 //==============================================================================
 void PyramidShape::setBaseDepth(double depth)
 {
-  assert(0.0 < depth);
+  DART_ASSERT(0.0 < depth);
   mBaseDepth = depth;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;
@@ -110,7 +111,7 @@ double PyramidShape::getHeight() const
 //==============================================================================
 void PyramidShape::setHeight(double height)
 {
-  assert(0.0 < height);
+  DART_ASSERT(0.0 < height);
   mHeight = height;
   mIsBoundingBoxDirty = true;
   mIsVolumeDirty = true;

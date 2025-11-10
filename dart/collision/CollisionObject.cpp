@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/collision/CollisionObject.hpp"
 
 #include "dart/collision/CollisionDetector.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/ShapeFrame.hpp"
 
 namespace dart {
@@ -74,8 +75,8 @@ CollisionObject::CollisionObject(
     const dynamics::ShapeFrame* shapeFrame)
   : mCollisionDetector(collisionDetector), mShapeFrame(shapeFrame)
 {
-  assert(mCollisionDetector);
-  assert(mShapeFrame);
+  DART_ASSERT(mCollisionDetector);
+  DART_ASSERT(mShapeFrame);
 }
 
 } // namespace collision

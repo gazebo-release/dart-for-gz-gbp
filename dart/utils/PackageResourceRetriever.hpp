@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,11 @@
 #ifndef DART_UTILS_PACKAGERESOURCERETRIEVER_HPP_
 #define DART_UTILS_PACKAGERESOURCERETRIEVER_HPP_
 
+#include <dart/common/ClassWithVirtualBase.hpp>
+#include <dart/common/ResourceRetriever.hpp>
+
 #include <unordered_map>
 #include <vector>
-
-#include "dart/common/ClassWithVirtualBase.hpp"
-#include "dart/common/ResourceRetriever.hpp"
 
 namespace dart {
 namespace utils {
@@ -99,7 +99,7 @@ public:
 
 private:
   common::ResourceRetrieverPtr mLocalRetriever;
-  std::unordered_map<std::string, std::vector<std::string> > mPackageMap;
+  std::unordered_map<std::string, std::vector<std::string>> mPackageMap;
 
   const std::vector<std::string>& getPackagePaths(
       const std::string& _packageName) const;

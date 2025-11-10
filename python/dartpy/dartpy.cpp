@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -31,6 +31,7 @@
  */
 
 #include <dart/config.hpp>
+
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -53,6 +54,12 @@ void dart_gui(py::module& m);
 PYBIND11_MODULE(dartpy, m)
 {
   m.doc() = "dartpy: Python API of Dynamic Animation and Robotics Toolkit";
+
+#ifdef DARTPY_VERSION_INFO
+  m.attr("__version__") = DARTPY_VERSION_INFO;
+#else
+  m.attr("__version__") = "dev";
+#endif
 
   eigen_geometry(m);
 

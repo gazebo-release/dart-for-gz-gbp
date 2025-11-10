@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -39,21 +39,25 @@
 #ifndef DART_SIMULATION_WORLD_HPP_
 #define DART_SIMULATION_WORLD_HPP_
 
-#include <set>
-#include <string>
-#include <vector>
+#include <dart/simulation/Recording.hpp>
+#include <dart/simulation/SmartPointer.hpp>
+
+#include <dart/constraint/SmartPointer.hpp>
+
+#include <dart/collision/CollisionOption.hpp>
+
+#include <dart/dynamics/SimpleFrame.hpp>
+#include <dart/dynamics/Skeleton.hpp>
+
+#include <dart/common/NameManager.hpp>
+#include <dart/common/SmartPointer.hpp>
+#include <dart/common/Subject.hpp>
 
 #include <Eigen/Dense>
 
-#include "dart/collision/CollisionOption.hpp"
-#include "dart/common/NameManager.hpp"
-#include "dart/common/SmartPointer.hpp"
-#include "dart/common/Subject.hpp"
-#include "dart/constraint/SmartPointer.hpp"
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/dynamics/Skeleton.hpp"
-#include "dart/simulation/Recording.hpp"
-#include "dart/simulation/SmartPointer.hpp"
+#include <set>
+#include <string>
+#include <vector>
 
 namespace dart {
 
@@ -396,6 +400,6 @@ DART_DECLARE_CLASS_WITH_VIRTUAL_BASE_END
 } // namespace simulation
 } // namespace dart
 
-#include "dart/simulation/detail/World-impl.hpp"
+#include <dart/simulation/detail/World-impl.hpp>
 
 #endif // DART_SIMULATION_WORLD_HPP_

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,9 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
 #include <dart/gui/gui.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_domino_height = 0.3;
 const double default_domino_width = 0.4 * default_domino_height;
@@ -166,10 +167,8 @@ public:
 
   void keyboard(unsigned char key, int x, int y) override
   {
-    if (!mHasEverRun)
-    {
-      switch (key)
-      {
+    if (!mHasEverRun) {
+      switch (key) {
         case 'q':
           attemptToCreateDomino(default_angle);
           break;
@@ -186,11 +185,8 @@ public:
           mHasEverRun = true;
           break;
       }
-    }
-    else
-    {
-      switch (key)
-      {
+    } else {
+      switch (key) {
         case 'f':
           mForceCountDown = default_force_duration;
           break;
@@ -208,20 +204,16 @@ public:
   {
     // If the user has pressed the 'f' key, apply a force to the first domino in
     // order to push it over
-    if (mForceCountDown > 0)
-    {
+    if (mForceCountDown > 0) {
       // Lesson 1d
       --mForceCountDown;
     }
 
     // Run the controller for the manipulator
-    if (mPushCountDown > 0)
-    {
+    if (mPushCountDown > 0) {
       mController->setOperationalSpaceForces();
       --mPushCountDown;
-    }
-    else
-    {
+    } else {
       mController->setPDForces();
     }
 

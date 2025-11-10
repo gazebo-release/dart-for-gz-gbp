@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,10 +30,11 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <random>
+#include <dart/gui/gui.hpp>
 
 #include <dart/dart.hpp>
-#include <dart/gui/gui.hpp>
+
+#include <random>
 
 [[maybe_unused]] const double default_shape_density = 1000;  // kg/m^3
 [[maybe_unused]] const double default_shape_height = 0.1;    // m
@@ -120,8 +121,7 @@ public:
 
   void keyboard(unsigned char key, int x, int y) override
   {
-    switch (key)
-    {
+    switch (key) {
       case '1':
         addObject(mOriginalBall->cloneSkeleton());
         break;
@@ -174,8 +174,7 @@ public:
     // We remove playback and baking, because we want to be able to add and
     // remove objects during runtime
     int numIter = mDisplayTimeout / (mWorld->getTimeStep() * 1000);
-    if (mSimulating)
-    {
+    if (mSimulating) {
       for (int i = 0; i < numIter; i++)
         timeStepping();
     }
@@ -229,14 +228,12 @@ protected:
   /// it, if one existed
   void removeSkeleton(const SkeletonPtr& skel)
   {
-    for (std::size_t i = 0; i < mJointConstraints.size(); ++i)
-    {
+    for (std::size_t i = 0; i < mJointConstraints.size(); ++i) {
       const dart::constraint::DynamicJointConstraintPtr& constraint
           = mJointConstraints[i];
 
       if (constraint->getBodyNode1()->getSkeleton() == skel
-          || constraint->getBodyNode2()->getSkeleton() == skel)
-      {
+          || constraint->getBodyNode2()->getSkeleton() == skel) {
         mWorld->getConstraintSolver()->removeConstraint(constraint);
         mJointConstraints.erase(mJointConstraints.begin() + i);
         break; // There should only be one constraint per skeleton

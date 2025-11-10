@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,12 +33,12 @@
 #ifndef DART_DYNAMICS_ASSIMPINPUTRESOURCEADAPTOR_HPP_
 #define DART_DYNAMICS_ASSIMPINPUTRESOURCEADAPTOR_HPP_
 
+#include <dart/common/Resource.hpp>
+#include <dart/common/ResourceRetriever.hpp>
+
 #include <assimp/IOStream.hpp>
 #include <assimp/IOSystem.hpp>
 #include <assimp/cfileio.h>
-
-#include "dart/common/Resource.hpp"
-#include "dart/common/ResourceRetriever.hpp"
 
 namespace dart {
 namespace dynamics {

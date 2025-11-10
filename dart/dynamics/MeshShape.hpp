@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,12 +33,13 @@
 #ifndef DART_DYNAMICS_MESHSHAPE_HPP_
 #define DART_DYNAMICS_MESHSHAPE_HPP_
 
-#include <string>
+#include <dart/dynamics/Shape.hpp>
+
+#include <dart/common/ResourceRetriever.hpp>
 
 #include <assimp/scene.h>
 
-#include "dart/common/ResourceRetriever.hpp"
-#include "dart/dynamics/Shape.hpp"
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -123,8 +124,24 @@ public:
 
   common::ResourceRetrieverPtr getResourceRetriever();
 
+  /// Sets the scale of the object using a 3D vector.
+  ///
+  /// The scale is applied independently along each axis (x, y, z). Negative
+  /// values will mirror the object along the corresponding axis, potentially
+  /// flipping normals and causing inside-out geometry.
+  ///
+  /// Use caution when applying negative scales as it may affect rendering and
+  /// physics calculations.
   void setScale(const Eigen::Vector3d& scale);
 
+  /// Sets a uniform scale for the object across all axes.
+  void setScale(double scale);
+
+  /// Returns the current scale of the object as a 3D vector.
+  ///
+  /// Each component of the vector represents the scale factor along the
+  /// corresponding axis (x, y, z). Negative values indicate that the object has
+  /// been mirrored along that axis.
   const Eigen::Vector3d& getScale() const;
 
   /// Set how the color of this mesh should be determined

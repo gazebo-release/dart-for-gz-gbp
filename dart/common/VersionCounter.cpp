@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,10 +32,12 @@
 
 #include "dart/common/VersionCounter.hpp"
 
-#include <cassert>
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+
 #include <iostream>
 
-#include "dart/common/Console.hpp"
+#include <cassert>
 
 namespace dart {
 namespace common {
@@ -66,21 +68,18 @@ std::size_t VersionCounter::getVersion() const
 void VersionCounter::setVersionDependentObject(VersionCounter* dependent)
 {
   VersionCounter* next = dependent;
-  do
-  {
-    if (next == this)
-    {
+  do {
+    if (next == this) {
       dterr
           << "[VersionCounter::setVersionDependentObject] Attempting to "
           << "create a circular version dependency with the following loop:\n";
       next = dependent;
-      while (next != this)
-      {
+      while (next != this) {
         std::cerr << " -- " << next << "\n";
         next = next->mDependent;
       }
       std::cerr << " -- " << this << "\n";
-      assert(false);
+      DART_ASSERT(false);
       return;
     }
 

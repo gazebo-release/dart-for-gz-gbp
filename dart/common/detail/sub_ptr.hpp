@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_COMMON_DETAIL_SUB_PTR_HPP_
 #define DART_COMMON_DETAIL_SUB_PTR_HPP_
 
-#include "dart/common/sub_ptr.hpp"
+#include <dart/common/sub_ptr.hpp>
 
 namespace dart {
 namespace common {
@@ -127,8 +127,7 @@ bool sub_ptr<T>::valid()
 template <class T>
 void sub_ptr<T>::handleDestructionNotification(const Subject* _subject)
 {
-  if (_subject == mSubjectBase)
-  {
+  if (_subject == mSubjectBase) {
     mT = nullptr;
     mSubjectBase = nullptr;
   }

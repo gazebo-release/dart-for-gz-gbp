@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/optimizer/Population.hpp"
 
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/math/Random.hpp"
 
 namespace dart {
@@ -43,8 +44,7 @@ namespace {
 //==============================================================================
 bool isValidX(const MultiObjectiveProblem& problem, const Eigen::VectorXd& x)
 {
-  if (problem.getSolutionDimension() != static_cast<std::size_t>(x.size()))
-  {
+  if (problem.getSolutionDimension() != static_cast<std::size_t>(x.size())) {
     dtwarn << "[Population] Attempting to add an incompatible decision vector. "
            << "The dimension of the decision vector '" << x.size()
            << "' should be '" << problem.getSolutionDimension() << "'.\n";
@@ -57,8 +57,7 @@ bool isValidX(const MultiObjectiveProblem& problem, const Eigen::VectorXd& x)
 //==============================================================================
 bool isValidF(const MultiObjectiveProblem& problem, const Eigen::VectorXd& f)
 {
-  if (problem.getFitnessDimension() != static_cast<std::size_t>(f.size()))
-  {
+  if (problem.getFitnessDimension() != static_cast<std::size_t>(f.size())) {
     dtwarn << "[Population] Attempting to add an incompatible decision vector. "
            << "The dimension of the decision vector '" << f.size()
            << "' should be '" << problem.getFitnessDimension() << "'.\n";
@@ -79,7 +78,7 @@ Population::Population(
   // MultiObjectiveProblem and clone it once MultiObjectiveProblem::clone()
   // is added.
 
-  assert(mProblem);
+  DART_ASSERT(mProblem);
 
   const int xSize = static_cast<int>(mProblem->getSolutionDimension());
   const int fSize = static_cast<int>(mProblem->getFitnessDimension());
@@ -157,7 +156,7 @@ void Population::set(
 //==============================================================================
 std::size_t Population::getSize() const
 {
-  assert(mPopulation.cols() == mFitness.cols());
+  DART_ASSERT(mPopulation.cols() == mFitness.cols());
   return static_cast<std::size_t>(mPopulation.cols());
 }
 
@@ -180,8 +179,7 @@ std::ostream& Population::print(std::ostream& os) const
   os << "Population size: " << getSize() << "\n\n";
   os << "List of individuals: \n";
 
-  for (std::size_t i = 0u; i < getSize(); ++i)
-  {
+  for (std::size_t i = 0u; i < getSize(); ++i) {
     os << "#" << i << ":\n";
     os << "\tDecision vector:\t"
        << mPopulation.col(static_cast<int>(i)).transpose() << "\n";

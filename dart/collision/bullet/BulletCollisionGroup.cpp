@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -75,8 +75,7 @@ void BulletCollisionGroup::addCollisionObjectToEngine(CollisionObject* object)
 void BulletCollisionGroup::addCollisionObjectsToEngine(
     const std::vector<CollisionObject*>& collObjects)
 {
-  for (auto collObj : collObjects)
-  {
+  for (auto collObj : collObjects) {
     auto casted = static_cast<BulletCollisionObject*>(collObj);
 
     mBulletCollisionWorld->addCollisionObject(

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/utils/mjcf/detail/Site.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/utils/XmlHelpers.hpp"
 #include "dart/utils/mjcf/detail/Body.hpp"
 #include "dart/utils/mjcf/detail/Utils.hpp"
@@ -46,8 +47,7 @@ Errors Site::read(tinyxml2::XMLElement* element)
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "site")
-  {
+  if (std::string(element->Name()) != "site") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <Site> from the provided element");
@@ -59,37 +59,24 @@ Errors Site::read(tinyxml2::XMLElement* element)
   //-----------------
 
   // name
-  if (hasAttribute(element, "name"))
-  {
+  if (hasAttribute(element, "name")) {
     mData.mName = getAttributeString(element, "name");
   }
 
   // type
-  if (hasAttribute(element, "type"))
-  {
+  if (hasAttribute(element, "type")) {
     const std::string type = getAttributeString(element, "type");
-    if (type == "sphere")
-    {
+    if (type == "sphere") {
       mData.mType = GeomType::SPHERE;
-    }
-    else if (type == "capsule")
-    {
+    } else if (type == "capsule") {
       mData.mType = GeomType::CAPSULE;
-    }
-    else if (type == "ellipsoid")
-    {
+    } else if (type == "ellipsoid") {
       mData.mType = GeomType::ELLIPSOID;
-    }
-    else if (type == "cylinder")
-    {
+    } else if (type == "cylinder") {
       mData.mType = GeomType::CYLINDER;
-    }
-    else if (type == "box")
-    {
+    } else if (type == "box") {
       mData.mType = GeomType::BOX;
-    }
-    else
-    {
+    } else {
       errors.emplace_back(
           ErrorCode::ATTRIBUTE_INVALID,
           "Invalid attribute for 'type': " + type);
@@ -98,17 +85,14 @@ Errors Site::read(tinyxml2::XMLElement* element)
   }
 
   // group
-  if (hasAttribute(element, "group"))
-  {
+  if (hasAttribute(element, "group")) {
     mData.mGroup = getAttributeInt(element, "group");
   }
 
   // size
-  if (hasAttribute(element, "size"))
-  {
+  if (hasAttribute(element, "size")) {
     const Eigen::VectorXd size = getAttributeVectorXd(element, "size");
-    if (size.size() == 0 || size.size() > 3)
-    {
+    if (size.size() == 0 || size.size() > 3) {
       errors.emplace_back(
           ErrorCode::ATTRIBUTE_INVALID, "Invalid attribute for 'size'");
       return errors;
@@ -117,20 +101,17 @@ Errors Site::read(tinyxml2::XMLElement* element)
   }
 
   // rgba
-  if (hasAttribute(element, "rgba"))
-  {
+  if (hasAttribute(element, "rgba")) {
     mData.mRGBA = getAttributeVector4d(element, "rgba");
   }
 
   // fromto
-  if (hasAttribute(element, "fromto"))
-  {
+  if (hasAttribute(element, "fromto")) {
     mData.mFromTo = getAttributeVector6d(element, "fromto");
   }
 
   // pos
-  if (hasAttribute(element, "pos"))
-  {
+  if (hasAttribute(element, "pos")) {
     mData.mPos = getAttributeVector3d(element, "pos");
   }
 
@@ -140,8 +121,7 @@ Errors Site::read(tinyxml2::XMLElement* element)
       errors.end(), orientationErrors.begin(), orientationErrors.end());
 
   // quat
-  if (hasAttribute(element, "quat"))
-  {
+  if (hasAttribute(element, "quat")) {
     const Eigen::Vector4d vec4d = getAttributeVector4d(element, "quat");
     mData.mQuat.w() = vec4d[0];
     mData.mQuat.x() = vec4d[1];
@@ -150,26 +130,22 @@ Errors Site::read(tinyxml2::XMLElement* element)
   }
 
   // axisangle
-  if (hasAttribute(element, "axisangle"))
-  {
+  if (hasAttribute(element, "axisangle")) {
     mData.mAxisAngle = getAttributeVector4d(element, "axisangle");
   }
 
   // euler
-  if (hasAttribute(element, "euler"))
-  {
+  if (hasAttribute(element, "euler")) {
     mData.mEuler = getAttributeVector3d(element, "euler");
   }
 
   // xyaxes
-  if (hasAttribute(element, "xyaxes"))
-  {
+  if (hasAttribute(element, "xyaxes")) {
     mData.mXYAxes = getAttributeVector6d(element, "xyaxes");
   }
 
   // zaxis
-  if (hasAttribute(element, "zaxis"))
-  {
+  if (hasAttribute(element, "zaxis")) {
     mData.mZAxis = getAttributeVector3d(element, "zaxis");
   }
 
@@ -183,8 +159,7 @@ static bool canUseFromTo(
   if (!fromto)
     return false;
 
-  switch (type)
-  {
+  switch (type) {
     case detail::GeomType::CAPSULE:
     case detail::GeomType::ELLIPSOID:
     case detail::GeomType::CYLINDER:
@@ -200,8 +175,7 @@ Errors Site::preprocess(const Compiler& compiler)
 {
   Errors errors;
 
-  if (mData.mName)
-  {
+  if (mData.mName) {
     mName = *mData.mName;
   }
 
@@ -212,8 +186,7 @@ Errors Site::preprocess(const Compiler& compiler)
   mRGBA = mData.mRGBA;
 
   // Size
-  switch (mData.mType)
-  {
+  switch (mData.mType) {
     case GeomType::PLANE:
     case GeomType::HFIELD:
     case GeomType::SPHERE: {
@@ -222,8 +195,7 @@ Errors Site::preprocess(const Compiler& compiler)
     }
     case GeomType::CAPSULE:
     case GeomType::CYLINDER: {
-      if (mData.mFromTo)
-      {
+      if (mData.mFromTo) {
         const double radius = mData.mSize[0];
         mSize[0] = radius;
 
@@ -231,17 +203,14 @@ Errors Site::preprocess(const Compiler& compiler)
         const Eigen::Vector3d to = (*mData.mFromTo).tail<3>();
         const double halfLength = 0.5 * (from - to).norm();
         mSize[1] = halfLength;
-      }
-      else
-      {
+      } else {
         mSize = mData.mSize;
       }
       break;
     }
     case GeomType::ELLIPSOID:
     case GeomType::BOX: {
-      if (mData.mFromTo)
-      {
+      if (mData.mFromTo) {
         const double halfLengthX = mData.mSize[0];
         mSize[0] = halfLengthX;
 
@@ -252,9 +221,7 @@ Errors Site::preprocess(const Compiler& compiler)
         const Eigen::Vector3d to = (*mData.mFromTo).tail<3>();
         const double halfLengthZ = 0.5 * (from - to).norm();
         mSize[2] = halfLengthZ;
-      }
-      else
-      {
+      } else {
         mSize = mData.mSize;
       }
       break;
@@ -265,9 +232,8 @@ Errors Site::preprocess(const Compiler& compiler)
   }
 
   Eigen::Isometry3d tf = Eigen::Isometry3d::Identity();
-  if (canUseFromTo(mData.mType, mData.mFromTo))
-  {
-    assert(mData.mFromTo);
+  if (canUseFromTo(mData.mType, mData.mFromTo)) {
+    DART_ASSERT(mData.mFromTo);
     const Eigen::Vector6d& fromto = *mData.mFromTo;
     const Eigen::Vector3d from = fromto.head<3>();
     const Eigen::Vector3d to = fromto.tail<3>();
@@ -276,9 +242,7 @@ Errors Site::preprocess(const Compiler& compiler)
     tf.linear()
         = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d::UnitZ(), dir)
               .toRotationMatrix();
-  }
-  else
-  {
+  } else {
     tf.translation() = mData.mPos;
     tf.linear() = compileRotation(
         mData.mQuat,
@@ -289,12 +253,9 @@ Errors Site::preprocess(const Compiler& compiler)
         compiler);
   }
 
-  if (compiler.getCoordinate() == Coordinate::LOCAL)
-  {
+  if (compiler.getCoordinate() == Coordinate::LOCAL) {
     mRelativeTransform = tf;
-  }
-  else
-  {
+  } else {
     mWorldTransform = tf;
   }
 
@@ -313,26 +274,17 @@ Errors Site::postprocess(const Body* parent, const Compiler& compiler)
 {
   Errors errors;
 
-  if (compiler.getCoordinate() == Coordinate::LOCAL)
-  {
-    if (parent != nullptr)
-    {
+  if (compiler.getCoordinate() == Coordinate::LOCAL) {
+    if (parent != nullptr) {
       mWorldTransform = parent->getWorldTransform() * mRelativeTransform;
-    }
-    else
-    {
+    } else {
       mWorldTransform = mRelativeTransform;
     }
-  }
-  else
-  {
-    if (parent != nullptr)
-    {
+  } else {
+    if (parent != nullptr) {
       mRelativeTransform
           = parent->getWorldTransform().inverse() * mWorldTransform;
-    }
-    else
-    {
+    } else {
       mRelativeTransform = mWorldTransform;
     }
   }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/dynamics/Frame.hpp"
 
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/Shape.hpp"
 
 namespace dart {
@@ -93,8 +94,7 @@ const Eigen::Isometry3d& Frame::getWorldTransform() const
   if (mAmWorld)
     return mWorldTransform;
 
-  if (mNeedTransformUpdate)
-  {
+  if (mNeedTransformUpdate) {
     mWorldTransform
         = mParentFrame->getWorldTransform() * getRelativeTransform();
     mNeedTransformUpdate = false;
@@ -120,8 +120,8 @@ Eigen::Isometry3d Frame::getTransform(const Frame* _withRespectTo) const
 Eigen::Isometry3d Frame::getTransform(
     const Frame* withRespectTo, const Frame* inCoordinatesOf) const
 {
-  assert(nullptr != withRespectTo);
-  assert(nullptr != inCoordinatesOf);
+  DART_ASSERT(nullptr != withRespectTo);
+  DART_ASSERT(nullptr != inCoordinatesOf);
 
   if (withRespectTo == inCoordinatesOf)
     return getTransform(withRespectTo);
@@ -140,8 +140,7 @@ const Eigen::Vector6d& Frame::getSpatialVelocity() const
   if (mAmWorld)
     return mVelocity;
 
-  if (mNeedVelocityUpdate)
-  {
+  if (mNeedVelocityUpdate) {
     mVelocity
         = math::AdInvT(
               getRelativeTransform(), getParentFrame()->getSpatialVelocity())
@@ -160,8 +159,7 @@ Eigen::Vector6d Frame::getSpatialVelocity(
   if (this == _relativeTo)
     return Eigen::Vector6d::Zero();
 
-  if (_relativeTo->isWorld())
-  {
+  if (_relativeTo->isWorld()) {
     if (this == _inCoordinatesOf)
       return getSpatialVelocity();
 
@@ -201,8 +199,7 @@ Eigen::Vector6d Frame::getSpatialVelocity(
   Eigen::Vector6d v = getSpatialVelocity();
   v.tail<3>().noalias() += v.head<3>().cross(_offset);
 
-  if (_relativeTo->isWorld())
-  {
+  if (_relativeTo->isWorld()) {
     if (this == _inCoordinatesOf)
       return v;
 
@@ -250,8 +247,7 @@ const Eigen::Vector6d& Frame::getSpatialAcceleration() const
   if (mAmWorld)
     return mAcceleration;
 
-  if (mNeedAccelerationUpdate)
-  {
+  if (mNeedAccelerationUpdate) {
     mAcceleration = math::AdInvT(
                         getRelativeTransform(),
                         getParentFrame()->getSpatialAcceleration())
@@ -278,8 +274,7 @@ Eigen::Vector6d Frame::getSpatialAcceleration(
   if (this == _relativeTo)
     return Eigen::Vector6d::Zero();
 
-  if (_relativeTo->isWorld())
-  {
+  if (_relativeTo->isWorld()) {
     if (this == _inCoordinatesOf)
       return getSpatialAcceleration();
 
@@ -326,8 +321,7 @@ Eigen::Vector6d Frame::getSpatialAcceleration(
   Eigen::Vector6d a = getSpatialAcceleration();
   a.tail<3>().noalias() += a.head<3>().cross(_offset);
 
-  if (_relativeTo->isWorld())
-  {
+  if (_relativeTo->isWorld()) {
     if (this == _inCoordinatesOf)
       return a;
 
@@ -555,7 +549,7 @@ Frame::Frame(ConstructAbstractTag)
   dterr << "[Frame::constructor] You are calling a constructor for the Frame "
         << "class which is only meant to be used by pure abstract classes. If "
         << "you are seeing this, then there is a bug!\n";
-  assert(false);
+  DART_ASSERT(false);
 }
 
 //==============================================================================
@@ -564,10 +558,8 @@ void Frame::changeParentFrame(Frame* _newParentFrame)
   if (mParentFrame == _newParentFrame)
     return;
 
-  if (_newParentFrame)
-  {
-    if (_newParentFrame->descendsFrom(this))
-    {
+  if (_newParentFrame) {
+    if (_newParentFrame->descendsFrom(this)) {
       if (!(this->isWorld() && _newParentFrame->isWorld()))
       // We make an exception here for the World Frame, because it's
       // special/unique
@@ -581,15 +573,13 @@ void Frame::changeParentFrame(Frame* _newParentFrame)
     }
   }
 
-  if (mParentFrame && !mParentFrame->isWorld())
-  {
+  if (mParentFrame && !mParentFrame->isWorld()) {
     FramePtrSet::iterator it = mParentFrame->mChildFrames.find(this);
     if (it != mParentFrame->mChildFrames.end())
       mParentFrame->mChildFrames.erase(it);
   }
 
-  if (nullptr == _newParentFrame)
-  {
+  if (nullptr == _newParentFrame) {
     Entity::changeParentFrame(_newParentFrame);
     return;
   }

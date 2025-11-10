@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,7 @@
 
 #include "dart/gui/osg/Viewer.hpp"
 
-#include <iomanip>
-
-#include <osg/OperationThread>
-#include <osgDB/WriteFile>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/Shape.hpp"
 #include "dart/dynamics/SimpleFrame.hpp"
@@ -48,14 +44,18 @@
 #include "dart/gui/osg/detail/CameraModeCallback.hpp"
 #include "dart/simulation/World.hpp"
 
+#include <osg/OperationThread>
+#include <osgDB/WriteFile>
+
+#include <iomanip>
+
 namespace dart {
 namespace gui {
 namespace osg {
 
 std::string toString(CameraMode mode)
 {
-  switch (mode)
-  {
+  switch (mode) {
     case CameraMode::RGBA:
       return "RGBA";
     case CameraMode::DEPTH:
@@ -77,8 +77,7 @@ public:
   {
     ::osg::Camera::DrawCallback::operator()(renderInfo);
 
-    if (mViewer->mRecording || mViewer->mScreenCapture)
-    {
+    if (mViewer->mRecording || mViewer->mScreenCapture) {
       const ::osg::Viewport* vp = mViewer->getCamera()->getViewport();
       const int x = static_cast<int>(vp->x());
       const int y = static_cast<int>(vp->y());
@@ -88,22 +87,17 @@ public:
       mImage->readPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE);
     }
 
-    if (mViewer->mRecording)
-    {
-      if (!mViewer->mImageDirectory.empty())
-      {
+    if (mViewer->mRecording) {
+      if (!mViewer->mImageDirectory.empty()) {
         std::stringstream str;
         str << mViewer->mImageDirectory << "/" << mViewer->mImagePrefix
             << std::setfill('0')
             << std::setw(static_cast<int>(mViewer->mImageDigits))
             << mViewer->mImageSequenceNum << std::setw(0) << ".png";
 
-        if (::osgDB::writeImageFile(*mImage, str.str()))
-        {
+        if (::osgDB::writeImageFile(*mImage, str.str())) {
           ++mViewer->mImageSequenceNum;
-        }
-        else
-        {
+        } else {
           dtwarn << "[SaveScreen::record] Unable to save image to file named: "
                  << str.str() << "\n";
 
@@ -113,10 +107,8 @@ public:
       }
     }
 
-    if (mViewer->mScreenCapture)
-    {
-      if (!mViewer->mScreenCapName.empty())
-      {
+    if (mViewer->mScreenCapture) {
+      if (!mViewer->mScreenCapName.empty()) {
         if (!::osgDB::writeImageFile(*mImage, mViewer->mScreenCapName))
           dtwarn << "[SaveScreen::capture] Unable to save image to file named: "
                  << mViewer->mScreenCapName << "\n";
@@ -244,8 +236,7 @@ Viewer::~Viewer()
 //==============================================================================
 void Viewer::captureScreen(const std::string& filename)
 {
-  if (filename.empty())
-  {
+  if (filename.empty()) {
     dtwarn << "[Viewer::captureScreen] Passed in empty filename for screen "
            << "capture. This is not allowed!\n";
     return;
@@ -265,8 +256,7 @@ void Viewer::record(
     bool restart,
     std::size_t digits)
 {
-  if (directory.empty())
-  {
+  if (directory.empty()) {
     dtwarn << "[Viewer::record] Passed in empty directory name for screen "
            << "recording. This is not allowed!\n";
     return;
@@ -324,47 +314,38 @@ void Viewer::switchHeadlights(bool _on)
 {
   mHeadlights = _on;
 
-  if (_on)
-  {
-    if (getLight())
-    {
+  if (_on) {
+    if (getLight()) {
       getLight()->setAmbient(::osg::Vec4(0.1, 0.1, 0.1, 1.0));
       getLight()->setDiffuse(::osg::Vec4(0.8, 0.8, 0.8, 1.0));
       getLight()->setSpecular(::osg::Vec4(1.0, 1.0, 1.0, 1.0));
     }
 
-    if (mLight1)
-    {
+    if (mLight1) {
       mLight1->setAmbient(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight1->setDiffuse(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight1->setSpecular(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
     }
 
-    if (mLight2)
-    {
+    if (mLight2) {
       mLight2->setAmbient(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight2->setDiffuse(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight2->setSpecular(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
     }
-  }
-  else
-  {
-    if (getLight())
-    {
+  } else {
+    if (getLight()) {
       getLight()->setAmbient(::osg::Vec4(0.1, 0.1, 0.1, 1.0));
       getLight()->setDiffuse(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       getLight()->setSpecular(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
     }
 
-    if (mLight1)
-    {
+    if (mLight1) {
       mLight1->setAmbient(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight1->setDiffuse(::osg::Vec4(0.7, 0.7, 0.7, 1.0));
       mLight1->setSpecular(::osg::Vec4(0.9, 0.9, 0.9, 1.0));
     }
 
-    if (mLight2)
-    {
+    if (mLight2) {
       mLight2->setAmbient(::osg::Vec4(0.0, 0.0, 0.0, 1.0));
       mLight2->setDiffuse(::osg::Vec4(0.3, 0.3, 0.3, 1.0));
       mLight2->setSpecular(::osg::Vec4(0.4, 0.4, 0.4, 1.0));
@@ -427,11 +408,9 @@ WorldNode* Viewer::getWorldNode(
   auto it = mWorldNodes.cbegin();
   auto end = mWorldNodes.cend();
   WorldNode* node = nullptr;
-  for (; it != end; ++it)
-  {
+  for (; it != end; ++it) {
     WorldNode* checkNode = it->first;
-    if (checkNode->getWorld() == _world)
-    {
+    if (checkNode->getWorld() == _world) {
       node = checkNode;
       break;
     }
@@ -487,7 +466,7 @@ const ::osg::Group* Viewer::getLightGroup() const
 const ::osg::ref_ptr<::osg::LightSource>& Viewer::getLightSource(
     std::size_t index) const
 {
-  assert(index < 2);
+  DART_ASSERT(index < 2);
   if (index == 0)
     return mLightSource1;
   return mLightSource2;
@@ -572,10 +551,8 @@ void Viewer::simulate(bool _on)
     return;
 
   mSimulating = _on;
-  for (auto& node_pair : mWorldNodes)
-  {
-    if (node_pair.second)
-    {
+  for (auto& node_pair : mWorldNodes) {
+    if (node_pair.second) {
       node_pair.first->simulate(_on);
     }
   }
@@ -649,11 +626,9 @@ static sfs_dnd::iterator getSimpleFrameShapeDnDFromMultimap(
 
   std::pair<iterator, iterator> range = map.equal_range(_shape);
   iterator it = range.first, end = range.second;
-  while (it != map.end())
-  {
+  while (it != map.end()) {
     SimpleFrameShapeDnD* dnd = it->second;
-    if (dnd->getSimpleFrame() == _frame)
-    {
+    if (dnd->getSimpleFrame() == _frame) {
       return it;
     }
 
@@ -830,26 +805,22 @@ void Viewer::updateViewer()
 //==============================================================================
 void Viewer::updateDragAndDrops()
 {
-  for (auto& dnd_pair : mSimpleFrameDnDMap)
-  {
+  for (auto& dnd_pair : mSimpleFrameDnDMap) {
     SimpleFrameDnD* dnd = dnd_pair.second;
     dnd->update();
   }
 
-  for (auto& dnd_pair : mSimpleFrameShapeDnDMap)
-  {
+  for (auto& dnd_pair : mSimpleFrameShapeDnDMap) {
     SimpleFrameShapeDnD* dnd = dnd_pair.second;
     dnd->update();
   }
 
-  for (auto& dnd_pair : mInteractiveFrameDnDMap)
-  {
+  for (auto& dnd_pair : mInteractiveFrameDnDMap) {
     InteractiveFrameDnD* dnd = dnd_pair.second;
     dnd->update();
   }
 
-  for (auto& dnd_pair : mBodyNodeDnDMap)
-  {
+  for (auto& dnd_pair : mBodyNodeDnDMap) {
     BodyNodeDnD* dnd = dnd_pair.second;
     dnd->update();
   }
@@ -871,8 +842,7 @@ void Viewer::setVerticalFieldOfView(const double fov)
 
   auto* camera = getCamera();
 
-  if (!camera)
-  {
+  if (!camera) {
     dtwarn << "[Viewer::setMasterCameraFieldOfView] This viewer doesn't have "
            << "any cameras. Ignoring this request.\n";
     return;
@@ -881,8 +851,7 @@ void Viewer::setVerticalFieldOfView(const double fov)
   const bool result = camera->getProjectionMatrixAsPerspective(
       fovy, aspectRatio, zNear, zFar);
 
-  if (!result)
-  {
+  if (!result) {
     dtwarn << "[Viewer::setMasterCameraFieldOfView] Attemping to set vertical "
            << "field of view while the camera isn't perspective view. "
            << "Ignoring this request.\n";
@@ -902,8 +871,7 @@ double Viewer::getVerticalFieldOfView() const
 
   const auto* camera = getCamera();
 
-  if (!camera)
-  {
+  if (!camera) {
     dtwarn << "[Viewer::getMasterCameraFieldOfView] This viewer doesn't have "
            << "any cameras. Returning 0.0.\n";
     return 0.0;
@@ -912,8 +880,7 @@ double Viewer::getVerticalFieldOfView() const
   const bool result = camera->getProjectionMatrixAsPerspective(
       fovy, aspectRatio, zNear, zFar);
 
-  if (!result)
-  {
+  if (!result) {
     dtwarn << "[Viewer::getMasterCameraFieldOfView] Vertical field of view is "
            << "requested while the camera isn't perspective view. "
            << "Returning 0.0.\n";

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/collision/CollisionResult.hpp"
 
 #include "dart/collision/CollisionObject.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/ShapeFrame.hpp"
 #include "dart/dynamics/ShapeNode.hpp"
@@ -57,7 +58,7 @@ std::size_t CollisionResult::getNumContacts() const
 //==============================================================================
 Contact& CollisionResult::getContact(std::size_t index)
 {
-  assert(index < mContacts.size());
+  DART_ASSERT(index < mContacts.size());
 
   return mContacts[index];
 }
@@ -65,7 +66,7 @@ Contact& CollisionResult::getContact(std::size_t index)
 //==============================================================================
 const Contact& CollisionResult::getContact(std::size_t index) const
 {
-  assert(index < mContacts.size());
+  DART_ASSERT(index < mContacts.size());
 
   return mContacts[index];
 }
@@ -125,20 +126,18 @@ void CollisionResult::clear()
 //==============================================================================
 void CollisionResult::addObject(CollisionObject* object)
 {
-  if (!object)
-  {
+  if (!object) {
     dterr << "[CollisionResult::addObject] Attempting to add a collision with "
           << "a nullptr object to a CollisionResult instance. This is not "
           << "allowed. Please report this as a bug!\n";
-    assert(false);
+    DART_ASSERT(false);
     return;
   }
 
   const dynamics::ShapeFrame* frame = object->getShapeFrame();
   mCollidingShapeFrames.insert(frame);
 
-  if (frame->isShapeNode())
-  {
+  if (frame->isShapeNode()) {
     const dynamics::ShapeNode* node = frame->asShapeNode();
     mCollidingBodyNodes.insert(node->getBodyNodePtr());
   }

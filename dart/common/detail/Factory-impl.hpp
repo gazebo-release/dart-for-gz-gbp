@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_COMMON_DETAIL_FACTORY_IMPL_HPP_
 #define DART_COMMON_DETAIL_FACTORY_IMPL_HPP_
 
-#include "dart/common/Console.hpp"
-#include "dart/common/Factory.hpp"
-#include "dart/common/Memory.hpp"
+#include <dart/common/Console.hpp>
+#include <dart/common/Factory.hpp>
+#include <dart/common/Memory.hpp>
 
 namespace dart {
 namespace common {
@@ -136,8 +136,7 @@ HeldT Factory<KeyT, BaseT, HeldT, Args...>::create(
   const auto it = mCreatorMap.find(key);
 
   const auto found = (it != mCreatorMap.end());
-  if (!found)
-  {
+  if (!found) {
     dtwarn << "[Factory] Failed to create an object of '"
            << typeid(BaseT).name() << "' class with the key (type: '"
            << typeid(KeyT).name() << "'). Returning nullptr instead.\n";

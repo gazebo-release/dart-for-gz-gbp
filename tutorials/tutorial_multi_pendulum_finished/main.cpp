@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,11 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
+#include "dart/common/Macros.hpp"
+
 #include <dart/gui/gui.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_height = 1.0; // m
 const double default_width = 0.2;  // m
@@ -66,7 +69,7 @@ public:
     mPendulum = world->getSkeleton("pendulum");
 
     // Make sure that the pendulum was found in the World
-    assert(mPendulum != nullptr);
+    DART_ASSERT(mPendulum != nullptr);
 
     mForceCountDown.resize(mPendulum->getNumDofs(), 0);
 
@@ -82,14 +85,11 @@ public:
   void changeDirection()
   {
     mPositiveSign = !mPositiveSign;
-    if (mPositiveSign)
-    {
+    if (mPositiveSign) {
       mArrow->setPositions(
           Eigen::Vector3d(-default_height, 0.0, default_height / 2.0),
           Eigen::Vector3d(-default_width / 2.0, 0.0, default_height / 2.0));
-    }
-    else
-    {
+    } else {
       mArrow->setPositions(
           Eigen::Vector3d(default_height, 0.0, default_height / 2.0),
           Eigen::Vector3d(default_width / 2.0, 0.0, default_height / 2.0));
@@ -104,8 +104,7 @@ public:
 
   void changeRestPosition(double delta)
   {
-    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i)
-    {
+    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i) {
       DegreeOfFreedom* dof = mPendulum->getDof(i);
       double q0 = dof->getRestPosition() + delta;
 
@@ -125,8 +124,7 @@ public:
 
   void changeStiffness(double delta)
   {
-    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i)
-    {
+    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i) {
       DegreeOfFreedom* dof = mPendulum->getDof(i);
       double stiffness = dof->getSpringStiffness() + delta;
       if (stiffness < 0.0)
@@ -137,8 +135,7 @@ public:
 
   void changeDamping(double delta)
   {
-    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i)
-    {
+    for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i) {
       DegreeOfFreedom* dof = mPendulum->getDof(i);
       double damping = dof->getDampingCoefficient() + delta;
       if (damping < 0.0)
@@ -171,8 +168,7 @@ public:
   /// Handle keyboard input
   void keyboard(unsigned char key, int x, int y) override
   {
-    switch (key)
-    {
+    switch (key) {
       case '-':
         changeDirection();
         break;
@@ -249,29 +245,25 @@ public:
   void timeStepping() override
   {
     // Reset all the shapes to be Blue
-    for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i)
-    {
+    for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i) {
       BodyNode* bn = mPendulum->getBodyNode(i);
 
       // If we have three visualization shapes, that means the arrow is
       // attached. We should remove it in case this body is no longer
       // experiencing a force
-      if (bn->getNumShapeNodesWith<VisualAspect>() == 3u)
-      {
-        assert(bn->getShapeNodeWith<VisualAspect>(2)->getShape() == mArrow);
+      if (bn->getNumShapeNodesWith<VisualAspect>() == 3u) {
+        DART_ASSERT(
+            bn->getShapeNodeWith<VisualAspect>(2)->getShape() == mArrow);
         bn->getShapeNodeWith<VisualAspect>(2)->remove();
       }
 
       bn->setColor(dart::Color::Blue());
     }
 
-    if (!mBodyForce)
-    {
+    if (!mBodyForce) {
       // Apply joint torques based on user input, and color the Joint shape red
-      for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i)
-      {
-        if (mForceCountDown[i] > 0)
-        {
+      for (std::size_t i = 0; i < mPendulum->getNumDofs(); ++i) {
+        if (mForceCountDown[i] > 0) {
           DegreeOfFreedom* dof = mPendulum->getDof(i);
           dof->setForce(mPositiveSign ? default_torque : -default_torque);
 
@@ -282,21 +274,16 @@ public:
           --mForceCountDown[i];
         }
       }
-    }
-    else
-    {
+    } else {
       // Apply body forces based on user input, and color the body shape red
-      for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i)
-      {
-        if (mForceCountDown[i] > 0)
-        {
+      for (std::size_t i = 0; i < mPendulum->getNumBodyNodes(); ++i) {
+        if (mForceCountDown[i] > 0) {
           BodyNode* bn = mPendulum->getBodyNode(i);
 
           Eigen::Vector3d force = default_force * Eigen::Vector3d::UnitX();
           Eigen::Vector3d location(
               -default_width / 2.0, 0.0, default_height / 2.0);
-          if (!mPositiveSign)
-          {
+          if (!mPositiveSign) {
             force = -force;
             location[0] = -location[0];
           }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/TranslationalJoint2D.hpp"
 
 namespace dart {
@@ -40,8 +41,7 @@ namespace detail {
 TranslationalJoint2DUniqueProperties::TranslationalJoint2DUniqueProperties(
     PlaneType planeType)
 {
-  switch (planeType)
-  {
+  switch (planeType) {
     case PlaneType::ARBITRARY:
     case PlaneType::XY:
       setXYPlane();
@@ -75,8 +75,7 @@ TranslationalJoint2DUniqueProperties::TranslationalJoint2DUniqueProperties(
 TranslationalJoint2DUniqueProperties::TranslationalJoint2DUniqueProperties(
     const TranslationalJoint2DUniqueProperties& other)
 {
-  switch (other.mPlaneType)
-  {
+  switch (other.mPlaneType) {
     case PlaneType::ARBITRARY:
       setArbitraryPlane(other.mTransAxes);
       break;
@@ -97,10 +96,8 @@ TranslationalJoint2DUniqueProperties&
 TranslationalJoint2DUniqueProperties::operator=(
     const TranslationalJoint2DUniqueProperties& other)
 {
-  if (this != &other)
-  {
-    switch (other.mPlaneType)
-    {
+  if (this != &other) {
+    switch (other.mPlaneType) {
       case PlaneType::ARBITRARY:
         setArbitraryPlane(other.mTransAxes);
         break;
@@ -155,7 +152,7 @@ void TranslationalJoint2DUniqueProperties::setArbitraryPlane(
 
   // Orthogonalize translational axes
   const double dotProduct = mTransAxes.col(0).dot(mTransAxes.col(1));
-  assert(std::abs(dotProduct) < 1.0 - 1e-6);
+  DART_ASSERT(std::abs(dotProduct) < 1.0 - 1e-6);
   if (std::abs(dotProduct) > 1e-6)
     mTransAxes.col(1)
         = (mTransAxes.col(1) - dotProduct * mTransAxes.col(0)).normalized();
@@ -176,7 +173,7 @@ void TranslationalJoint2DUniqueProperties::setArbitraryPlane(
 
   // Orthogonalize translational axes
   const double dotProduct = mTransAxes.col(0).dot(mTransAxes.col(1));
-  assert(std::abs(dotProduct) < 1.0 - 1e-6);
+  DART_ASSERT(std::abs(dotProduct) < 1.0 - 1e-6);
   if (std::abs(dotProduct) > 1e-6)
     mTransAxes.col(1)
         = (mTransAxes.col(1) - dotProduct * mTransAxes.col(0)).normalized();

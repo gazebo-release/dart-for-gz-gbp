@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,9 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
+#include "dart/common/Macros.hpp"
+
 #include <dart/gui/gui.hpp>
+
 #include <dart/utils/utils.hpp>
+
+#include <dart/dart.hpp>
 
 const double default_speed_increment = 0.5;
 
@@ -63,14 +67,12 @@ public:
     mKp = Eigen::MatrixXd::Identity(nDofs, nDofs);
     mKd = Eigen::MatrixXd::Identity(nDofs, nDofs);
 
-    for (std::size_t i = 0; i < 6; ++i)
-    {
+    for (std::size_t i = 0; i < 6; ++i) {
       mKp(i, i) = 0.0;
       mKd(i, i) = 0.0;
     }
 
-    for (std::size_t i = 6; i < biped->getNumDofs(); ++i)
-    {
+    for (std::size_t i = 6; i < biped->getNumDofs(); ++i) {
       mKp(i, i) = 1000;
       mKd(i, i) = 50;
     }
@@ -157,8 +159,7 @@ public:
   /// Handle keyboard input
   void keyboard(unsigned char key, int x, int y) override
   {
-    switch (key)
-    {
+    switch (key) {
       case ',':
         mForceCountDown = default_countdown;
         mPositiveSign = false;
@@ -192,8 +193,7 @@ public:
     mController->setWheelCommands();
 
     // Apply body forces based on user input, and color the body shape red
-    if (mForceCountDown > 0)
-    {
+    if (mForceCountDown > 0) {
       BodyNode* bn = mWorld->getSkeleton("biped")->getBodyNode("h_abdomen");
       bn->setColor(dart::Color::Red());
 
@@ -234,7 +234,7 @@ SkeletonPtr loadBiped()
 
   // Create the world with a skeleton
   WorldPtr world = SkelParser::readWorld("dart://sample/skel/biped.skel");
-  assert(world != nullptr);
+  DART_ASSERT(world != nullptr);
 
   SkeletonPtr biped = world->getSkeleton("biped");
 
@@ -248,7 +248,7 @@ void modifyBipedWithSkateboard(SkeletonPtr /*biped*/)
 }
 
 // Set the actuator type for four wheel joints to "VELOCITY"
-void setVelocityAccuators(SkeletonPtr /*biped*/)
+void setVelocityActuators(SkeletonPtr /*biped*/)
 {
   // Lesson 6
 }
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
   modifyBipedWithSkateboard(biped);
 
   // Lesson 6
-  setVelocityAccuators(biped);
+  setVelocityActuators(biped);
 
   // Lesson 7
   Eigen::VectorXd balancedPose = solveIK(biped);
@@ -308,8 +308,7 @@ int main(int argc, char* argv[])
   WorldPtr world = std::make_shared<World>();
   world->setGravity(Eigen::Vector3d(0.0, -9.81, 0.0));
 
-  if (dart::collision::CollisionDetector::getFactory()->canCreate("bullet"))
-  {
+  if (dart::collision::CollisionDetector::getFactory()->canCreate("bullet")) {
     world->getConstraintSolver()->setCollisionDetector(
         dart::collision::CollisionDetector::getFactory()->create("bullet"));
   }

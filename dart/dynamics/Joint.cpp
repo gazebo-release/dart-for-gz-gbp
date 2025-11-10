@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/dynamics/Joint.hpp"
 
-#include <string>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -71,12 +72,19 @@ JointProperties::JointProperties(
     mT_ParentBodyToJoint(_T_ParentBodyToJoint),
     mT_ChildBodyToJoint(_T_ChildBodyToJoint),
     mIsPositionLimitEnforced(_isPositionLimitEnforced),
-    mActuatorType(_actuatorType),
-    mMimicJoint(_mimicJoint),
-    mMimicMultiplier(_mimicMultiplier),
-    mMimicOffset(_mimicOffset)
+    mActuatorType(_actuatorType)
 {
-  // Do nothing
+  mMimicDofProps.resize(6);
+  // TODO: Dof 6, which is the max value at the moment, is used because
+  // JointProperties doesn't have the Dof information
+
+  for (auto i = 0u; i < mMimicDofProps.size(); ++i) {
+    auto& prop = mMimicDofProps[i];
+    prop.mReferenceJoint = _mimicJoint;
+    prop.mReferenceDofIndex = i;
+    prop.mMultiplier = _mimicMultiplier;
+    prop.mOffset = _mimicOffset;
+  }
 }
 
 } // namespace detail
@@ -119,10 +127,7 @@ void Joint::setAspectProperties(const AspectProperties& properties)
   setTransformFromChildBodyNode(properties.mT_ChildBodyToJoint);
   setLimitEnforcement(properties.mIsPositionLimitEnforced);
   setActuatorType(properties.mActuatorType);
-  setMimicJoint(
-      properties.mMimicJoint,
-      properties.mMimicMultiplier,
-      properties.mMimicOffset);
+  setMimicJointDofs(properties.mMimicDofProps);
 }
 
 //==============================================================================
@@ -159,8 +164,7 @@ Joint& Joint::operator=(const Joint& _otherJoint)
 //==============================================================================
 const std::string& Joint::setName(const std::string& _name, bool _renameDofs)
 {
-  if (mAspectProperties.mName == _name)
-  {
+  if (mAspectProperties.mName == _name) {
     if (_renameDofs)
       updateDegreeOfFreedomNames();
     return mAspectProperties.mName;
@@ -168,15 +172,12 @@ const std::string& Joint::setName(const std::string& _name, bool _renameDofs)
 
   const SkeletonPtr& skel
       = mChildBodyNode ? mChildBodyNode->getSkeleton() : nullptr;
-  if (skel)
-  {
+  if (skel) {
     skel->mNameMgrForJoints.removeName(mAspectProperties.mName);
     mAspectProperties.mName = _name;
 
     skel->addEntryToJointNameMgr(this, _renameDofs);
-  }
-  else
-  {
+  } else {
     mAspectProperties.mName = _name;
 
     if (_renameDofs)
@@ -206,36 +207,73 @@ Joint::ActuatorType Joint::getActuatorType() const
 
 //==============================================================================
 void Joint::setMimicJoint(
-    const Joint* _mimicJoint, double _mimicMultiplier, double _mimicOffset)
+    const Joint* referenceJoint, double mimicMultiplier, double mimicOffset)
 {
-  mAspectProperties.mMimicJoint = _mimicJoint;
-  mAspectProperties.mMimicMultiplier = _mimicMultiplier;
-  mAspectProperties.mMimicOffset = _mimicOffset;
+  std::size_t numDofs = getNumDofs();
+  mAspectProperties.mMimicDofProps.resize(numDofs);
+
+  for (std::size_t i = 0; i < numDofs; ++i) {
+    MimicDofProperties prop;
+    prop.mReferenceJoint = referenceJoint;
+    prop.mReferenceDofIndex = i;
+    prop.mMultiplier = mimicMultiplier;
+    prop.mOffset = mimicOffset;
+    setMimicJointDof(i, prop);
+  }
 }
 
 //==============================================================================
-const Joint* Joint::getMimicJoint() const
+void Joint::setMimicJointDof(
+    std::size_t index, const MimicDofProperties& mimicProp)
 {
-  return mAspectProperties.mMimicJoint;
+  mAspectProperties.mMimicDofProps[index] = mimicProp;
 }
 
 //==============================================================================
-double Joint::getMimicMultiplier() const
+void Joint::setMimicJointDofs(const std::vector<MimicDofProperties>& mimicProps)
 {
-  return mAspectProperties.mMimicMultiplier;
+  mAspectProperties.mMimicDofProps = mimicProps;
 }
 
 //==============================================================================
-double Joint::getMimicOffset() const
+void Joint::setMimicJointDofs(
+    const std::map<std::size_t, MimicDofProperties>& mimicPropMap)
 {
-  return mAspectProperties.mMimicOffset;
+  for (const auto& pair : mimicPropMap) {
+    const auto& index = pair.first;
+    const auto& prop = pair.second;
+    setMimicJointDof(index, prop);
+  }
+}
+
+//==============================================================================
+const Joint* Joint::getMimicJoint(std::size_t index) const
+{
+  return mAspectProperties.mMimicDofProps[index].mReferenceJoint;
+}
+
+//==============================================================================
+double Joint::getMimicMultiplier(std::size_t index) const
+{
+  return mAspectProperties.mMimicDofProps[index].mMultiplier;
+}
+
+//==============================================================================
+double Joint::getMimicOffset(std::size_t index) const
+{
+  return mAspectProperties.mMimicDofProps[index].mOffset;
+}
+
+//==============================================================================
+const std::vector<MimicDofProperties>& Joint::getMimicDofProperties() const
+{
+  return mAspectProperties.mMimicDofProps;
 }
 
 //==============================================================================
 bool Joint::isKinematic() const
 {
-  switch (mAspectProperties.mActuatorType)
-  {
+  switch (mAspectProperties.mActuatorType) {
     case FORCE:
     case PASSIVE:
     case SERVO:
@@ -342,8 +380,7 @@ const math::Jacobian Joint::getLocalJacobianTimeDeriv() const
 //==============================================================================
 const Eigen::Isometry3d& Joint::getRelativeTransform() const
 {
-  if (mNeedTransformUpdate)
-  {
+  if (mNeedTransformUpdate) {
     updateRelativeTransform();
     mNeedTransformUpdate = false;
   }
@@ -354,8 +391,7 @@ const Eigen::Isometry3d& Joint::getRelativeTransform() const
 //==============================================================================
 const Eigen::Vector6d& Joint::getRelativeSpatialVelocity() const
 {
-  if (mNeedSpatialVelocityUpdate)
-  {
+  if (mNeedSpatialVelocityUpdate) {
     updateRelativeSpatialVelocity();
     mNeedSpatialVelocityUpdate = false;
   }
@@ -366,8 +402,7 @@ const Eigen::Vector6d& Joint::getRelativeSpatialVelocity() const
 //==============================================================================
 const Eigen::Vector6d& Joint::getRelativeSpatialAcceleration() const
 {
-  if (mNeedSpatialAccelerationUpdate)
-  {
+  if (mNeedSpatialAccelerationUpdate) {
     updateRelativeSpatialAcceleration();
     mNeedSpatialAccelerationUpdate = false;
   }
@@ -378,8 +413,7 @@ const Eigen::Vector6d& Joint::getRelativeSpatialAcceleration() const
 //==============================================================================
 const Eigen::Vector6d& Joint::getRelativePrimaryAcceleration() const
 {
-  if (mNeedPrimaryAccelerationUpdate)
-  {
+  if (mNeedPrimaryAccelerationUpdate) {
     updateRelativePrimaryAcceleration();
     mNeedPrimaryAccelerationUpdate = false;
   }
@@ -392,34 +426,26 @@ Eigen::Vector6d Joint::getWrenchToChildBodyNode(
     const Frame* withRespectTo) const
 {
   const BodyNode* childBodyNode = getChildBodyNode();
-  if (!childBodyNode)
-  {
+  if (!childBodyNode) {
     return Eigen::Vector6d::Zero();
   }
 
   const Eigen::Vector6d& F2 = childBodyNode->getBodyForce();
   const BodyNode* parentBodyNode = getParentBodyNode();
 
-  if (withRespectTo == nullptr)
-  {
+  if (withRespectTo == nullptr) {
     // (Default) Wrench applying to the child body node, where the reference
     // frame is the joint frame
     return math::dAdT(getTransformFromChildBodyNode(), -F2);
-  }
-  else if (withRespectTo == childBodyNode)
-  {
+  } else if (withRespectTo == childBodyNode) {
     // Wrench applying to the child body node, where the reference frame is the
     // child body frame
     return -F2;
-  }
-  else if (withRespectTo == parentBodyNode)
-  {
+  } else if (withRespectTo == parentBodyNode) {
     // Wrench applying to the child body node, where the reference frame is the
     // parent body frame
     return math::dAdInvT(getRelativeTransform(), -F2);
-  }
-  else
-  {
+  } else {
     // Wrench applying to the child body node, where the reference frame is an
     // arbitrary frame
     return math::dAdT(withRespectTo->getTransform(childBodyNode), -F2);
@@ -479,22 +505,17 @@ std::size_t Joint::getTreeIndex() const
 bool Joint::checkSanity(bool _printWarnings) const
 {
   bool sane = true;
-  for (std::size_t i = 0; i < getNumDofs(); ++i)
-  {
+  for (std::size_t i = 0; i < getNumDofs(); ++i) {
     if (getInitialPosition(i) < getPositionLowerLimit(i)
-        || getPositionUpperLimit(i) < getInitialPosition(i))
-    {
-      if (_printWarnings)
-      {
+        || getPositionUpperLimit(i) < getInitialPosition(i)) {
+      if (_printWarnings) {
         dtwarn << "[Joint::checkSanity] Initial position of index " << i << " ["
                << getDofName(i) << "] in Joint [" << getName() << "] is "
                << "outside of its position limits\n"
                << " -- Initial Position: " << getInitialPosition(i) << "\n"
                << " -- Limits: [" << getPositionLowerLimit(i) << ", "
                << getPositionUpperLimit(i) << "]\n";
-      }
-      else
-      {
+      } else {
         return false;
       }
 
@@ -502,19 +523,15 @@ bool Joint::checkSanity(bool _printWarnings) const
     }
 
     if (getInitialVelocity(i) < getVelocityLowerLimit(i)
-        || getVelocityUpperLimit(i) < getInitialVelocity(i))
-    {
-      if (_printWarnings)
-      {
+        || getVelocityUpperLimit(i) < getInitialVelocity(i)) {
+      if (_printWarnings) {
         dtwarn << "[Joint::checkSanity] Initial velocity of index " << i << " ["
                << getDofName(i) << "] is Joint [" << getName() << "] is "
                << "outside of its velocity limits\n"
                << " -- Initial Velocity: " << getInitialVelocity(i) << "\n"
                << " -- Limits: [" << getVelocityLowerLimit(i) << ", "
                << getVelocityUpperLimit(i) << "]\n";
-      }
-      else
-      {
+      } else {
         return false;
       }
 
@@ -534,7 +551,7 @@ double Joint::getPotentialEnergy() const
 //==============================================================================
 void Joint::setTransformFromParentBodyNode(const Eigen::Isometry3d& _T)
 {
-  assert(math::verifyTransform(_T));
+  DART_ASSERT(math::verifyTransform(_T));
   mAspectProperties.mT_ParentBodyToJoint = _T;
   notifyPositionUpdated();
 }
@@ -542,7 +559,7 @@ void Joint::setTransformFromParentBodyNode(const Eigen::Isometry3d& _T)
 //==============================================================================
 void Joint::setTransformFromChildBodyNode(const Eigen::Isometry3d& _T)
 {
-  assert(math::verifyTransform(_T));
+  DART_ASSERT(math::verifyTransform(_T));
   mAspectProperties.mT_ChildBodyToJoint = _T;
   updateRelativeJacobian();
   notifyPositionUpdated();
@@ -649,7 +666,7 @@ void Joint::updateArticulatedInertia() const
 //                                + getGenCoord(i)->getVel() * _timeStep
 //                                - mRestPosition[i]);
 //  }
-//  assert(!math::isNan(springForce));
+//  DART_ASSERT(!math::isNan(springForce));
 //  return springForce;
 //}
 
@@ -662,8 +679,7 @@ void Joint::notifyPositionUpdate()
 //==============================================================================
 void Joint::notifyPositionUpdated()
 {
-  if (mChildBodyNode)
-  {
+  if (mChildBodyNode) {
     mChildBodyNode->dirtyTransform();
     mChildBodyNode->dirtyJacobian();
     mChildBodyNode->dirtyJacobianDeriv();
@@ -678,8 +694,7 @@ void Joint::notifyPositionUpdated()
   mNeedSpatialAccelerationUpdate = true;
 
   SkeletonPtr skel = getSkeleton();
-  if (skel)
-  {
+  if (skel) {
     std::size_t tree = mChildBodyNode->mTreeIndex;
     skel->dirtyArticulatedInertia(tree);
     skel->mTreeCache[tree].mDirty.mExternalForces = true;
@@ -696,8 +711,7 @@ void Joint::notifyVelocityUpdate()
 //==============================================================================
 void Joint::notifyVelocityUpdated()
 {
-  if (mChildBodyNode)
-  {
+  if (mChildBodyNode) {
     mChildBodyNode->dirtyVelocity();
     mChildBodyNode->dirtyJacobianDeriv();
   }

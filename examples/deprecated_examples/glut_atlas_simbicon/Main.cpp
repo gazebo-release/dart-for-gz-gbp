@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,14 +30,15 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
+#include "Controller.hpp"
+#include "MyWindow.hpp"
 
-#include <dart/dart.hpp>
 #include <dart/utils/urdf/urdf.hpp>
 #include <dart/utils/utils.hpp>
 
-#include "Controller.hpp"
-#include "MyWindow.hpp"
+#include <dart/dart.hpp>
+
+#include <iostream>
 
 using namespace std;
 using namespace Eigen;

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,11 @@
 
 #include "dart/collision/ode/OdeCollisionDetector.hpp"
 
-#include <ode/ode.h>
-
 #include "dart/collision/CollisionFilter.hpp"
 #include "dart/collision/ode/OdeCollisionGroup.hpp"
 #include "dart/collision/ode/OdeCollisionObject.hpp"
 #include "dart/collision/ode/OdeTypes.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BoxShape.hpp"
 #include "dart/dynamics/CapsuleShape.hpp"
 #include "dart/dynamics/ConeShape.hpp"
@@ -48,6 +47,8 @@
 #include "dart/dynamics/PlaneShape.hpp"
 #include "dart/dynamics/SoftMeshShape.hpp"
 #include "dart/dynamics/SphereShape.hpp"
+
+#include <ode/ode.h>
 
 namespace dart {
 namespace collision {
@@ -217,13 +218,13 @@ OdeCollisionDetector::OdeCollisionDetector()
 {
   // Initialize ODE. dInitODE is deprecated.
   const auto initialized = dInitODE2(0);
-  assert(initialized);
+  DART_ASSERT(initialized);
   DART_UNUSED(initialized);
 
   dAllocateODEDataForThread(dAllocateMaskAll);
 
   mWorldId = dWorldCreate();
-  assert(mWorldId);
+  DART_ASSERT(mWorldId);
 }
 
 //==============================================================================
@@ -255,8 +256,8 @@ namespace {
 //==============================================================================
 void CollisionCallback(void* data, dGeomID o1, dGeomID o2)
 {
-  assert(!dGeomIsSpace(o1));
-  assert(!dGeomIsSpace(o2));
+  DART_ASSERT(!dGeomIsSpace(o1));
+  DART_ASSERT(!dGeomIsSpace(o2));
 
   auto cdData = static_cast<OdeCollisionCallbackData*>(data);
 
@@ -273,8 +274,8 @@ void CollisionCallback(void* data, dGeomID o1, dGeomID o2)
 
   auto collObj1 = static_cast<OdeCollisionObject*>(geomData1);
   auto collObj2 = static_cast<OdeCollisionObject*>(geomData2);
-  assert(collObj1);
-  assert(collObj2);
+  DART_ASSERT(collObj1);
+  DART_ASSERT(collObj2);
 
   if (filter && filter->ignoresCollision(collObj1, collObj2))
     return;
@@ -303,15 +304,13 @@ void reportContacts(
 
   // For binary check, return after adding the first contact point to the result
   // without the checkings of repeatidity and co-linearity.
-  if (1u == option.maxNumContacts)
-  {
+  if (1u == option.maxNumContacts) {
     result.addContact(convertContact(contactGeoms[0], b1, b2, option));
 
     return;
   }
 
-  for (auto i = 0; i < numContacts; ++i)
-  {
+  for (auto i = 0; i < numContacts; ++i) {
     result.addContact(convertContact(contactGeoms[i], b1, b2, option));
 
     if (result.getNumContacts() >= option.maxNumContacts)
@@ -331,8 +330,7 @@ Contact convertContact(
   contact.collisionObject1 = b1;
   contact.collisionObject2 = b2;
 
-  if (option.enableContact)
-  {
+  if (option.enableContact) {
     contact.point = OdeTypes::convertVector3(odeContact.pos);
     contact.normal = OdeTypes::convertVector3(odeContact.normal);
     contact.penetrationDepth = odeContact.depth;

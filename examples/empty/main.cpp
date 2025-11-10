@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,8 +30,9 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
 #include <dart/gui/osg/osg.hpp>
+
+#include <dart/dart.hpp>
 
 //==============================================================================
 class CustomWorldNode : public dart::gui::osg::RealTimeWorldNode
@@ -84,48 +85,31 @@ public:
   virtual bool handle(
       const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&) override
   {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
-    {
-      if (ea.getKey() == 'q')
-      {
+    if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
+      if (ea.getKey() == 'q') {
         std::cout << "Lowercase q pressed" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == 'Q')
-      {
+      } else if (ea.getKey() == 'Q') {
         std::cout << "Capital Q pressed" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Left)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Left) {
         std::cout << "Left arrow key pressed" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Right)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Right) {
         std::cout << "Right arrow key pressed" << std::endl;
         return true;
       }
-    }
-    else if (ea.getEventType() == osgGA::GUIEventAdapter::KEYUP)
-    {
-      if (ea.getKey() == 'q')
-      {
+    } else if (ea.getEventType() == osgGA::GUIEventAdapter::KEYUP) {
+      if (ea.getKey() == 'q') {
         std::cout << "Lowercase q released" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == 'Q')
-      {
+      } else if (ea.getKey() == 'Q') {
         std::cout << "Capital Q released" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Left)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Left) {
         std::cout << "Left arrow key released" << std::endl;
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Right)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Right) {
         std::cout << "Right arrow key released" << std::endl;
         return true;
       }

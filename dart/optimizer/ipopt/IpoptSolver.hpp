@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_OPTIMIZER_IPOPT_IPOPTSOLVER_HPP_
 #define DART_OPTIMIZER_IPOPT_IPOPTSOLVER_HPP_
 
-#include <memory>
+#include <dart/optimizer/ipopt/BackwardCompatibility.hpp>
 
-#include "dart/optimizer/ipopt/BackwardCompatibility.hpp"
+#include <memory>
 #if IPOPT_VERSION_GE(3, 13, 0)
   #include <IpIpoptApplication.hpp>
   #include <IpTNLP.hpp>
@@ -44,7 +44,7 @@
   #include <coin/IpTNLP.hpp>
 #endif
 
-#include "dart/optimizer/Solver.hpp"
+#include <dart/optimizer/Solver.hpp>
 
 namespace dart {
 namespace optimizer {

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/dynamics/IkFast.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/dynamics/RevoluteJoint.hpp"
@@ -92,9 +93,8 @@ std::vector<bool> getFreeJointFlags(
 {
   std::vector<bool> flags(numParams, false);
 
-  for (int i = 0; i < numFreeParams; ++i)
-  {
-    assert(freeParams[i] < numParams);
+  for (int i = 0; i < numFreeParams; ++i) {
+    DART_ASSERT(freeParams[i] < numParams);
     flags[freeParams[i]] = true;
   }
 
@@ -125,10 +125,9 @@ void convertIkSolution(
   bool limitViolated = false;
 
   auto index = 0u;
-  assert(solutionValues.size());
+  DART_ASSERT(solutionValues.size());
   solution.mConfig.resize(dofIndices.size());
-  for (auto i = 0u; i < solutionValues.size(); ++i)
-  {
+  for (auto i = 0u; i < solutionValues.size(); ++i) {
     const auto isFreeJoint = freeJointFlags[i];
     if (isFreeJoint)
       continue;
@@ -142,28 +141,22 @@ void convertIkSolution(
     const auto lb = dof->getPositionLowerLimit();
     const auto ub = dof->getPositionUpperLimit();
 
-    if (joint->getType() == RevoluteJoint::getStaticType())
-    {
+    if (joint->getType() == RevoluteJoint::getStaticType()) {
       // TODO(JS): Apply this to any DegreeOfFreedom whose configuration space
       // is SO(2).
 
       const auto currentValue = dof->getPosition();
-      if (!wrapCyclicSolution(currentValue, lb, ub, solutionValue))
-      {
+      if (!wrapCyclicSolution(currentValue, lb, ub, solutionValue)) {
         limitViolated = true;
         break;
       }
-    }
-    else
-    {
-      if (solutionValues[i] < lb)
-      {
+    } else {
+      if (solutionValues[i] < lb) {
         limitViolated = true;
         break;
       }
 
-      if (solutionValues[i] > ub)
-      {
+      if (solutionValues[i] > ub) {
         limitViolated = true;
         break;
       }
@@ -192,8 +185,7 @@ void convertIkSolutions(
 
   solutions.resize(numSolutions);
 
-  for (auto i = 0u; i < numSolutions; ++i)
-  {
+  for (auto i = 0u; i < numSolutions; ++i) {
     const auto& ikfastSolution = ikfastSolutions.GetSolution(i);
     convertIkSolution(
         ikfast,
@@ -216,21 +208,17 @@ bool checkDofMapValidity(
   // in dependentDofs. Returns false otherwise.
   const auto& dependentDofs = ik->getNode()->getDependentDofs();
 
-  for (const auto& dof : dofMap)
-  {
+  for (const auto& dof : dofMap) {
     bool found = false;
-    for (auto dependentDof : dependentDofs)
-    {
+    for (auto dependentDof : dependentDofs) {
       const auto dependentDofIndex = dependentDof->getIndexInSkeleton();
-      if (dof == dependentDofIndex)
-      {
+      if (dof == dependentDofIndex) {
         found = true;
         break;
       }
     }
 
-    if (!found)
-    {
+    if (!found) {
       dterr << "[IkFast::configure] Failed to configure. An element of the "
             << "given " << dofMapName << " '" << dof
             << "' is not a dependent dofs of Node '" << ik->getNode()->getName()
@@ -262,16 +250,14 @@ IkFast::IkFast(
 //==============================================================================
 auto IkFast::getDofs() const -> const std::vector<std::size_t>&
 {
-  if (!mConfigured)
-  {
+  if (!mConfigured) {
     configure();
 
-    if (!mConfigured)
-    {
+    if (!mConfigured) {
       dtwarn << "[IkFast::getDofs] This analytical IK was not able "
              << "to configure properly, so it will not be able to compute "
              << "solutions. Returning an empty list of dofs.\n";
-      assert(mDofs.empty());
+      DART_ASSERT(mDofs.empty());
     }
   }
 
@@ -367,16 +353,14 @@ void IkFast::configure() const
   const auto ikFastNumFreeJoints = getNumFreeParameters();
   const auto ikFastNumNonFreeJoints = ikFastNumJoints - ikFastNumFreeJoints;
 
-  if (static_cast<std::size_t>(ikFastNumNonFreeJoints) != mDofs.size())
-  {
+  if (static_cast<std::size_t>(ikFastNumNonFreeJoints) != mDofs.size()) {
     dterr << "[IkFast::configure] Failed to configure. Received a joint map of "
           << "size '" << mDofs.size() << "' but the actual dofs IkFast is '"
           << ikFastNumNonFreeJoints << "'.\n";
     return;
   }
 
-  if (static_cast<std::size_t>(ikFastNumFreeJoints) != mFreeDofs.size())
-  {
+  if (static_cast<std::size_t>(ikFastNumFreeJoints) != mFreeDofs.size()) {
     dterr << "[IkFast::configure] Failed to configure. Received a free joint "
           << "map of size '" << mDofs.size()
           << "' but the actual dofs IkFast is '" << ikFastNumFreeJoints
@@ -401,12 +385,10 @@ auto IkFast::computeSolutions(const Eigen::Isometry3d& desiredBodyTf)
 {
   mSolutions.clear();
 
-  if (!mConfigured)
-  {
+  if (!mConfigured) {
     configure();
 
-    if (!mConfigured)
-    {
+    if (!mConfigured) {
       dtwarn << "[IkFast::computeSolutions] This analytical IK was not able "
              << "to configure properly, so it will not be able to compute "
              << "solutions. Returning an empty list of solutions.\n";
@@ -429,8 +411,7 @@ auto IkFast::computeSolutions(const Eigen::Isometry3d& desiredBodyTf)
       mFreeParams.data(),
       solutions);
 
-  if (success)
-  {
+  if (success) {
     convertIkSolutions(
         this,
         getNumJoints(),
@@ -448,8 +429,7 @@ Eigen::Isometry3d IkFast::computeFk(const Eigen::VectorXd& parameters)
 {
   const std::size_t ikFastNumNonFreeJoints
       = getNumJoints2() - getNumFreeParameters2();
-  if (static_cast<std::size_t>(parameters.size()) != ikFastNumNonFreeJoints)
-  {
+  if (static_cast<std::size_t>(parameters.size()) != ikFastNumNonFreeJoints) {
     dtwarn << "[IkFast::computeFk] The dimension of given joint positions "
            << "doesn't agree with the number of joints of this IkFast solver. "
            << "Returning identity.\n";
@@ -474,68 +454,50 @@ bool wrapCyclicSolution(
 
   const auto pi2 = math::constantsd::two_pi();
 
-  if (currentValue < lb)
-  {
+  if (currentValue < lb) {
     const auto diff_lb = lb - solutionValue;
     const auto lb_ceil = solutionValue + std::ceil(diff_lb / pi2) * pi2;
-    assert(lb <= lb_ceil);
-    if (lb_ceil <= ub)
-    {
+    DART_ASSERT(lb <= lb_ceil);
+    if (lb_ceil <= ub) {
       solutionValue = lb_ceil;
-    }
-    else
-    {
+    } else {
       return false;
     }
-  }
-  else if (ub < currentValue)
-  {
+  } else if (ub < currentValue) {
     const auto diff_ub = ub - solutionValue;
     const auto ub_floor = solutionValue + std::floor(diff_ub / pi2) * pi2;
-    assert(ub_floor <= ub);
-    if (lb <= ub_floor)
-    {
+    DART_ASSERT(ub_floor <= ub);
+    if (lb <= ub_floor) {
       solutionValue = ub_floor;
-    }
-    else
-    {
+    } else {
       return false;
     }
-  }
-  else
-  {
+  } else {
     const auto diff_curr = currentValue - solutionValue;
     const auto curr_floor = solutionValue + std::floor(diff_curr / pi2) * pi2;
     const auto curr_ceil = solutionValue + std::ceil(diff_curr / pi2) * pi2;
 
     bool found = false;
 
-    if (lb <= curr_floor)
-    {
+    if (lb <= curr_floor) {
       solutionValue = curr_floor;
       found = true;
     }
 
-    if (curr_ceil <= ub)
-    {
-      if (found)
-      {
+    if (curr_ceil <= ub) {
+      if (found) {
         if (std::abs(curr_floor - currentValue)
-            > std::abs(curr_ceil - currentValue))
-        {
+            > std::abs(curr_ceil - currentValue)) {
           solutionValue = curr_ceil;
           found = true;
         }
-      }
-      else
-      {
+      } else {
         solutionValue = curr_ceil;
         found = true;
       }
     }
 
-    if (!found)
-    {
+    if (!found) {
       return false;
     }
   }

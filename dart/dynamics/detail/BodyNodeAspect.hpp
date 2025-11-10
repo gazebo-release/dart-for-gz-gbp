@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,12 @@
 #ifndef DART_DYNAMICS_DETAIL_BODYNODEASPECT_HPP_
 #define DART_DYNAMICS_DETAIL_BODYNODEASPECT_HPP_
 
-#include "dart/common/EmbeddedAspect.hpp"
-#include "dart/common/ProxyAspect.hpp"
-#include "dart/dynamics/Entity.hpp"
-#include "dart/dynamics/Inertia.hpp"
-#include "dart/dynamics/Node.hpp"
+#include <dart/dynamics/Entity.hpp>
+#include <dart/dynamics/Inertia.hpp>
+#include <dart/dynamics/Node.hpp>
+
+#include <dart/common/EmbeddedAspect.hpp>
+#include <dart/common/ProxyAspect.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -115,16 +116,16 @@ struct BodyNodeAspectProperties
 
 //==============================================================================
 using NodeTypeStateVector
-    = common::CloneableVector<std::unique_ptr<Node::State> >;
+    = common::CloneableVector<std::unique_ptr<Node::State>>;
 using NodeStateMap
-    = std::map<std::type_index, std::unique_ptr<NodeTypeStateVector> >;
+    = std::map<std::type_index, std::unique_ptr<NodeTypeStateVector>>;
 using AllNodeStates = common::CloneableMap<NodeStateMap>;
 
 //==============================================================================
 using NodeTypePropertiesVector
-    = common::CloneableVector<std::unique_ptr<Node::Properties> >;
+    = common::CloneableVector<std::unique_ptr<Node::Properties>>;
 using NodePropertiesMap
-    = std::map<std::type_index, std::unique_ptr<NodeTypePropertiesVector> >;
+    = std::map<std::type_index, std::unique_ptr<NodeTypePropertiesVector>>;
 using AllNodeProperties = common::CloneableMap<NodePropertiesMap>;
 
 //==============================================================================
@@ -167,7 +168,7 @@ using BodyNodeCompositeBase = common::EmbedStateAndPropertiesOnTopOf<
     BodyNode,
     BodyNodeState,
     BodyNodeAspectProperties,
-    common::RequiresAspect<NodeVectorProxyAspect> >;
+    common::RequiresAspect<NodeVectorProxyAspect>>;
 
 } // namespace detail
 } // namespace dynamics

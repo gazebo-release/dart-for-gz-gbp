@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/dynamics/Chain.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/FreeJoint.hpp"
 
 namespace dart {
@@ -65,17 +66,14 @@ Linkage::Criteria Chain::Criteria::convert() const
   target.mChain = true;
   target.mPolicy = Linkage::Criteria::INCLUDE;
 
-  if (!mIncludeUpstreamParentJoint)
-  {
+  if (!mIncludeUpstreamParentJoint) {
     if (target.mNode.lock()
-        && target.mNode.lock()->descendsFrom(criteria.mStart.mNode.lock()))
-    {
+        && target.mNode.lock()->descendsFrom(criteria.mStart.mNode.lock())) {
       criteria.mStart.mPolicy = Linkage::Criteria::EXCLUDE;
     }
 
     if (criteria.mStart.mNode.lock()
-        && criteria.mStart.mNode.lock()->descendsFrom(target.mNode.lock()))
-    {
+        && criteria.mStart.mNode.lock()->descendsFrom(target.mNode.lock())) {
       target.mPolicy = Linkage::Criteria::EXCLUDE;
     }
   }
@@ -89,16 +87,14 @@ Linkage::Criteria Chain::Criteria::convert() const
 Chain::Criteria Chain::Criteria::convert(const Linkage::Criteria& criteria)
 {
   BodyNodePtr startBodyNode = criteria.mStart.mNode.lock();
-  if (!startBodyNode)
-  {
+  if (!startBodyNode) {
     dtwarn << "[Chain::Criteria::convert] Failed in conversion because the "
            << "start node of the input criteria is not valid anymore. Using "
            << "the returning Criteria will lead to creating an empty Chain.\n";
     return Chain::Criteria(nullptr, nullptr);
   }
 
-  if (criteria.mTargets.size() != 1u)
-  {
+  if (criteria.mTargets.size() != 1u) {
     dtwarn << "[Chain::Criteria::convert] Failed in conversion because the "
            << "input criteria is not for Chain. The number of targets should "
            << "be one while the input is " << criteria.mTargets.size() << ". "
@@ -108,8 +104,7 @@ Chain::Criteria Chain::Criteria::convert(const Linkage::Criteria& criteria)
   }
   const Linkage::Criteria::Target& target = criteria.mTargets[0];
   BodyNodePtr targetBodyNode = target.mNode.lock();
-  if (!targetBodyNode)
-  {
+  if (!targetBodyNode) {
     dtwarn << "[Chain::Criteria::convert] Failed in conversion because the "
            << "end node of the input criteria is not valid anymore. Using the "
            << "returning Criteria will lead to creating an empty Chain.\n";
@@ -173,8 +168,7 @@ ChainPtr Chain::cloneChain(const std::string& cloneName) const
 {
   // Clone the skeleton (assuming one skeleton is involved)
   BodyNodePtr bodyNode = mCriteria.mStart.mNode.lock();
-  if (!bodyNode)
-  {
+  if (!bodyNode) {
     dtwarn << "[Chain::cloneMetaSkeleton] Failed to clone because the "
            << "start node of the criteria in this Chain is not valid anymore. "
            << "Returning nullptr.\n";
@@ -184,8 +178,8 @@ ChainPtr Chain::cloneChain(const std::string& cloneName) const
 
   // Create a Criteria
   Criteria newCriteria = Criteria::convert(mCriteria);
-  assert(newCriteria.mStart.lock());
-  assert(newCriteria.mTarget.lock());
+  DART_ASSERT(newCriteria.mStart.lock());
+  DART_ASSERT(newCriteria.mTarget.lock());
   newCriteria.mStart
       = skelClone->getBodyNode(newCriteria.mStart.lock()->getName());
   newCriteria.mTarget
@@ -211,8 +205,7 @@ bool Chain::isStillChain() const
 
   // Make sure there are no Branches and no parent FreeJoints on the BodyNodes
   // on the inside of the chain
-  for (std::size_t i = 1; i < mBodyNodes.size() - 1; ++i)
-  {
+  for (std::size_t i = 1; i < mBodyNodes.size() - 1; ++i) {
     if (mBodyNodes[i]->getNumChildBodyNodes() > 1)
       return false;
 
@@ -222,8 +215,7 @@ bool Chain::isStillChain() const
 
   // Make sure there is not a FreeJoint at the final BodyNode (which was not
   // tested above)
-  if (mBodyNodes.size() > 1)
-  {
+  if (mBodyNodes.size() > 1) {
     if (dynamic_cast<FreeJoint*>(mBodyNodes.back()->getParentJoint()))
       return false;
   }

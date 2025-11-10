@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -42,14 +42,15 @@
   #include <sys/stat.h>
   #include <sys/types.h>
 #endif
-#include <cstdio>
-#include <iostream>
-#include <vector>
-
 #include "dart/common/Console.hpp"
 #include "dart/gui/GLFuncs.hpp"
 #include "dart/gui/OpenGLRenderInterface.hpp"
 #include "dart/gui/glut/LoadGlut.hpp"
+
+#include <iostream>
+#include <vector>
+
+#include <cstdio>
 
 namespace dart {
 namespace gui {
@@ -193,8 +194,7 @@ bool Window::screenshot()
     mkdir(directory, 0777);
 #endif
 
-  if (!S_ISDIR(buff.st_mode))
-  {
+  if (!S_ISDIR(buff.st_mode)) {
     dtwarn << "[Window::screenshot] 'frames' is not a directory, "
            << "cannot write a screenshot\n";
     return false;
@@ -226,8 +226,7 @@ bool Window::screenshot()
   glReadPixels(0, 0, tw, th, GL_RGBA, GL_UNSIGNED_BYTE, &mScreenshotTemp[0]);
 
   // reverse temp2 temp1
-  for (int row = 0; row < th; row++)
-  {
+  for (int row = 0; row < th; row++) {
     memcpy(
         &mScreenshotTemp2[row * tw * 4],
         &mScreenshotTemp[(th - row - 1) * tw * 4],
@@ -237,14 +236,11 @@ bool Window::screenshot()
   unsigned result = lodepng::encode(fileName, mScreenshotTemp2, tw, th);
 
   // if there's an error, display it
-  if (result)
-  {
+  if (result) {
     std::cout << "lodepng error " << result << ": "
               << lodepng_error_text(result) << std::endl;
     return false;
-  }
-  else
-  {
+  } else {
     std::cout << "wrote screenshot " << fileName << "\n";
     return true;
   }
@@ -253,10 +249,8 @@ bool Window::screenshot()
 inline Window* Window::current()
 {
   int id = glutGetWindow();
-  for (unsigned int i = 0; i < mWinIDs.size(); i++)
-  {
-    if (mWinIDs.at(i) == id)
-    {
+  for (unsigned int i = 0; i < mWinIDs.size(); i++) {
+    if (mWinIDs.at(i) == id) {
       return mWindows.at(i);
     }
   }

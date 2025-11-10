@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,15 +33,17 @@
 #ifndef DART_CONSTRAINT_CONSTRAINTSOVER_HPP_
 #define DART_CONSTRAINT_CONSTRAINTSOVER_HPP_
 
-#include <vector>
+#include <dart/constraint/ConstrainedGroup.hpp>
+#include <dart/constraint/ConstraintBase.hpp>
+#include <dart/constraint/SmartPointer.hpp>
+
+#include <dart/collision/CollisionDetector.hpp>
+
+#include <dart/common/Deprecated.hpp>
 
 #include <Eigen/Dense>
 
-#include "dart/collision/CollisionDetector.hpp"
-#include "dart/common/Deprecated.hpp"
-#include "dart/constraint/ConstrainedGroup.hpp"
-#include "dart/constraint/ConstraintBase.hpp"
-#include "dart/constraint/SmartPointer.hpp"
+#include <vector>
 
 namespace dart {
 
@@ -318,6 +320,6 @@ protected:
 } // namespace constraint
 } // namespace dart
 
-#include "dart/constraint/detail/ConstraintSolver-impl.hpp"
+#include <dart/constraint/detail/ConstraintSolver-impl.hpp>
 
 #endif // DART_CONSTRAINT_CONSTRAINTSOVER_HPP_

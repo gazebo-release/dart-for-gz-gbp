@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,11 @@
 #ifndef DART_MATH_DETAIL_GEOMETRY_IMPL_HPP_
 #define DART_MATH_DETAIL_GEOMETRY_IMPL_HPP_
 
-#include <unordered_map>
+#include "dart/external/convhull_3d/safe_convhull_3d.h"
 
-#include "dart/external/convhull_3d/convhull_3d.h"
-#include "dart/math/Geometry.hpp"
+#include <dart/math/Geometry.hpp>
+
+#include <unordered_map>
 
 namespace dart {
 namespace math {
@@ -56,18 +57,15 @@ discardUnusedVertices(
   auto indexMap = std::unordered_map<Index, Index>();
   auto newIndex = 0;
 
-  for (auto i = 0u; i < triangles.size(); ++i)
-  {
+  for (auto i = 0u; i < triangles.size(); ++i) {
     const auto& triangle = triangles[i];
     auto& newTriangle = newTriangles[i];
 
-    for (auto j = 0u; j < 3; ++j)
-    {
+    for (auto j = 0u; j < 3; ++j) {
       const auto result
           = indexMap.insert(std::make_pair(triangle[j], newIndex));
       const bool& inserted = result.second;
-      if (inserted)
-      {
+      if (inserted) {
         newVertices.push_back(vertices[triangle[j]]);
         newIndex++;
       }
@@ -89,8 +87,7 @@ computeConvexHull3D(
 {
   ch_vertex* vertices = new ch_vertex[inputVertices.size()];
 
-  for (auto i = 0u; i < inputVertices.size(); ++i)
-  {
+  for (auto i = 0u; i < inputVertices.size(); ++i) {
     const Eigen::Matrix<S, 3, 1>& inputV = inputVertices[i];
     ch_vertex& v = vertices[i];
     v.x = inputV[0];
@@ -106,8 +103,7 @@ computeConvexHull3D(
   std::vector<Eigen::Matrix<Index, 3, 1>> eigenFaces;
   eigenFaces.reserve(numFaces);
 
-  for (auto i = 0; i < numFaces; ++i)
-  {
+  for (auto i = 0; i < numFaces; ++i) {
     const auto index1 = faces[3 * i];
     const auto index2 = faces[3 * i + 1];
     const auto index3 = faces[3 * i + 2];

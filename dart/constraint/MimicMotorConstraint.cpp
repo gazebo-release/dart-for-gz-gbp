@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/constraint/MimicMotorConstraint.hpp"
 
-#include <iostream>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/Joint.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 #include "dart/external/odelcpsolver/lcp.h"
+
+#include <iostream>
 
 #define DART_CFM 1e-9
 
@@ -50,21 +51,16 @@ double MimicMotorConstraint::mConstraintForceMixing = DART_CFM;
 //==============================================================================
 MimicMotorConstraint::MimicMotorConstraint(
     dynamics::Joint* joint,
-    const dynamics::Joint* mimicJoint,
-    double multiplier,
-    double offset)
+    const std::vector<dynamics::MimicDofProperties>& mimicDofProperties)
   : ConstraintBase(),
     mJoint(joint),
-    mMimicJoint(mimicJoint),
-    mMultiplier(multiplier),
-    mOffset(offset),
+    mMimicProps(mimicDofProperties),
     mBodyNode(joint->getChildBodyNode()),
     mAppliedImpulseIndex(0)
 {
-  assert(joint);
-  assert(mimicJoint);
-  assert(mBodyNode);
-  assert(joint->getNumDofs() == mimicJoint->getNumDofs());
+  DART_ASSERT(joint);
+  DART_ASSERT(joint->getNumDofs() <= mMimicProps.size());
+  DART_ASSERT(mBodyNode);
 
   mLifeTime[0] = 0;
   mLifeTime[1] = 0;
@@ -104,8 +100,7 @@ const std::string& MimicMotorConstraint::getStaticType()
 void MimicMotorConstraint::setConstraintForceMixing(double cfm)
 {
   // Clamp constraint force mixing parameter if it is out of the range
-  if (cfm < 1e-9)
-  {
+  if (cfm < 1e-9) {
     dtwarn << "[MimicMotorConstraint::setConstraintForceMixing] "
            << "Constraint force mixing parameter[" << cfm
            << "] is lower than 1e-9. "
@@ -125,15 +120,18 @@ double MimicMotorConstraint::getConstraintForceMixing()
 //==============================================================================
 void MimicMotorConstraint::update()
 {
-  // Reset dimention
+  // Reset dimension
   mDim = 0;
 
   std::size_t dof = mJoint->getNumDofs();
-  for (std::size_t i = 0; i < dof; ++i)
-  {
+  for (std::size_t i = 0; i < dof; ++i) {
+    const auto& mimicProp = mMimicProps[i];
+
     double timeStep = mJoint->getSkeleton()->getTimeStep();
-    double qError = mMimicJoint->getPosition(i) * mMultiplier + mOffset
-                    - mJoint->getPosition(i);
+    double qError
+        = mimicProp.mReferenceJoint->getPosition(mimicProp.mReferenceDofIndex)
+              * mimicProp.mMultiplier
+          + mimicProp.mOffset - mJoint->getPosition(i);
     double desiredVelocity = math::clip(
         qError / timeStep,
         mJoint->getVelocityLowerLimit(i),
@@ -141,26 +139,20 @@ void MimicMotorConstraint::update()
 
     mNegativeVelocityError[i] = desiredVelocity - mJoint->getVelocity(i);
 
-    if (mNegativeVelocityError[i] != 0.0)
-    {
+    if (mNegativeVelocityError[i] != 0.0) {
       // Note that we are computing impulse not force
       mUpperBound[i] = mJoint->getForceUpperLimit(i) * timeStep;
       mLowerBound[i] = mJoint->getForceLowerLimit(i) * timeStep;
 
-      if (mActive[i])
-      {
+      if (mActive[i]) {
         ++(mLifeTime[i]);
-      }
-      else
-      {
+      } else {
         mActive[i] = true;
         mLifeTime[i] = 0;
       }
 
       ++mDim;
-    }
-    else
-    {
+    } else {
       mActive[i] = false;
     }
   }
@@ -171,18 +163,17 @@ void MimicMotorConstraint::getInformation(ConstraintInfo* lcp)
 {
   std::size_t index = 0;
   std::size_t dof = mJoint->getNumDofs();
-  for (std::size_t i = 0; i < dof; ++i)
-  {
+  for (std::size_t i = 0; i < dof; ++i) {
     if (mActive[i] == false)
       continue;
 
-    assert(lcp->w[index] == 0.0);
+    DART_ASSERT(lcp->w[index] == 0.0);
 
     lcp->b[index] = mNegativeVelocityError[i];
     lcp->lo[index] = mLowerBound[i];
     lcp->hi[index] = mUpperBound[i];
 
-    assert(lcp->findex[index] == -1);
+    DART_ASSERT(lcp->findex[index] == -1);
 
     if (mLifeTime[i])
       lcp->x[index] = mOldX[i];
@@ -196,19 +187,17 @@ void MimicMotorConstraint::getInformation(ConstraintInfo* lcp)
 //==============================================================================
 void MimicMotorConstraint::applyUnitImpulse(std::size_t index)
 {
-  assert(index < mDim && "Invalid Index.");
+  DART_ASSERT(index < mDim && "Invalid Index.");
 
   std::size_t localIndex = 0;
   const dynamics::SkeletonPtr& skeleton = mJoint->getSkeleton();
 
   std::size_t dof = mJoint->getNumDofs();
-  for (std::size_t i = 0; i < dof; ++i)
-  {
+  for (std::size_t i = 0; i < dof; ++i) {
     if (mActive[i] == false)
       continue;
 
-    if (localIndex == index)
-    {
+    if (localIndex == index) {
       skeleton->clearConstraintImpulses();
       mJoint->setConstraintImpulse(i, 1.0);
       skeleton->updateBiasImpulse(mBodyNode);
@@ -225,12 +214,11 @@ void MimicMotorConstraint::applyUnitImpulse(std::size_t index)
 //==============================================================================
 void MimicMotorConstraint::getVelocityChange(double* delVel, bool withCfm)
 {
-  assert(delVel != nullptr && "Null pointer is not allowed.");
+  DART_ASSERT(delVel != nullptr && "Null pointer is not allowed.");
 
   std::size_t localIndex = 0;
   std::size_t dof = mJoint->getNumDofs();
-  for (std::size_t i = 0; i < dof; ++i)
-  {
+  for (std::size_t i = 0; i < dof; ++i) {
     if (mActive[i] == false)
       continue;
 
@@ -244,13 +232,12 @@ void MimicMotorConstraint::getVelocityChange(double* delVel, bool withCfm)
 
   // Add small values to diagnal to keep it away from singular, similar to cfm
   // varaible in ODE
-  if (withCfm)
-  {
+  if (withCfm) {
     delVel[mAppliedImpulseIndex]
         += delVel[mAppliedImpulseIndex] * mConstraintForceMixing;
   }
 
-  assert(localIndex == mDim);
+  DART_ASSERT(localIndex == mDim);
 }
 
 //==============================================================================
@@ -270,8 +257,7 @@ void MimicMotorConstraint::applyImpulse(double* lambda)
 {
   std::size_t localIndex = 0;
   std::size_t dof = mJoint->getNumDofs();
-  for (std::size_t i = 0; i < dof; ++i)
-  {
+  for (std::size_t i = 0; i < dof; ++i) {
     if (mActive[i] == false)
       continue;
 

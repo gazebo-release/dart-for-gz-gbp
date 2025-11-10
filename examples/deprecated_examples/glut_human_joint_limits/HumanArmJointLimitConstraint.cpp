@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2018, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -31,15 +31,17 @@
  */
 
 #include "HumanArmJointLimitConstraint.hpp"
+#include "dart/common/Macros.hpp"
 
-#include <iostream>
-
-#include <dart/external/odelcpsolver/lcp.h>
-
-#include <dart/common/Console.hpp>
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/dynamics/Joint.hpp>
 #include <dart/dynamics/Skeleton.hpp>
+
+#include <dart/common/Console.hpp>
+
+#include <dart/external/odelcpsolver/lcp.h>
+
+#include <iostream>
 
 #define DART_ERROR_ALLOWANCE 0.0
 #define DART_ERP 0.01
@@ -67,15 +69,15 @@ HumanArmJointLimitConstraint::HumanArmJointLimitConstraint(
     mIsMirror(isMirror),
     mAppliedImpulseIndex(0)
 {
-  assert(mShldJoint);
-  assert(mElbowJoint);
-  assert(mUArmNode);
-  assert(mLArmNode);
+  DART_ASSERT(mShldJoint);
+  DART_ASSERT(mElbowJoint);
+  DART_ASSERT(mUArmNode);
+  DART_ASSERT(mLArmNode);
 
-  assert(mShldJoint->getNumDofs() == 3);
-  assert(mElbowJoint->getNumDofs() == 1);
-  assert(mUArmNode->getSkeleton() == mLArmNode->getSkeleton());
-  assert(mElbowJoint->getParentBodyNode() == mUArmNode);
+  DART_ASSERT(mShldJoint->getNumDofs() == 3);
+  DART_ASSERT(mElbowJoint->getNumDofs() == 1);
+  DART_ASSERT(mUArmNode->getSkeleton() == mLArmNode->getSkeleton());
+  DART_ASSERT(mElbowJoint->getParentBodyNode() == mUArmNode);
 
   mLifeTime = 0;
   mActive = false;
@@ -101,8 +103,7 @@ const std::string& HumanArmJointLimitConstraint::getStaticType()
 void HumanArmJointLimitConstraint::setErrorAllowance(double allowance)
 {
   // Clamp error reduction parameter if it is out of the range
-  if (allowance < 0.0)
-  {
+  if (allowance < 0.0) {
     dtwarn << "Error reduction parameter[" << allowance
            << "] is lower than 0.0. "
            << "It is set to 0.0." << std::endl;
@@ -122,14 +123,12 @@ double HumanArmJointLimitConstraint::getErrorAllowance()
 void HumanArmJointLimitConstraint::setErrorReductionParameter(double erp)
 {
   // Clamp error reduction parameter if it is out of the range [0, 1]
-  if (erp < 0.0)
-  {
+  if (erp < 0.0) {
     dtwarn << "Error reduction parameter[" << erp << "] is lower than 0.0. "
            << "It is set to 0.0." << std::endl;
     mErrorReductionParameter = 0.0;
   }
-  if (erp > 1.0)
-  {
+  if (erp > 1.0) {
     dtwarn << "Error reduction parameter[" << erp << "] is greater than 1.0. "
            << "It is set to 1.0." << std::endl;
     mErrorReductionParameter = 1.0;
@@ -148,8 +147,7 @@ double HumanArmJointLimitConstraint::getErrorReductionParameter()
 void HumanArmJointLimitConstraint::setMaxErrorReductionVelocity(double erv)
 {
   // Clamp maximum error reduction velocity if it is out of the range
-  if (erv < 0.0)
-  {
+  if (erv < 0.0) {
     dtwarn << "Maximum error reduction velocity[" << erv
            << "] is lower than 0.0. "
            << "It is set to 0.0." << std::endl;
@@ -169,15 +167,13 @@ double HumanArmJointLimitConstraint::getMaxErrorReductionVelocity()
 void HumanArmJointLimitConstraint::setConstraintForceMixing(double cfm)
 {
   // Clamp constraint force mixing parameter if it is out of the range
-  if (cfm < 1e-9)
-  {
+  if (cfm < 1e-9) {
     dtwarn << "Constraint force mixing parameter[" << cfm
            << "] is lower than 1e-9. "
            << "It is set to 1e-9." << std::endl;
     mConstraintForceMixing = 1e-9;
   }
-  if (cfm > 1.0)
-  {
+  if (cfm > 1.0) {
     dtwarn << "Constraint force mixing parameter[" << cfm
            << "] is greater than 1.0. "
            << "It is set to 1.0." << std::endl;
@@ -208,18 +204,18 @@ void HumanArmJointLimitConstraint::update()
 
   // if isMirror (right-arm), set up a mirrored euler joint for shoulder
   // i.e. pass the mirrored config to NN
-  if (mIsMirror)
-  {
+  if (mIsMirror) {
     qz = -qz;
     qy = -qy;
   }
 
-  double qsin[6] = {cos(qz),
-                    sin(qz),
-                    cos(qx),
-                    sin(qx),
-                    cos(qy + 2 * math::constantsd::pi() / 3),
-                    cos(qe)};
+  double qsin[6]
+      = {cos(qz),
+         sin(qz),
+         cos(qx),
+         sin(qx),
+         cos(qy + 2 * math::constantsd::pi() / 3),
+         cos(qe)};
   vec_t input;
   input.assign(qsin, qsin + 6);
   vec_t pred_vec = mNet.predict(input);
@@ -232,14 +228,10 @@ void HumanArmJointLimitConstraint::update()
   mDim = 0;
 
   // active: mViolation <= 0 (C(q)-0.5<=0)
-  if (mViolation <= 0.0)
-  {
-    if (mActive)
-    {
+  if (mViolation <= 0.0) {
+    if (mActive) {
       ++mLifeTime;
-    }
-    else
-    {
+    } else {
       mActive = true;
       mLifeTime = 0;
     }
@@ -248,23 +240,18 @@ void HumanArmJointLimitConstraint::update()
     layer* l;
     vec_t out_grad = {1};
     vec_t in_grad;
-    for (int n = mNet.layer_size() - 1; n >= 0; n--)
-    {
+    for (int n = mNet.layer_size() - 1; n >= 0; n--) {
       // implement chain rule layer by layer
       l = mNet[n];
-      if (l->layer_type() == "fully-connected")
-      {
+      if (l->layer_type() == "fully-connected") {
         auto Wb = l->weights();
         vec_t W = *(Wb[0]);
         in_grad.assign(W.size() / out_grad.size(), 0);
-        for (size_t c = 0; c < in_grad.size(); c++)
-        {
+        for (size_t c = 0; c < in_grad.size(); c++) {
           in_grad[c] = vectorize::dot(
               &out_grad[0], &W[c * out_grad.size()], out_grad.size());
         }
-      }
-      else
-      {
+      } else {
         // this is activation layer
         std::vector<const tensor_t*> out_t;
         l->output(out_t);
@@ -286,8 +273,7 @@ void HumanArmJointLimitConstraint::update()
 
     // note that we also need to take the mirror of the NN gradient for
     // right-arm
-    if (mIsMirror)
-    {
+    if (mIsMirror) {
       mJacobian[0] = -mJacobian[0];
       mJacobian[2] = -mJacobian[2];
     }
@@ -309,15 +295,14 @@ void HumanArmJointLimitConstraint::getInformation(
     constraint::ConstraintInfo* lcp)
 {
   // if non-active, should not call getInfo()
-  assert(isActive());
+  DART_ASSERT(isActive());
 
   // assume caller will allocate enough space for _lcp variables
-  assert(lcp->w[0] == 0.0);
-  assert(lcp->findex[0] == -1);
+  DART_ASSERT(lcp->w[0] == 0.0);
+  DART_ASSERT(lcp->findex[0] == -1);
 
   double bouncingVel = -mViolation - mErrorAllowance;
-  if (bouncingVel < 0.0)
-  {
+  if (bouncingVel < 0.0) {
     bouncingVel = 0.0;
   }
   bouncingVel *= lcp->invTimeStep * mErrorReductionParameter;
@@ -338,14 +323,13 @@ void HumanArmJointLimitConstraint::getInformation(
 void HumanArmJointLimitConstraint::applyUnitImpulse(std::size_t index)
 {
   // the dim of constraint = 1, valid _index can only be 0
-  assert(index < mDim && "Invalid Index.");
-  assert(isActive());
+  DART_ASSERT(index < mDim && "Invalid Index.");
+  DART_ASSERT(isActive());
 
   const dynamics::SkeletonPtr& skeleton = mShldJoint->getSkeleton();
   skeleton->clearConstraintImpulses();
 
-  for (std::size_t i = 0; i < 3; i++)
-  {
+  for (std::size_t i = 0; i < 3; i++) {
     mShldJoint->setConstraintImpulse(i, mJacobian[i]);
   }
   mElbowJoint->setConstraintImpulse(0, mJacobian[3]);
@@ -355,8 +339,7 @@ void HumanArmJointLimitConstraint::applyUnitImpulse(std::size_t index)
   skeleton->updateBiasImpulse(mLArmNode);
   skeleton->updateVelocityChange();
 
-  for (std::size_t i = 0; i < 3; i++)
-  {
+  for (std::size_t i = 0; i < 3; i++) {
     mShldJoint->setConstraintImpulse(i, 0.0);
   }
   mElbowJoint->setConstraintImpulse(0, 0.0);
@@ -368,14 +351,12 @@ void HumanArmJointLimitConstraint::applyUnitImpulse(std::size_t index)
 void HumanArmJointLimitConstraint::getVelocityChange(
     double* delVel, bool withCfm)
 {
-  assert(delVel != nullptr && "Null pointer is not allowed.");
+  DART_ASSERT(delVel != nullptr && "Null pointer is not allowed.");
   delVel[0] = 0.0;
 
-  if (mShldJoint->getSkeleton()->isImpulseApplied())
-  {
+  if (mShldJoint->getSkeleton()->isImpulseApplied()) {
     Eigen::Vector4d delq_d;
-    for (std::size_t i = 0; i < 3; i++)
-    {
+    for (std::size_t i = 0; i < 3; i++) {
       delq_d[i] = mShldJoint->getVelocityChange(i);
     }
     delq_d[3] = mElbowJoint->getVelocityChange(0);
@@ -383,8 +364,7 @@ void HumanArmJointLimitConstraint::getVelocityChange(
     delVel[0] = mJacobian.dot(delq_d);
   }
 
-  if (withCfm)
-  {
+  if (withCfm) {
     delVel[mAppliedImpulseIndex]
         += delVel[mAppliedImpulseIndex] * mConstraintForceMixing;
   }
@@ -405,14 +385,13 @@ void HumanArmJointLimitConstraint::unexcite()
 //==============================================================================
 void HumanArmJointLimitConstraint::applyImpulse(double* lambda)
 {
-  assert(isActive());
+  DART_ASSERT(isActive());
 
   // the dim of constraint = 1
   auto con_force = lambda[0];
   mOldX = con_force;
 
-  for (std::size_t i = 0; i < 3; i++)
-  {
+  for (std::size_t i = 0; i < 3; i++) {
     mShldJoint->setConstraintImpulse(
         i, mShldJoint->getConstraintImpulse(i) + mJacobian[i] * con_force);
   }

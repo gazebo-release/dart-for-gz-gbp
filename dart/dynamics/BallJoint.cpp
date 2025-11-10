@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,12 @@
 
 #include "dart/dynamics/BallJoint.hpp"
 
-#include <string>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -156,14 +157,13 @@ void BallJoint::updateRelativeTransform() const
   mT = Joint::mAspectProperties.mT_ParentBodyToJoint * mR
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
 void BallJoint::updateRelativeJacobian(bool _mandatory) const
 {
-  if (_mandatory)
-  {
+  if (_mandatory) {
     mJacobian = math::getAdTMatrix(Joint::mAspectProperties.mT_ChildBodyToJoint)
                     .leftCols<3>();
   }
@@ -172,14 +172,13 @@ void BallJoint::updateRelativeJacobian(bool _mandatory) const
 //==============================================================================
 void BallJoint::updateRelativeJacobianTimeDeriv() const
 {
-  assert(Eigen::Matrix6d::Zero().leftCols<3>() == mJacobianDeriv);
+  DART_ASSERT(Eigen::Matrix6d::Zero().leftCols<3>() == mJacobianDeriv);
 }
 
 //==============================================================================
 const Eigen::Isometry3d& BallJoint::getR() const
 {
-  if (mNeedTransformUpdate)
-  {
+  if (mNeedTransformUpdate) {
     updateRelativeTransform();
     mNeedTransformUpdate = false;
   }

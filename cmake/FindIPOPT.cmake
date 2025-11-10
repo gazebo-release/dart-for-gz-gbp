@@ -1,8 +1,8 @@
-# Copyright (c) 2011-2022, The DART development contributors
+# Copyright (c) 2011-2025, The DART development contributors
 # All rights reserved.
 #
 # The list of contributors can be found at:
-#   https://github.com/dartsim/dart/blob/master/LICENSE
+#   https://github.com/dartsim/dart/blob/main/LICENSE
 #
 # This file is provided under the "BSD-style" License
 
@@ -34,7 +34,7 @@ find_path(IPOPT_INCLUDE_DIRS
 
 # Libraries
 find_library(IPOPT_LIBRARIES
-    NAMES ipopt
+    NAMES ipopt ipopt-3
     HINTS ${PC_IPOPT_LIBDIR})
 
 # Version

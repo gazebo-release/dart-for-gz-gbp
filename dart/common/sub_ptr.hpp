@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_COMMON_SUB_PTR_HPP_
 #define DART_COMMON_SUB_PTR_HPP_
 
-#include "dart/common/Observer.hpp"
+#include <dart/common/Observer.hpp>
 
 namespace dart {
 namespace common {
@@ -98,6 +98,6 @@ using sub_ptr = common::sub_ptr<T>;
 
 } // namespace dart
 
-#include "dart/common/detail/sub_ptr.hpp"
+#include <dart/common/detail/sub_ptr.hpp>
 
 #endif // DART_COMMON_SUB_PTR_HPP_

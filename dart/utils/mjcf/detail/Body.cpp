@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/utils/mjcf/detail/Body.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/utils/XmlHelpers.hpp"
 #include "dart/utils/mjcf/detail/Compiler.hpp"
 #include "dart/utils/mjcf/detail/Size.hpp"
@@ -52,8 +53,7 @@ Errors Body::read(
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "body")
-  {
+  if (std::string(element->Name()) != "body") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <Body> from the provided element");
@@ -61,16 +61,12 @@ Errors Body::read(
   }
 
   // childclass
-  if (hasAttribute(element, "childclass"))
-  {
+  if (hasAttribute(element, "childclass")) {
     const std::string className = getAttributeString(element, "childclass");
     const auto& defaultClass = defaults.getDefault(className);
-    if (defaultClass)
-    {
+    if (defaultClass) {
       currentDefault = &(*defaultClass);
-    }
-    else
-    {
+    } else {
       errors.push_back(Error(
           ErrorCode::ATTRIBUTE_INVALID,
           "Failed to find default with childclass name '" + className + "'"));
@@ -82,10 +78,9 @@ Errors Body::read(
   errors.insert(errors.end(), attrErrors.begin(), attrErrors.end());
 
   // Read <inertial>
-  if (hasElement(element, "inertial"))
-  {
+  if (hasElement(element, "inertial")) {
     auto inertialElement = getElement(element, "inertial");
-    assert(inertialElement);
+    DART_ASSERT(inertialElement);
     mAttributes.mInertial = Inertial();
     const Errors inertialErrors = mAttributes.mInertial->read(inertialElement);
     errors.insert(errors.end(), inertialErrors.begin(), inertialErrors.end());
@@ -93,8 +88,7 @@ Errors Body::read(
 
   // Read multiple <joint>
   ElementEnumerator jointElements(element, "joint");
-  while (jointElements.next())
-  {
+  while (jointElements.next()) {
     Joint joint = Joint();
     const Errors jointErrors = joint.read(
         jointElements.get(), defaults, currentDefault->getJointAttributes());
@@ -104,8 +98,7 @@ Errors Body::read(
 
   // Read multiple <geom>
   ElementEnumerator geomElements(element, "geom");
-  while (geomElements.next())
-  {
+  while (geomElements.next()) {
     Geom geom = Geom();
     const Errors geomErrors = geom.read(
         geomElements.get(), defaults, currentDefault->getGeomAttributes());
@@ -115,8 +108,7 @@ Errors Body::read(
 
   // Read multiple <site>
   ElementEnumerator siteElements(element, "site");
-  while (siteElements.next())
-  {
+  while (siteElements.next()) {
     Site site = Site();
     const Errors siteErrors = site.read(siteElements.get());
     errors.insert(errors.end(), siteErrors.begin(), siteErrors.end());
@@ -125,8 +117,7 @@ Errors Body::read(
 
   // Read childrend <body>
   ElementEnumerator bodyElements(element, "body");
-  while (bodyElements.next())
-  {
+  while (bodyElements.next()) {
     Body childBody = Body();
     const Errors bodyErrors
         = childBody.read(bodyElements.get(), size, defaults, currentDefault);
@@ -142,8 +133,7 @@ Errors Body::preprocess(const Compiler& compiler)
 {
   Errors errors;
 
-  if (mAttributes.mName)
-  {
+  if (mAttributes.mName) {
     mName = *mAttributes.mName;
   }
 
@@ -155,26 +145,22 @@ Errors Body::preprocess(const Compiler& compiler)
 
   // Inertial will be handled in compile()
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.preprocess(compiler, true);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Site& site : mSites)
-  {
+  for (Site& site : mSites) {
     const Errors siteErrors = site.preprocess(compiler);
     errors.insert(errors.end(), siteErrors.begin(), siteErrors.end());
   }
 
-  for (Joint& joint : mJoints)
-  {
+  for (Joint& joint : mJoints) {
     const Errors jointErrors = joint.preprocess(compiler);
     errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
   }
 
-  for (Body& body : mChildBodies)
-  {
+  for (Body& body : mChildBodies) {
     const Errors bodyErrors = body.preprocess(compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }
@@ -188,18 +174,13 @@ Errors Body::compile(const Compiler& compiler)
   Errors errors;
 
   // Set inertial
-  if (mAttributes.mInertial)
-  {
+  if (mAttributes.mInertial) {
     mInertial = *mAttributes.mInertial;
     const Errors inertialErrors = mInertial.compile(compiler);
     errors.insert(errors.end(), inertialErrors.begin(), inertialErrors.end());
-  }
-  else
-  {
-    for (const Geom& geom : mGeoms)
-    {
-      if (geom.getType() == GeomType::MESH)
-      {
+  } else {
+    for (const Geom& geom : mGeoms) {
+      if (geom.getType() == GeomType::MESH) {
         errors.push_back(Error(
             ErrorCode::ELEMENT_MISSING,
             "<inertial> element must be specified if a <body> include a geom "
@@ -208,32 +189,27 @@ Errors Body::compile(const Compiler& compiler)
       }
     }
 
-    if (!mGeoms.empty())
-    {
+    if (!mGeoms.empty()) {
       mInertial = computeInertialFromGeoms(mGeoms, compiler);
     }
   }
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.compile(compiler);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Site& site : mSites)
-  {
+  for (Site& site : mSites) {
     const Errors siteErrors = site.compile(compiler);
     errors.insert(errors.end(), siteErrors.begin(), siteErrors.end());
   }
 
-  for (Joint& joint : mJoints)
-  {
+  for (Joint& joint : mJoints) {
     const Errors jointErrors = joint.compile(compiler);
     errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
   }
 
-  for (Body& body : mChildBodies)
-  {
+  for (Body& body : mChildBodies) {
     const Errors bodyErrors = body.compile(compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }
@@ -246,10 +222,8 @@ Errors Body::postprocess(const Body* parent, const Compiler& compiler)
 {
   Errors errors;
 
-  if (mAttributes.mPos)
-  {
-    if (compiler.getCoordinate() == Coordinate::LOCAL)
-    {
+  if (mAttributes.mPos) {
+    if (compiler.getCoordinate() == Coordinate::LOCAL) {
       mRelativeTransform.translation() = *mAttributes.mPos;
       mRelativeTransform.linear() = compileRotation(
           mAttributes.mQuat,
@@ -258,10 +232,8 @@ Errors Body::postprocess(const Body* parent, const Compiler& compiler)
           mAttributes.mXYAxes,
           mAttributes.mZAxis,
           compiler);
-      assert(math::verifyTransform(mRelativeTransform));
-    }
-    else
-    {
+      DART_ASSERT(math::verifyTransform(mRelativeTransform));
+    } else {
       mWorldTransform.translation() = *mAttributes.mPos;
       mWorldTransform.linear() = compileRotation(
           mAttributes.mQuat,
@@ -270,59 +242,46 @@ Errors Body::postprocess(const Body* parent, const Compiler& compiler)
           mAttributes.mXYAxes,
           mAttributes.mZAxis,
           compiler);
-      if (mAttributes.mInertial)
-      {
+      if (mAttributes.mInertial) {
         mInertial.setRelativeTransform(
             mWorldTransform.inverse() * mInertial.getWorldTransform());
       }
-      assert(math::verifyTransform(mWorldTransform));
+      DART_ASSERT(math::verifyTransform(mWorldTransform));
     }
-  }
-  else
-  {
-    if (compiler.getCoordinate() == Coordinate::LOCAL)
-    {
+  } else {
+    if (compiler.getCoordinate() == Coordinate::LOCAL) {
       mRelativeTransform = mInertial.getRelativeTransform();
-      assert(math::verifyTransform(mRelativeTransform));
-    }
-    else
-    {
+      DART_ASSERT(math::verifyTransform(mRelativeTransform));
+    } else {
       mWorldTransform = mInertial.getWorldTransform();
-      if (parent != nullptr)
-      {
+      if (parent != nullptr) {
         mRelativeTransform
             = parent->getWorldTransform().inverse() * mWorldTransform;
-        assert(math::verifyTransform(mRelativeTransform));
-      }
-      else
-      {
+        DART_ASSERT(math::verifyTransform(mRelativeTransform));
+      } else {
         mRelativeTransform = mWorldTransform;
-        assert(math::verifyTransform(mRelativeTransform));
+        DART_ASSERT(math::verifyTransform(mRelativeTransform));
       }
       mInertial.setRelativeTransform(Eigen::Isometry3d::Identity());
     }
   }
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.postprocess(this, compiler);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Site& site : mSites)
-  {
+  for (Site& site : mSites) {
     const Errors siteErrors = site.postprocess(this, compiler);
     errors.insert(errors.end(), siteErrors.begin(), siteErrors.end());
   }
 
-  for (Joint& joint : mJoints)
-  {
+  for (Joint& joint : mJoints) {
     const Errors jointErrors = joint.postprocess(this, compiler);
     errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
   }
 
-  for (Body& body : mChildBodies)
-  {
+  for (Body& body : mChildBodies) {
     const Errors bodyErrors = body.postprocess(this, compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }
@@ -399,7 +358,7 @@ const Site& Body::getSite(std::size_t index) const
 //==============================================================================
 void Body::setRelativeTransform(const Eigen::Isometry3d& tf)
 {
-  assert(math::verifyTransform(tf));
+  DART_ASSERT(math::verifyTransform(tf));
   mRelativeTransform = tf;
 }
 
@@ -412,7 +371,7 @@ const Eigen::Isometry3d& Body::getRelativeTransform() const
 //==============================================================================
 void Body::setWorldTransform(const Eigen::Isometry3d& tf)
 {
-  assert(math::verifyTransform(tf));
+  DART_ASSERT(math::verifyTransform(tf));
   mWorldTransform = tf;
 }
 
@@ -429,27 +388,22 @@ Inertial Body::computeInertialFromGeoms(
   Inertial inertial;
 
   // TODO(JS): Handle this error properly instead of seg-faulting
-  if (geoms.empty())
-  {
+  if (geoms.empty()) {
     dterr << "[MjcfParser] Faled to infer <inertial> because of no <geom> "
           << "found.\n";
-    assert(false);
+    DART_ASSERT(false);
     return inertial;
   }
 
   // TODO(JS): Single geom assumed for now
-  if (geoms.size() > 1)
-  {
+  if (geoms.size() > 1) {
     dtwarn << "[MjcfParser] Unsupported number of <geom> in inferring "
            << "<inertial>. We use only the first <geom> for now.\n";
   }
 
-  if (compiler.getCoordinate() == Coordinate::LOCAL)
-  {
+  if (compiler.getCoordinate() == Coordinate::LOCAL) {
     inertial.setRelativeTransform(geoms[0].getRelativeTransform());
-  }
-  else
-  {
+  } else {
     inertial.setWorldTransform(geoms[0].getWorldTransform());
   }
 

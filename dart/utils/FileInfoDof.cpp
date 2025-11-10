@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/utils/FileInfoDof.hpp"
 
-#include <fstream>
-#include <string>
-
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/dynamics/Joint.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 #include "dart/simulation/Recording.hpp"
+
+#include <fstream>
+#include <string>
 
 namespace dart {
 namespace utils {
@@ -86,11 +87,9 @@ bool FileInfoDof::loadFile(const char* _fName)
   // dof names
   for (std::size_t i = 0; i < nDof; i++)
     inFile >> buffer;
-  for (std::size_t j = 0; j < mNumFrames; j++)
-  {
+  for (std::size_t j = 0; j < mNumFrames; j++) {
     mDofs[j].resize(nDof);
-    for (std::size_t i = 0; i < nDof; i++)
-    {
+    for (std::size_t i = 0; i < nDof; i++) {
       double val;
       inFile >> val;
       mDofs[j][i] = val;
@@ -132,8 +131,7 @@ bool FileInfoDof::saveFile(
   outFile << "frames = " << last - first + 1
           << " dofs = " << mSkel->getNumDofs() << std::endl;
 
-  for (std::size_t i = 0; i < mSkel->getNumDofs(); i++)
-  {
+  for (std::size_t i = 0; i < mSkel->getNumDofs(); i++) {
     const dynamics::DegreeOfFreedom* dof = mSkel->getDof(i);
     const dynamics::Joint* joint = dof->getJoint();
     const std::size_t localIndex = dof->getIndexInJoint();
@@ -143,8 +141,7 @@ bool FileInfoDof::saveFile(
 
   outFile << std::endl;
 
-  for (std::size_t i = first; i <= last; i++)
-  {
+  for (std::size_t i = first; i <= last; i++) {
     for (std::size_t j = 0; j < mSkel->getNumDofs(); j++)
       outFile << mDofs[i][j] << ' ';
     outFile << std::endl;
@@ -171,7 +168,7 @@ void FileInfoDof::addDof(const Eigen::VectorXd& _dofs)
 //==============================================================================
 double FileInfoDof::getDofAt(std::size_t _frame, std::size_t _id) const
 {
-  assert(_frame < mNumFrames);
+  DART_ASSERT(_frame < mNumFrames);
   return mDofs.at(_frame)[_id];
 }
 

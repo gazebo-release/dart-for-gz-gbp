@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,12 +33,14 @@
 #ifndef DART_UTILS_MJCF_DETAIL_INERTIAL_HPP_
 #define DART_UTILS_MJCF_DETAIL_INERTIAL_HPP_
 
-#include <tinyxml2.h>
+#include <dart/utils/mjcf/detail/Compiler.hpp>
+#include <dart/utils/mjcf/detail/Error.hpp>
 
-#include "dart/common/Optional.hpp"
-#include "dart/math/MathTypes.hpp"
-#include "dart/utils/mjcf/detail/Compiler.hpp"
-#include "dart/utils/mjcf/detail/Error.hpp"
+#include <dart/math/MathTypes.hpp>
+
+#include <dart/common/Optional.hpp>
+
+#include <tinyxml2.h>
 
 namespace dart {
 namespace utils {
@@ -78,7 +80,7 @@ private:
   struct Data
   {
     /// Position of the inertial frame.
-    Eigen::Vector3d mPos;
+    Eigen::Vector3d mPos{Eigen::Vector3d::Zero()};
 
     /// Quaternion
     Eigen::Quaterniond mQuat{Eigen::Quaterniond::Identity()};
@@ -104,7 +106,7 @@ private:
     Eigen::Isometry3d mWorldTransform{Eigen::Isometry3d::Identity()};
 
     /// Mass of the body.
-    double mMass;
+    double mMass{0};
 
     /// Diagonal inertia matrix, expressing the body inertia relative to the
     /// inertial frame.
@@ -117,16 +119,16 @@ private:
   Data mData;
 
   /// Position of the inertial frame.
-  Eigen::Vector3d mPos;
+  Eigen::Vector3d mPos{Eigen::Vector3d::Zero()};
 
   Eigen::Isometry3d mRelativeTransform{Eigen::Isometry3d::Identity()};
   Eigen::Isometry3d mWorldTransform{Eigen::Isometry3d::Identity()};
 
   /// Mass of the body.
-  double mMass;
+  double mMass{0};
 
-  Eigen::Vector3d mDiagonalInertia;
-  Eigen::Vector3d mOffDiagonalInertia;
+  Eigen::Vector3d mDiagonalInertia{Eigen::Vector3d::Zero()};
+  Eigen::Vector3d mOffDiagonalInertia{Eigen::Vector3d::Zero()};
 };
 
 } // namespace detail

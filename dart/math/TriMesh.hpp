@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_MATH_TRIMESH_HPP_
 #define DART_MATH_TRIMESH_HPP_
 
-#include <memory>
+#include <dart/math/Mesh.hpp>
 
-#include "dart/math/Mesh.hpp"
+#include <memory>
 
 namespace dart {
 namespace math {
@@ -116,6 +116,6 @@ using TriMeshd = TriMesh<double>;
 } // namespace math
 } // namespace dart
 
-#include "dart/math/detail/TriMesh-impl.hpp"
+#include <dart/math/detail/TriMesh-impl.hpp>
 
 #endif // DART_MATH_TRIMESH_HPP_

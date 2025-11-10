@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,13 +33,14 @@
 #ifndef DART_DYNAMICS_NODE_HPP_
 #define DART_DYNAMICS_NODE_HPP_
 
-#include <memory>
+#include <dart/dynamics/SmartPointer.hpp>
 
-#include "dart/common/Cloneable.hpp"
-#include "dart/common/EmbeddedAspect.hpp"
-#include "dart/common/Subject.hpp"
-#include "dart/common/VersionCounter.hpp"
-#include "dart/dynamics/SmartPointer.hpp"
+#include <dart/common/Cloneable.hpp>
+#include <dart/common/EmbeddedAspect.hpp>
+#include <dart/common/Subject.hpp>
+#include <dart/common/VersionCounter.hpp>
+
+#include <memory>
 
 namespace dart {
 namespace dynamics {
@@ -267,6 +268,6 @@ protected:
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/Node.hpp"
+#include <dart/dynamics/detail/Node.hpp>
 
 #endif // DART_DYNAMICS_NODE_HPP_

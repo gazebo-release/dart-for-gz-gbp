@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_COMMON_DETAIL_PROXYASPECT_HPP_
 #define DART_COMMON_DETAIL_PROXYASPECT_HPP_
 
-#include "dart/common/Aspect.hpp"
+#include <dart/common/Aspect.hpp>
 
 namespace dart {
 namespace common {
@@ -86,8 +86,7 @@ protected:
     typename State::Owner* owner
         = dynamic_cast<typename State::Owner*>(newComposite);
 
-    if (owner && mProxyState.getOwner() != owner)
-    {
+    if (owner && mProxyState.getOwner() != owner) {
       // Link the ProxyState to its new owner
       mProxyState = State(owner, mProxyState.get());
     }
@@ -149,8 +148,7 @@ protected:
     typename Properties::Owner* owner
         = dynamic_cast<typename Properties::Owner*>(newComposite);
 
-    if (owner && mProxyProperties.getOwner() != owner)
-    {
+    if (owner && mProxyProperties.getOwner() != owner) {
       // Link the ProxyProperties to its new owner
       mProxyProperties = Properties(owner, mProxyProperties.get());
     }

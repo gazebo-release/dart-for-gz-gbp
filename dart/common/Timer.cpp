@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,9 +32,10 @@
 
 #include "dart/common/Timer.hpp"
 
-#include <ctime>
 #include <iostream>
 #include <string>
+
+#include <ctime>
 
 // #if defined _WIN64 || defined _WIN32
 // #define CLOCKS_PER_SEC 1000
@@ -142,8 +143,7 @@ bool Timer::isStarted() const
 //==============================================================================
 void Timer::print()
 {
-  if (mCount > 0)
-  {
+  if (mCount > 0) {
     std::cout << "Timer [" << mName << "] : " << std::endl
               << "Last elapsed : " << mLastElapsedTime << "; "
               << "Total time : "
@@ -151,9 +151,7 @@ void Timer::print()
               << "Total count : " << mCount << "; "
               << "Average time : " << mTotalElapsedTime / mCount << " "
               << "FPS : " << mCount / mTotalElapsedTime << " hz " << std::endl;
-  }
-  else
-  {
+  } else {
     std::cout << "Timer [" << mName << "] doesn't have any record."
               << std::endl;
   }

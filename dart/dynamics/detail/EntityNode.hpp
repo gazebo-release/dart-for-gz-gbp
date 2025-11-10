@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,8 @@
 #ifndef DART_DYNAMICS_DETAIL_ENTITYNODE_HPP_
 #define DART_DYNAMICS_DETAIL_ENTITYNODE_HPP_
 
-#include "dart/dynamics/Entity.hpp"
-#include "dart/dynamics/EntityNode.hpp"
+#include <dart/dynamics/Entity.hpp>
+#include <dart/dynamics/EntityNode.hpp>
 
 namespace dart {
 namespace dynamics {

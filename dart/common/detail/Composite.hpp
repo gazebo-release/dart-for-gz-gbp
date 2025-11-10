@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,14 +33,15 @@
 #ifndef DART_COMMON_DETAIL_COMPOSITE_HPP_
 #define DART_COMMON_DETAIL_COMPOSITE_HPP_
 
-#include "dart/common/Composite.hpp"
+#include "dart/common/Macros.hpp"
+
+#include <dart/common/Composite.hpp>
 
 #define DART_COMMON_CHECK_ILLEGAL_ASPECT_ERASE(Func, T, ReturnType)            \
-  if (requiresAspect<T>())                                                     \
-  {                                                                            \
+  if (requiresAspect<T>()) {                                                   \
     dterr << "[Composite::" #Func << "] Illegal request to remove required "   \
           << "Aspect [" << typeid(T).name() << "]!\n";                         \
-    assert(false);                                                             \
+    DART_ASSERT(false);                                                        \
     return ReturnType;                                                         \
   }
 
@@ -103,8 +104,7 @@ void Composite::removeAspect()
 {
   AspectMap::iterator it = mAspectMap.find(typeid(T));
   DART_COMMON_CHECK_ILLEGAL_ASPECT_ERASE(removeAspect, T, DART_BLANK)
-  if (mAspectMap.end() != it)
-  {
+  if (mAspectMap.end() != it) {
     removeFromComposite(it->second.get());
     it->second = nullptr;
   }
@@ -117,8 +117,7 @@ std::unique_ptr<T> Composite::releaseAspect()
   std::unique_ptr<T> extraction = nullptr;
   AspectMap::iterator it = mAspectMap.find(typeid(T));
   DART_COMMON_CHECK_ILLEGAL_ASPECT_ERASE(releaseAspect, T, nullptr)
-  if (mAspectMap.end() != it)
-  {
+  if (mAspectMap.end() != it) {
     removeFromComposite(it->second.get());
     extraction = std::unique_ptr<T>(static_cast<T*>(it->second.release()));
   }

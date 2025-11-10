@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,9 @@
 #ifndef DART_DYNAMICS_DETAIL_SPECIALIZEDNODEMANAGER_HPP_
 #define DART_DYNAMICS_DETAIL_SPECIALIZEDNODEMANAGER_HPP_
 
-#include "dart/dynamics/SpecializedNodeManager.hpp"
+#include "dart/common/Macros.hpp"
+
+#include <dart/dynamics/SpecializedNodeManager.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -227,12 +229,11 @@ std::size_t SkeletonSpecializedFor<SpecNode>::_getNumNodes(
   usedSpecializedNodeAccess = true;
 #endif // DART_UNITTEST_SPECIALIZED_NODE_ACCESS
 
-  if (treeIndex >= mTreeNodeMaps.size())
-  {
+  if (treeIndex >= mTreeNodeMaps.size()) {
     dterr << "[Skeleton::getNumNodes<" << typeid(SpecNode).name() << ">] "
           << "Requested tree index (" << treeIndex << "), but there are only ("
           << mTreeNodeMaps.size() << ") trees available\n";
-    assert(false);
+    DART_ASSERT(false);
     return 0;
   }
 
@@ -258,24 +259,22 @@ SpecNode* SkeletonSpecializedFor<SpecNode>::_getNode(
   usedSpecializedNodeAccess = true;
 #endif // DART_UNITTEST_SPECIALIZED_NODE_ACCESS
 
-  if (treeIndex >= mTreeNodeMaps.size())
-  {
+  if (treeIndex >= mTreeNodeMaps.size()) {
     dterr << "[Skeleton::getNode<" << typeid(SpecNode).name() << ">] "
           << "Requested tree index (" << treeIndex << "), but there are only ("
           << mTreeNodeMaps.size() << ") trees available\n";
-    assert(false);
+    DART_ASSERT(false);
     return nullptr;
   }
 
   NodeMap::iterator& it = mTreeSpecNodeIterators[treeIndex];
 
-  if (nodeIndex >= it->second.size())
-  {
+  if (nodeIndex >= it->second.size()) {
     dterr << "[Skeleton::getNode<" << typeid(SpecNode).name() << ">] "
           << "Requested index (" << nodeIndex << ") within tree (" << treeIndex
           << "), but there are only (" << it->second.size() << ") Nodes of the "
           << "requested type within that tree\n";
-    assert(false);
+    DART_ASSERT(false);
     return nullptr;
   }
 

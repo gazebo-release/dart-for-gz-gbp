@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,14 @@
 
 #include "dart/dynamics/AssimpInputResourceAdaptor.hpp"
 
-#include <cassert>
-#include <iostream>
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 
 #include <assimp/IOStream.hpp>
 
-#include "dart/common/Console.hpp"
+#include <iostream>
+
+#include <cassert>
 
 namespace dart {
 namespace dynamics {
@@ -79,8 +81,7 @@ Assimp::IOStream* AssimpInputResourceRetrieverAdaptor::Open(
 {
   // TODO: How do we support text mode?
   if (pMode != std::string("r") && pMode != std::string("rb")
-      && pMode != std::string("rt"))
-  {
+      && pMode != std::string("rt")) {
     dtwarn << "[AssimpInputResourceRetrieverAdaptor::Open] Unsupported mode '"
            << pMode << "'. Only 'r', 'rb', and 'rt' are supported.\n";
     return nullptr;
@@ -108,7 +109,7 @@ AssimpInputResourceAdaptor::AssimpInputResourceAdaptor(
     const common::ResourcePtr& _resource)
   : mResource(_resource)
 {
-  assert(_resource);
+  DART_ASSERT(_resource);
 }
 
 //==============================================================================
@@ -139,8 +140,7 @@ aiReturn AssimpInputResourceAdaptor::Seek(std::size_t pOffset, aiOrigin pOrigin)
   using common::Resource;
 
   Resource::SeekType origin;
-  switch (pOrigin)
-  {
+  switch (pOrigin) {
     case aiOrigin_CUR:
       origin = Resource::SEEKTYPE_CUR;
       break;

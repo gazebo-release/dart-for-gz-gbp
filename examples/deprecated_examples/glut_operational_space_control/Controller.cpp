@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,15 @@
 
 #include "Controller.hpp"
 
+#include "dart/common/Macros.hpp"
+
 //==============================================================================
 Controller::Controller(
     dart::dynamics::SkeletonPtr _robot, dart::dynamics::BodyNode* _endEffector)
   : mRobot(_robot), mEndEffector(_endEffector)
 {
-  assert(_robot != nullptr);
-  assert(_endEffector != nullptr);
+  DART_ASSERT(_robot != nullptr);
+  DART_ASSERT(_endEffector != nullptr);
 
   int dof = mRobot->getNumDofs();
 
@@ -47,8 +49,7 @@ Controller::Controller(
   mKp.setZero();
   mKv.setZero();
 
-  for (int i = 0; i < 3; ++i)
-  {
+  for (int i = 0; i < 3; ++i) {
     mKp(i, i) = 750.0;
     mKv(i, i) = 250.0;
   }

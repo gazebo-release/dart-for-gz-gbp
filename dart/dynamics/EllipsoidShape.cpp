@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/dynamics/EllipsoidShape.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/math/Helpers.hpp"
 
 namespace dart {
@@ -78,9 +79,9 @@ const Eigen::Vector3d& EllipsoidShape::getSize() const
 //==============================================================================
 void EllipsoidShape::setDiameters(const Eigen::Vector3d& diameters)
 {
-  assert(diameters[0] > 0.0);
-  assert(diameters[1] > 0.0);
-  assert(diameters[2] > 0.0);
+  DART_ASSERT(diameters[0] > 0.0);
+  DART_ASSERT(diameters[1] > 0.0);
+  DART_ASSERT(diameters[2] > 0.0);
 
   mDiameters = diameters;
 

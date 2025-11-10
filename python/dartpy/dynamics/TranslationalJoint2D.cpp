@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,12 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "Joint.hpp"
+
 #include <dart/dart.hpp>
+
 #include <eigen_geometry_pybind.h>
 #include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
-
-#include "Joint.hpp"
 
 namespace py = pybind11;
 
@@ -73,8 +74,8 @@ void TranslationalJoint2D(py::module& m)
       dart::common::EmbedPropertiesOnTopOf<
           dart::dynamics::TranslationalJoint2D,
           dart::dynamics::detail::TranslationalJoint2DUniqueProperties,
-          dart::dynamics::GenericJoint<dart::math::RealVectorSpace<2> > >,
-      std::shared_ptr<dart::dynamics::TranslationalJoint2D> >(
+          dart::dynamics::GenericJoint<dart::math::RealVectorSpace<2>>>,
+      std::shared_ptr<dart::dynamics::TranslationalJoint2D>>(
       m, "TranslationalJoint2D")
       .def(
           "hasTranslationalJoint2DAspect",
@@ -88,7 +89,7 @@ void TranslationalJoint2D(py::module& m)
                   dart::dynamics::TranslationalJoint2D,
                   dart::dynamics::detail::TranslationalJoint2DUniqueProperties,
                   dart::dynamics::GenericJoint<
-                      dart::math::RealVectorSpace<2> > >::Aspect* aspect) {
+                      dart::math::RealVectorSpace<2>>>::Aspect* aspect) {
             self->setTranslationalJoint2DAspect(aspect);
           },
           ::py::arg("aspect"))
@@ -104,7 +105,7 @@ void TranslationalJoint2D(py::module& m)
                   dart::dynamics::TranslationalJoint2D,
                   dart::dynamics::detail::TranslationalJoint2DUniqueProperties,
                   dart::dynamics::GenericJoint<
-                      dart::math::RealVectorSpace<2> > >::Aspect> {
+                      dart::math::RealVectorSpace<2>>>::Aspect> {
             return self->releaseTranslationalJoint2DAspect();
           })
       .def(
@@ -126,7 +127,7 @@ void TranslationalJoint2D(py::module& m)
                   dart::dynamics::TranslationalJoint2D,
                   dart::dynamics::detail::TranslationalJoint2DUniqueProperties,
                   dart::dynamics::GenericJoint<
-                      dart::math::RealVectorSpace<2> > >::AspectProperties&
+                      dart::math::RealVectorSpace<2>>>::AspectProperties&
                   properties) { self->setAspectProperties(properties); },
           ::py::arg("properties"))
       .def(

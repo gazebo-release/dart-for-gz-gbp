@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,11 +32,13 @@
 
 #include "dart/common/Uri.hpp"
 
-#include <cassert>
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+
 #include <regex>
 #include <sstream>
 
-#include "dart/common/Console.hpp"
+#include <cassert>
 
 static bool startsWith(const std::string& _target, const std::string& _prefix)
 {
@@ -121,14 +123,14 @@ void UriComponent::reset()
 //==============================================================================
 auto UriComponent::get() -> reference_type
 {
-  assert(mExists);
+  DART_ASSERT(mExists);
   return mValue;
 }
 
 //==============================================================================
 auto UriComponent::get() const -> reference_const_type
 {
-  assert(mExists);
+  DART_ASSERT(mExists);
   return mValue;
 }
 
@@ -204,27 +206,27 @@ bool Uri::fromString(const std::string& _input)
   if (!regex_match(_input, matches, uriRegex))
     return false;
 
-  assert(matches.size() > schemeIndex);
+  DART_ASSERT(matches.size() > schemeIndex);
   const std::ssub_match& schemeMatch = matches[schemeIndex];
   if (schemeMatch.matched)
     mScheme = schemeMatch;
 
-  assert(matches.size() > authorityIndex);
+  DART_ASSERT(matches.size() > authorityIndex);
   const std::ssub_match& authorityMatch = matches[authorityIndex];
   if (authorityMatch.matched)
     mAuthority = authorityMatch;
 
-  assert(matches.size() > pathIndex);
+  DART_ASSERT(matches.size() > pathIndex);
   const std::ssub_match& pathMatch = matches[pathIndex];
   if (pathMatch.matched)
     mPath = pathMatch;
 
-  assert(matches.size() > queryIndex);
+  DART_ASSERT(matches.size() > queryIndex);
   const std::ssub_match& queryMatch = matches[queryIndex];
   if (queryMatch.matched)
     mQuery = queryMatch;
 
-  assert(matches.size() > fragmentIndex);
+  DART_ASSERT(matches.size() > fragmentIndex);
   const std::ssub_match& fragmentMatch = matches[fragmentIndex];
   if (fragmentMatch.matched)
     mFragment = fragmentMatch;
@@ -286,8 +288,7 @@ bool Uri::fromRelativeUri(
     const std::string& _base, const std::string& _relative, bool _strict)
 {
   Uri baseUri;
-  if (!baseUri.fromString(_base))
-  {
+  if (!baseUri.fromString(_base)) {
     dtwarn << "[Uri::fromRelativeUri] Failed parsing base URI '" << _base
            << "'.\n";
     clear();
@@ -309,8 +310,7 @@ bool Uri::fromRelativeUri(
     const Uri& _base, const std::string& _relative, bool _strict)
 {
   Uri relativeUri;
-  if (!relativeUri.fromString(_relative))
-  {
+  if (!relativeUri.fromString(_relative)) {
     dtwarn << "[Uri::fromRelativeUri] Failed parsing relative URI '"
            << _relative << "'.\n";
     clear();
@@ -330,41 +330,32 @@ bool Uri::fromRelativeUri(const Uri& _base, const char* _relative, bool _strict)
 bool Uri::fromRelativeUri(
     const Uri& _base, const Uri& _relative, bool /*_strict*/)
 {
-  assert(_base.mPath && "The path component is always defined.");
-  assert(_relative.mPath && "The path component is always defined.");
+  DART_ASSERT(_base.mPath && "The path component is always defined.");
+  DART_ASSERT(_relative.mPath && "The path component is always defined.");
 
   // TODO If (!_strict && _relative.mScheme == _base.mScheme), then we need to
   // enable backwards compatability.
 
   // This directly implements the psueocode in Section 5.2.2. of RFC 3986.
-  if (_relative.mScheme)
-  {
+  if (_relative.mScheme) {
     mScheme = _relative.mScheme;
     mAuthority = _relative.mAuthority;
     mPath = removeDotSegments(*_relative.mPath);
     mQuery = _relative.mQuery;
-  }
-  else
-  {
-    if (_relative.mAuthority)
-    {
+  } else {
+    if (_relative.mAuthority) {
       mAuthority = _relative.mAuthority;
       mPath = removeDotSegments(*_relative.mPath);
       mQuery = _relative.mQuery;
-    }
-    else
-    {
-      if (_relative.mPath->empty())
-      {
+    } else {
+      if (_relative.mPath->empty()) {
         mPath = _base.mPath;
 
         if (_relative.mQuery)
           mQuery = _relative.mQuery;
         else
           mQuery = _base.mQuery;
-      }
-      else
-      {
+      } else {
         if (_relative.mPath->front() == '/')
           mPath = removeDotSegments(*_relative.mPath);
         else
@@ -410,8 +401,7 @@ std::string Uri::toString() const
 Uri Uri::createFromString(const std::string& _input)
 {
   Uri uri;
-  if (!uri.fromString(_input))
-  {
+  if (!uri.fromString(_input)) {
     dtwarn << "[Uri::createFromString] Failed parsing URI '" << _input
            << "'.\n";
   }
@@ -426,8 +416,7 @@ Uri Uri::createFromString(const std::string& _input)
 Uri Uri::createFromPath(const std::string& _path)
 {
   Uri fileUri;
-  if (!fileUri.fromPath(_path))
-  {
+  if (!fileUri.fromPath(_path)) {
     dtwarn << "[Uri::createFromPath] Failed parsing local path '" << _path
            << "'.\n";
   }
@@ -442,8 +431,7 @@ Uri Uri::createFromPath(const std::string& _path)
 Uri Uri::createFromStringOrPath(const std::string& _input)
 {
   Uri uri;
-  if (!uri.fromStringOrPath(_input))
-  {
+  if (!uri.fromStringOrPath(_input)) {
     dtwarn << "[Uri::createFromString] Failed parsing URI '" << _input
            << "'.\n";
   }
@@ -459,8 +447,7 @@ Uri Uri::createFromRelativeUri(
     const std::string& _base, const std::string& _relative, bool _strict)
 {
   Uri mergedUri;
-  if (!mergedUri.fromRelativeUri(_base, _relative, _strict))
-  {
+  if (!mergedUri.fromRelativeUri(_base, _relative, _strict)) {
     dtwarn << "[Uri::createFromRelativeUri] Failed merging URI '" << _relative
            << "' with base URI '" << _base << "'.\n";
   }
@@ -476,8 +463,7 @@ Uri Uri::createFromRelativeUri(
     const Uri& _base, const std::string& _relative, bool _strict)
 {
   Uri mergedUri;
-  if (!mergedUri.fromRelativeUri(_base, _relative, _strict))
-  {
+  if (!mergedUri.fromRelativeUri(_base, _relative, _strict)) {
     dtwarn << "[Uri::createFromRelativeUri] Failed merging URI '" << _relative
            << "' with base URI '" << _base.toString() << "'.\n";
   }
@@ -493,8 +479,7 @@ Uri Uri::createFromRelativeUri(
     const Uri& _baseUri, const Uri& _relativeUri, bool _strict)
 {
   Uri mergedUri;
-  if (!mergedUri.fromRelativeUri(_baseUri, _relativeUri, _strict))
-  {
+  if (!mergedUri.fromRelativeUri(_baseUri, _relativeUri, _strict)) {
     dtwarn << "[Uri::createFromRelativeUri] Failed merging URI '"
            << _relativeUri.toString() << "' with base URI '"
            << _baseUri.toString() << "'.\n";
@@ -559,8 +544,7 @@ std::string Uri::getPath() const
 std::string Uri::getFilesystemPath() const
 {
 #ifdef _WIN32
-  if (mScheme.get_value_or("") == "file")
-  {
+  if (mScheme.get_value_or("") == "file") {
     const std::string& filesystemPath = getPath();
 
     if (!filesystemPath.empty() && filesystemPath[0] == '/')
@@ -574,14 +558,13 @@ std::string Uri::getFilesystemPath() const
 //==============================================================================
 std::string Uri::mergePaths(const Uri& _base, const Uri& _relative)
 {
-  assert(_base.mPath && "The path component is always defined.");
-  assert(_relative.mPath && "The path component is always defined.");
+  DART_ASSERT(_base.mPath && "The path component is always defined.");
+  DART_ASSERT(_relative.mPath && "The path component is always defined.");
 
   // This directly implements the logic from Section 5.2.3. of RFC 3986.
   if (_base.mAuthority && _base.mPath->empty())
     return "/" + *_relative.mPath;
-  else
-  {
+  else {
     const std::size_t index = _base.mPath->find_last_of('/');
     if (index != std::string::npos)
       return _base.mPath->substr(0, index + 1) + *_relative.mPath;
@@ -600,27 +583,20 @@ std::string Uri::removeDotSegments(const std::string& _path)
   std::string output;
 
   // 2.  While the input buffer is not empty, loop as follows:
-  while (!input.empty())
-  {
+  while (!input.empty()) {
     // A.  If the input buffer begins with a prefix of "../" or "./",
     //     then remove that prefix from the input buffer; otherwise,
-    if (startsWith(input, "../"))
-    {
+    if (startsWith(input, "../")) {
       input = input.substr(3);
-    }
-    else if (startsWith(input, "./"))
-    {
+    } else if (startsWith(input, "./")) {
       input = input.substr(2);
     }
     // B.  if the input buffer begins with a prefix of "/./" or "/.",
     //     where "." is a complete path segment, then replace that
     //     prefix with "/" in the input buffer; otherwise,
-    else if (input == "/.")
-    {
+    else if (input == "/.") {
       input = "/";
-    }
-    else if (startsWith(input, "/./"))
-    {
+    } else if (startsWith(input, "/./")) {
       input = "/" + input.substr(3);
     }
     // C.  if the input buffer begins with a prefix of "/../" or "/..",
@@ -628,8 +604,7 @@ std::string Uri::removeDotSegments(const std::string& _path)
     //     prefix with "/" in the input buffer and remove the last
     //     segment and its preceding "/" (if any) from the output
     //     buffer; otherwise,
-    else if (input == "/..")
-    {
+    else if (input == "/..") {
       input = "/";
 
       std::size_t index = output.find_last_of('/');
@@ -637,9 +612,7 @@ std::string Uri::removeDotSegments(const std::string& _path)
         output = output.substr(0, index);
       else
         output = "";
-    }
-    else if (startsWith(input, "/../"))
-    {
+    } else if (startsWith(input, "/../")) {
       input = "/" + input.substr(4);
 
       std::size_t index = output.find_last_of('/');
@@ -650,16 +623,14 @@ std::string Uri::removeDotSegments(const std::string& _path)
     }
     // D.  if the input buffer consists only of "." or "..", then remove
     //     that from the input buffer; otherwise,
-    else if (input == "." || input == "..")
-    {
+    else if (input == "." || input == "..") {
       input = "";
     }
     // E.  move the first path segment in the input buffer to the end of
     //     the output buffer, including the initial "/" character (if
     //     any) and any subsequent characters up to, but not including,
     //     the next "/" character or the end of the input buffer.
-    else
-    {
+    else {
       // Start at index one so we keep the leading '/'.
       std::size_t index = input.find_first_of('/', 1);
       output += input.substr(0, index);

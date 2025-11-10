@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_DYNAMICS_TRANSLATIONALJOINT_HPP_
 #define DART_DYNAMICS_TRANSLATIONALJOINT_HPP_
 
-#include <string>
+#include <dart/dynamics/GenericJoint.hpp>
 
-#include "dart/dynamics/GenericJoint.hpp"
+#include <string>
 
 namespace dart {
 namespace dynamics {

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,11 @@
 #ifndef DART_GUI_OSG_DETAIL_CAMERAMODECALLBACK_HPP_
 #define DART_GUI_OSG_DETAIL_CAMERAMODECALLBACK_HPP_
 
-#include <mutex>
+#include <dart/gui/osg/Viewer.hpp>
 
 #include <osg/NodeCallback>
 
-#include "dart/gui/osg/Viewer.hpp"
+#include <mutex>
 
 namespace dart::gui::osg::detail {
 

@@ -1,11 +1,7 @@
 #===============================================================================
 # CMake settings
 #===============================================================================
-if(WIN32)
-  cmake_minimum_required(VERSION 3.11)
-else()
-  cmake_minimum_required(VERSION 3.10.2)
-endif()
+cmake_minimum_required(VERSION 3.22.1)
 
 project(dart)
 
@@ -47,17 +43,13 @@ set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_MODULE_PATH "${DART_SOURCE_DIR}/cmake")
 
 include(DARTMacros)
+include(dart_defs)
 
 # CMake component helper. It uses the following variables:
 # - LIBRARY_INSTALL_DIR
 # - CONFIG_INSTALL_DIR
 include(Components)
 initialize_component_helpers(${PROJECT_NAME})
-
-# System install paths on Windows
-if(WIN32)
-  set(CMAKE_INSTALL_PREFIX "C:/Golems" CACHE PATH "Install prefix")
-endif()
 
 #===============================================================================
 # Project settings
@@ -72,19 +64,22 @@ string(REGEX REPLACE "^<version>([0-9]+)\\.([0-9]+)\\.([0-9]+)</version>$" "\\3"
 set(DART_VERSION "${DART_MAJOR_VERSION}.${DART_MINOR_VERSION}.${DART_PATCH_VERSION}")
 
 set(DART_PKG_DESC "Dynamic Animation and Robotics Toolkit.")
-set(DART_PKG_EXTERNAL_DEPS "eigen, ccd, fcl, assimp")
+set(DART_PKG_EXTERNAL_DEPS "assimp, ccd, eigen3, fcl, octomap")
 
 #===============================================================================
 # Build options
 #===============================================================================
-option(DART_VERBOSE "Whether print detailed information in CMake process" OFF)
 if(MSVC)
   set(DART_RUNTIME_LIBRARY "/MD" CACHE STRING "BaseName chosen by the user at CMake configure time")
   set_property(CACHE DART_RUNTIME_LIBRARY PROPERTY STRINGS /MD /MT)
-  option(DART_MSVC_DEFAULT_OPTIONS "Build DART with default Visual Studio options" OFF)
+  dart_option(DART_MSVC_DEFAULT_OPTIONS "Build DART with default Visual Studio options" OFF)
 else()
-  option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+  dart_option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 endif()
+dart_option(DART_BUILD_DARTPY "Build dartpy" OFF)
+dart_option(DART_BUILD_GUI_OSG "Build osgDart library" ON)
+dart_option(DART_BUILD_PROFILE "Build DART with profiling options" OFF)
+dart_option(DART_CODECOV "Turn on codecov support" OFF)
 # Warning: DART_ENABLE_SIMD should be ON only when you build DART and the DART
 # dependent projects on the same machine. If this option is on, then compile
 # option `-march=native` is added to the target `dart` that enables all
@@ -92,20 +87,22 @@ endif()
 # local machines are different then the projects will be built with different
 # compile options, which may cause runtime errors especially memory alignment
 # errors.
-option(DART_ENABLE_SIMD
+dart_option(DART_ENABLE_SIMD
   "Build DART with all SIMD instructions on the current local machine" OFF)
-option(DART_BUILD_GUI_OSG "Build osgDart library" ON)
-option(DART_BUILD_EXTRAS "Build extra projects" OFF)
-option(DART_BUILD_DARTPY "Build dartpy" ON)
-option(DART_CODECOV "Turn on codecov support" OFF)
-option(DART_FAST_DEBUG "Add -O1 option for DEBUG mode build" OFF)
+dart_option(DART_FAST_DEBUG "Add -O1 option for DEBUG mode build" OFF)
 # GCC and Clang add ANSI-formatted colors when they detect the output medium is a
 # terminal. However, this doesn't work in some cases such as when the makefile is
 # invoked by Ninja. DART_FORCE_COLORED_OUTPUT can be used in this case to enforce
 # to always generate ANSI-formatted colors regardless of the output medium types.
 # See: https://medium.com/@alasher/colored-c-compiler-output-with-ninja-clang-gcc-10bfe7f2b949
-option(DART_FORCE_COLORED_OUTPUT
+dart_option(DART_FORCE_COLORED_OUTPUT
   "Always produce ANSI-colored output (GNU/Clang only)." OFF)
+dart_option(DART_USE_SYSTEM_IMGUI "Use system ImGui" OFF)
+dart_option(DART_USE_SYSTEM_GOOGLEBENCHMARK "Use system GoogleBenchmark" OFF)
+dart_option(DART_USE_SYSTEM_GOOGLETEST "Use system GoogleTest" OFF)
+dart_option(DART_USE_SYSTEM_PYBIND11 "Use system pybind11" OFF)
+dart_option(DART_USE_SYSTEM_TRACY "Use system Tracy" OFF)
+dart_option(DART_VERBOSE "Whether print detailed information in CMake process" OFF)
 
 #===============================================================================
 # Print intro
@@ -116,21 +113,53 @@ message(STATUS "                DART ${DART_VERSION}")
 message(STATUS "============================================")
 message(STATUS "")
 
+dart_print_options()
+
 # Print build tool information
 message(STATUS "[ Build Tools ]")
-message(STATUS "- CMake: ${CMAKE_VERSION}")
-message(STATUS "- C++  : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "- CMake               : ${CMAKE_VERSION}")
+message(STATUS "- C++                 : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+if(MSVC)
+  message(STATUS "- CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+endif()
 message(STATUS "")
 
 #===============================================================================
 # CodeCov settings
 #===============================================================================
 if(DART_CODECOV)
-  include(CodeCoverage)
-  setup_target_for_coverage(codecov ctest coverage)
-  set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage"
+  # Set up custom targets for code coverage
+  dart_coverage(
+    INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dart
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dart
   )
+
+  # Code Coverage Configuration
+  add_library(coverage_config INTERFACE)
+
+  # CodeCov can only be enabled in Debug mode
+  if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(FATAL_ERROR "CodeCov can only be enabled in Debug mode")
+  endif()
+
+  # CodeCov can only be enabled with GCC or Clang
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message(FATAL_ERROR "CodeCov can only be enabled with GCC or Clang")
+  endif()
+
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(coverage_config INTERFACE
+    -O0        # no optimization
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+
+  # Add required flags (GCC & LLVM/Clang)
+  target_link_options(coverage_config INTERFACE --coverage)
+
+  # Export CodeCov configuration
+  install(TARGETS coverage_config DESTINATION lib EXPORT coverage_config)
+  install(EXPORT coverage_config DESTINATION ${CONFIG_INSTALL_DIR})
 endif()
 
 #===============================================================================
@@ -141,19 +170,17 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPERCASE)
 
-set(BUILD_TYPE_DEBUG FALSE)
-set(BUILD_TYPE_RELEASE FALSE)
-set(BUILD_TYPE_RELWITHDEBINFO FALSE)
-set(BUILD_TYPE_MINSIZEREL FALSE)
+set(DART_BUILD_MODE_DEBUG FALSE)
+set(DART_BUILD_MODE_RELEASE FALSE)
 
 if("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "DEBUG")
-  set(BUILD_TYPE_DEBUG TRUE)
+  set(DART_BUILD_MODE_DEBUG TRUE)
 elseif("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "RELEASE")
-  set(BUILD_TYPE_RELEASE TRUE)
+  set(DART_BUILD_MODE_RELEASE TRUE)
 elseif("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "RELWITHDEBINFO")
-  set(BUILD_TYPE_RELWITHDEBINFO TRUE)
+  set(DART_BUILD_MODE_RELEASE TRUE)
 elseif("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "MINSIZEREL")
-  set(BUILD_TYPE_MINSIZEREL TRUE)
+  set(DART_BUILD_MODE_RELEASE TRUE)
 else()
   message(WARNING "CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug | Release | RelWithDebInfo | MinSizeRel")
 endif()
@@ -167,18 +194,20 @@ endif()
 # - ERROR: To enable log with DART_ERROR() and below
 # - FATAL: To enable log with DART_FATAL()
 # - OFF: To turn off all the logs
-if(BUILD_TYPE_DEBUG)
+if(DART_BUILD_MODE_DEBUG)
   set(DART_ACTIVE_LOG_LEVEL "DEBUG" CACHE STRING "Compile time active log level to enable")
 else()
   set(DART_ACTIVE_LOG_LEVEL "INFO" CACHE STRING "Compile time active log level to enable")
 endif()
 set_property(CACHE DART_ACTIVE_LOG_LEVEL PROPERTY STRINGS TRACE DEBUG INFO WARN ERROR FATAL OFF)
 
-if(BUILD_TYPE_DEBUG)
+if(DART_BUILD_MODE_DEBUG)
   option(DART_TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 else()
   option(DART_TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 endif()
+
+option(DART_BUILD_WHEELS "Indicate building dartpy for wheels" OFF)
 
 #===============================================================================
 # Find dependencies
@@ -188,7 +217,7 @@ include(DARTFindDependencies)
 #===============================================================================
 # Check for non-case-sensitive filesystems
 #===============================================================================
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/case_sensitive_filesystem
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/case_sensitive_filesystem
                 RESULT_VARIABLE FILESYSTEM_CASE_SENSITIVE_RETURN)
 if(${FILESYSTEM_CASE_SENSITIVE_RETURN} EQUAL 0)
   set(FILESYSTEM_CASE_SENSITIVE TRUE)
@@ -233,14 +262,40 @@ if(MSVC)
 
 elseif(CMAKE_COMPILER_IS_GNUCXX)
 
+  # There is a known bug in GCC 12.1 and above that leads to spurious
+  # -Wmaybe-uninitialized warnings from gcc/x86_64-linux-gnu/12/include/avxintrin.h and
+  # -Warray-bounds warnings from gcc/x86_64-linux-gnu/12/include/avx512fintrin.h.
+  # The bug is tracked here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105593
+  # The following workaround can be removed once the bug is fixed.
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.1)
+    add_compile_options(-Wno-array-bounds)
+    add_compile_options(-Wno-dangling-pointer)
+    add_compile_options(-Wno-maybe-uninitialized)
+    add_compile_options(-Wno-stringop-overflow)
+    add_compile_options(-Wno-uninitialized)
+  endif()
+
   add_compile_options(-Wall -Wextra -fPIC)
   if(DART_TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
   endif()
   execute_process(
     COMMAND ${CMAKE_CXX_COMPILER} -dumpfullversion -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-  if(GCC_VERSION VERSION_LESS 7.3.0)
-    message(FATAL_ERROR "The installed g++ version is ${GCC_VERSION}. ${PROJECT_NAME} requires g++ 7.3.0 or greater.")
+  if(DART_BUILD_WHEELS)
+    set(gcc_required_version 10.2.1) # Lowered from 11.2.0 to support building in manylinux2014
+  else()
+    set(gcc_required_version 11.2.0)
+  endif()
+  if(GCC_VERSION VERSION_LESS ${gcc_required_version})
+    message(FATAL_ERROR "The installed g++ version is ${GCC_VERSION}. ${PROJECT_NAME} requires g++ ${gcc_required_version} or greater.")
+  endif()
+  if(GCC_VERSION VERSION_GREATER_EQUAL 13.2.0)
+    # TODO: These warnings should be properly addressed and these compiler options removed
+    add_compile_options(-Wno-overloaded-virtual -Wno-alloc-size-larger-than -Wno-dangling-pointer)
+  endif()
+  if(GCC_VERSION VERSION_GREATER_EQUAL 13.2.0)
+    # TODO: These warnings should be properly addressed and these compiler options removed
+    add_compile_options(-Wno-overloaded-virtual -Wno-alloc-size-larger-than -Wno-dangling-pointer)
   endif()
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
   set(CMAKE_CXX_FLAGS_DEBUG "-g -fno-omit-frame-pointer -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls")
@@ -327,11 +382,13 @@ set(DART_IN_SOURCE_BUILD TRUE)
 if(TARGET dart)
 
   # Add a "tests" target to build unit tests.
-  enable_testing()
-  if(MSVC)
-    add_subdirectory(unittests)
-  else()
-    add_subdirectory(unittests EXCLUDE_FROM_ALL)
+  include(CTest)
+  if (BUILD_TESTING)
+    if(MSVC)
+      add_subdirectory(tests)
+    else()
+      add_subdirectory(tests EXCLUDE_FROM_ALL)
+    endif()
   endif()
 
   # Add example subdirectories and an "examples" target.
@@ -378,12 +435,11 @@ endif()
 
 add_subdirectory(python)
 
-if(DART_BUILD_EXTRAS)
-  add_subdirectory(extras)
-endif()
-
 # Add 'ALL' target that builds everything
-set(all_target_candidates tests_and_run dartpy pytest dartc)
+set(all_target_candidates dartpy)
+if (BUILD_TESTING)
+  list(APPEND all_target_candidates tests_and_run pytest)
+endif()
 foreach(target_candidate ${all_target_candidates})
   if(TARGET ${target_candidate})
     list(APPEND all_targets ${target_candidate})
@@ -456,7 +512,25 @@ install(
 # Generate the DART pkg-config
 set(PC_CONFIG_IN ${DART_SOURCE_DIR}/cmake/dart.pc.in)
 set(PC_CONFIG_OUT ${DART_BINARY_DIR}/cmake/dart.pc)
-set(PC_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+cmake_path(IS_ABSOLUTE CMAKE_INSTALL_LIBDIR ABSOLUTE_CMAKE_INSTALL_LIBDIR)
+if(ABSOLUTE_CMAKE_INSTALL_LIBDIR)
+  # Absolute "CMAKE_INSTALL_*DIR" can be provided by user
+  # eg. to install libs and headers in different prefixes
+  # to split the package between propagated runtime dependency package
+  # and buildtime-only -dev package.
+  # In that case, the package can not be relocatable,
+  # and the installed files must not contain any "CMAKE_INSTALL_PREFIX"
+  # concatenated with a "CMAKE_INSTALL_*DIR". Use "CMAKE_INSTALL_FULL_*DIR".
+  set(PC_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
+  set(PC_LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
+  set(PC_INCLUDEDIR ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+else()
+  # When "CMAKE_INSTALL_*DIR" are relative, we should ensure the installed
+  # files contain relocatable references to install paths.
+  set(PC_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+  set(PC_LIBDIR "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
+  set(PC_INCLUDEDIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
 file(RELATIVE_PATH
   RELATIVE_PATH_TO_INSTALL_PREFIX
   "${PC_CONFIG_INSTALL_DIR}"
@@ -497,9 +571,15 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorials"
 #===============================================================================
 
 # Add an "uninstall" target
-# Ref: http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
-configure_file("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in" "${PROJECT_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
-add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
+# https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/recipe/AddUninstallTarget
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake/uninstall_target.cmake"
+  IMMEDIATE @ONLY
+)
+add_custom_target(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
+)
 
 #===============================================================================
 # Code Formatting
@@ -511,7 +591,7 @@ endif()
 
 find_program(
   CLANG_FORMAT_EXECUTABLE
-  NAMES clang-format-12
+  NAMES clang-format-14
 )
 
 get_property(formatting_files GLOBAL PROPERTY DART_FORMAT_FILES)
@@ -535,7 +615,7 @@ if(CLANG_FORMAT_EXECUTABLE)
 
     add_custom_target(check-format
                       COMMAND ${CMAKE_COMMAND} -E echo "Checking ${formatting_files_length} files... "
-                      COMMAND ${DART_SOURCE_DIR}/tools/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+                      COMMAND ${DART_SOURCE_DIR}/scripts/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
                       COMMAND ${CMAKE_COMMAND} -E echo "Done."
                       DEPENDS ${CLANG_FORMAT_EXECUTABLE}
                       WORKING_DIRECTORY ${DART_SOURCE_DIR}/dart)
@@ -563,14 +643,14 @@ endif()
 #===============================================================================
 if(DOXYGEN_FOUND)
 
-  set(DOXYGEN_DOXYFILE_IN      "${PROJECT_SOURCE_DIR}/doxygen/Doxyfile.in"    )
-  set(DOXYGEN_DOXYFILE         "${PROJECT_BINARY_DIR}/doxygen/Doxyfile"       )
-  set(DOXYGEN_HTML_INDEX       "${PROJECT_BINARY_DIR}/doxygen/html/index.html")
-  set(DOXYGEN_OUTPUT_ROOT      "${PROJECT_BINARY_DIR}/doxygen/html"           )
+  set(DOXYGEN_DOXYFILE_IN      "${PROJECT_SOURCE_DIR}/docs/doxygen/Doxyfile.in"    )
+  set(DOXYGEN_DOXYFILE         "${PROJECT_BINARY_DIR}/docs/doxygen/Doxyfile"       )
+  set(DOXYGEN_HTML_INDEX       "${PROJECT_BINARY_DIR}/docs/doxygen/html/index.html")
+  set(DOXYGEN_OUTPUT_ROOT      "${PROJECT_BINARY_DIR}/docs/doxygen/html"           )
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/${PROJECT_NAME}.tag"   )
   set(DOXYGEN_INCLUDE_PATH     "${PROJECT_SOURCE_DIR}"                        )
   set(DOXYGEN_INPUT_ROOT       "${PROJECT_SOURCE_DIR}/dart"                   )
-  set(DOXYGEN_EXTRA_INPUTS     "${PROJECT_SOURCE_DIR}/doxygen/mainpage.dox"   )
+  set(DOXYGEN_EXTRA_INPUTS     "${PROJECT_SOURCE_DIR}/docs/doxygen/mainpage.dox"   )
   set(DOXYGEN_EXCLUDE          "${PROJECT_SOURCE_DIR}/dart/external"          )
   set(DOXYGEN_STRIP_FROM_PATH  "${CMAKE_CURRENT_SOURCE_DIR}"                  )
 
@@ -584,7 +664,7 @@ if(DOXYGEN_FOUND)
   # - DOXYGEN_STRIP_FROM_PATH
   configure_file(${DOXYGEN_DOXYFILE_IN} ${DOXYGEN_DOXYFILE} @ONLY)
   file(
-    COPY "${PROJECT_SOURCE_DIR}/doxygen/DART logo.png"
+    COPY "${PROJECT_SOURCE_DIR}/docs/doxygen/DART logo.png"
     DESTINATION ${DOXYGEN_OUTPUT_ROOT}
   )
   add_custom_command(
@@ -601,10 +681,9 @@ if(DOXYGEN_FOUND)
     COMMAND find "${DOXYGEN_OUTPUT_ROOT}" -type f -name "*.html"
         -exec sed -i 's: doxygen=\"[^\"]*\"::g' {} \\$<SEMICOLON>
     COMMAND ${CMAKE_COMMAND} -E echo "Done."
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docs/doxygen
     DEPENDS ${DOXYGEN_DOXYFILE}
   )
-  # add_custom_target(docs ALL DEPENDS ${DOXYGEN_HTML_INDEX})
   add_custom_target(docs DEPENDS ${DOXYGEN_HTML_INDEX})
   add_custom_target(
     docs_forced
@@ -612,7 +691,7 @@ if(DOXYGEN_FOUND)
     COMMAND ${DOXYGEN_EXECUTABLE} -u ${DOXYGEN_DOXYFILE}
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_DOXYFILE}
     COMMAND ${CMAKE_COMMAND} -E echo "Done."
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docs/doxygen
   )
 
   # Add the "view_docs" target that opens the generated API documentation.
@@ -633,7 +712,9 @@ endif()
 #===============================================================================
 message(STATUS "")
 message(STATUS "Run 'make' to build all the components")
-message(STATUS "Run 'make tests' to build all the unittests")
+if (BUILD_TESTING)
+  message(STATUS "Run 'make tests' to build all the tests")
+endif()
 message(STATUS "Run 'make examples' to build all the examples")
 message(STATUS "Run 'make tutorials' to build all the tutorials")
 message(STATUS "Run 'make view_docs' to see the API documentation")
@@ -641,6 +722,11 @@ message(STATUS "Run 'make install' to install all the C++ components")
 if(TARGET dartpy)
   message(STATUS "Run 'make dartpy' to build dartpy")
   message(STATUS "Run 'make install' to install dartpy")
+endif()
+if(TARGET coverage)
+  message(STATUS "- 'coverage'     : generage coverage report")
+  message(STATUS "- 'coverage_html': generage coverage report in html")
+  message(STATUS "- 'coverage_view': view generaged coverage report in a browser")
 endif()
 
 #===============================================================================

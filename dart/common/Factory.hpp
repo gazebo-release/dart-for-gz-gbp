@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,13 +33,13 @@
 #ifndef DART_COMMON_FACTORY_HPP_
 #define DART_COMMON_FACTORY_HPP_
 
+#include <dart/common/Singleton.hpp>
+#include <dart/common/StlHelpers.hpp>
+
 #include <functional>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-
-#include "dart/common/Singleton.hpp"
-#include "dart/common/StlHelpers.hpp"
 
 namespace dart {
 namespace common {
@@ -141,6 +141,6 @@ public:
 } // namespace common
 } // namespace dart
 
-#include "dart/common/detail/Factory-impl.hpp"
+#include <dart/common/detail/Factory-impl.hpp>
 
 #endif // DART_COMMON_FACTORY_HPP_

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/constraint/ConstrainedGroup.hpp"
 
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+#include "dart/constraint/ConstraintBase.hpp"
+#include "dart/constraint/ConstraintSolver.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
-
-#include "dart/common/Console.hpp"
-#include "dart/constraint/ConstraintBase.hpp"
-#include "dart/constraint/ConstraintSolver.hpp"
 
 namespace dart {
 namespace constraint {
@@ -52,11 +53,11 @@ ConstrainedGroup::~ConstrainedGroup() {}
 //==============================================================================
 void ConstrainedGroup::addConstraint(const ConstraintBasePtr& _constraint)
 {
-  assert(_constraint != nullptr && "Attempted to add nullptr.");
-  assert(
+  DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
+  DART_ASSERT(
       !containConstraint(_constraint)
       && "Attempted to add a duplicate constraint.");
-  assert(_constraint->isActive());
+  DART_ASSERT(_constraint->isActive());
 
   mConstraints.push_back(_constraint);
 }
@@ -70,22 +71,22 @@ std::size_t ConstrainedGroup::getNumConstraints() const
 //==============================================================================
 ConstraintBasePtr ConstrainedGroup::getConstraint(std::size_t _index)
 {
-  assert(_index < mConstraints.size());
+  DART_ASSERT(_index < mConstraints.size());
   return mConstraints[_index];
 }
 
 //==============================================================================
 ConstConstraintBasePtr ConstrainedGroup::getConstraint(std::size_t _index) const
 {
-  assert(_index < mConstraints.size());
+  DART_ASSERT(_index < mConstraints.size());
   return mConstraints[_index];
 }
 
 //==============================================================================
 void ConstrainedGroup::removeConstraint(const ConstraintBasePtr& _constraint)
 {
-  assert(_constraint != nullptr && "Attempted to add nullptr.");
-  assert(
+  DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
+  DART_ASSERT(
       containConstraint(_constraint)
       && "Attempted to remove not existing constraint.");
 
@@ -101,7 +102,7 @@ void ConstrainedGroup::removeAllConstraints()
 }
 
 //==============================================================================
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
 bool ConstrainedGroup::containConstraint(
     const ConstConstraintBasePtr& _constraint) const
 {

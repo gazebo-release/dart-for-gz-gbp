@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -43,8 +43,9 @@
     "This header is deprecated as of DART 6.6. "                               \
     "Please use dart/gui/glut/GraphWindow.hpp instead.")
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/gui/glut/GraphWindow.hpp"
+#include <dart/gui/glut/GraphWindow.hpp>
+
+#include <dart/common/Deprecated.hpp>
 
 namespace dart {
 namespace gui {

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,14 +32,15 @@
 
 #include "dart/gui/glut/GLUTFuncs.hpp"
 
-#include <cstdio>
-#include <iostream>
-#include <string>
+#include "dart/gui/LoadOpengl.hpp"
+#include "dart/gui/glut/LoadGlut.hpp"
 
 #include <Eigen/Eigen>
 
-#include "dart/gui/LoadOpengl.hpp"
-#include "dart/gui/glut/LoadGlut.hpp"
+#include <iostream>
+#include <string>
+
+#include <cstdio>
 
 namespace dart {
 namespace gui {
@@ -61,8 +62,7 @@ void drawStringOnScreen(float x, float y, const std::string& s, bool bigFont)
   glLoadIdentity();
   glRasterPos2f(x, y);
   unsigned int length = s.length();
-  for (unsigned int c = 0; c < length; c++)
-  {
+  for (unsigned int c = 0; c < length; c++) {
     if (bigFont)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s.at(c));
     else

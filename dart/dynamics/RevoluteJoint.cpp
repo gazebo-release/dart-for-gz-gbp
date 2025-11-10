@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,13 @@
 
 #include "dart/dynamics/RevoluteJoint.hpp"
 
-#include <string>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -145,7 +146,7 @@ RevoluteJoint::getRelativeJacobianStatic(
       Joint::mAspectProperties.mT_ChildBodyToJoint, getAxis());
 
   // Verification
-  assert(!math::isNan(jacobian));
+  DART_ASSERT(!math::isNan(jacobian));
 
   return jacobian;
 }
@@ -183,7 +184,7 @@ void RevoluteJoint::updateRelativeTransform() const
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
   // Verification
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -197,7 +198,7 @@ void RevoluteJoint::updateRelativeJacobian(bool _mandatory) const
 void RevoluteJoint::updateRelativeJacobianTimeDeriv() const
 {
   // Time derivative of revolute joint is always zero
-  assert(mJacobianDeriv == Eigen::Vector6d::Zero());
+  DART_ASSERT(mJacobianDeriv == Eigen::Vector6d::Zero());
 }
 
 } // namespace dynamics

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,16 +32,17 @@
 
 #include "dart/gui/osg/WorldNode.hpp"
 
-#include <deque>
+#include "dart/common/Macros.hpp"
+#include "dart/dynamics/BodyNode.hpp"
+#include "dart/dynamics/Skeleton.hpp"
+#include "dart/gui/osg/ShapeFrameNode.hpp"
+#include "dart/simulation/World.hpp"
 
 #include <osg/NodeCallback>
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowedScene>
 
-#include "dart/dynamics/BodyNode.hpp"
-#include "dart/dynamics/Skeleton.hpp"
-#include "dart/gui/osg/ShapeFrameNode.hpp"
-#include "dart/simulation/World.hpp"
+#include <deque>
 
 namespace dart {
 namespace gui {
@@ -114,10 +115,8 @@ void WorldNode::refresh()
 
   clearChildUtilizationFlags();
 
-  if (mSimulating)
-  {
-    for (std::size_t i = 0; i < mNumStepsPerCycle; ++i)
-    {
+  if (mSimulating) {
+    for (std::size_t i = 0; i < mNumStepsPerCycle; ++i) {
       customPreStep();
       mWorld->step();
       customPostStep();
@@ -206,16 +205,14 @@ void WorldNode::clearUnusedNodes()
   unused.reserve(mFrameToNode.size());
 
   // Find unusued ShapeFrameNodes
-  for (auto& node_pair : mFrameToNode)
-  {
+  for (auto& node_pair : mFrameToNode) {
     ShapeFrameNode* node = node_pair.second;
     if (node && !node->wasUtilized())
       unused.push_back(node_pair.first);
   }
 
   // Clear unused ShapeFrameNodes
-  for (dart::dynamics::Frame* frame : unused)
-  {
+  for (dart::dynamics::Frame* frame : unused) {
     NodeMap::iterator it = mFrameToNode.find(frame);
     ShapeFrameNode* node = it->second;
     mNormalGroup->removeChild(node);
@@ -232,11 +229,9 @@ void WorldNode::refreshSkeletons()
 
   // Apply the recursive Frame refreshing functionality to the root BodyNode of
   // each Skeleton
-  for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
-  {
+  for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i) {
     const dart::dynamics::SkeletonPtr& skeleton = mWorld->getSkeleton(i);
-    for (std::size_t i = 0; i < skeleton->getNumTrees(); ++i)
-    {
+    for (std::size_t i = 0; i < skeleton->getNumTrees(); ++i) {
       refreshBaseFrameNode(skeleton->getRootBodyNode(i));
     }
   }
@@ -257,8 +252,7 @@ void WorldNode::refreshBaseFrameNode(dart::dynamics::Frame* frame)
 {
   std::deque<dart::dynamics::Frame*> frames;
   frames.push_back(frame);
-  while (!frames.empty())
-  {
+  while (!frames.empty()) {
     dart::dynamics::Frame* nextFrame = frames.front();
     frames.pop_front();
     if (nextFrame->isShapeFrame())
@@ -280,8 +274,7 @@ void WorldNode::refreshShapeFrameNode(dart::dynamics::Frame* frame)
   NodeMap::iterator it = insertion.first;
   bool inserted = insertion.second;
 
-  if (!inserted)
-  {
+  if (!inserted) {
     ShapeFrameNode* node = it->second;
     if (!node)
       return;
@@ -291,16 +284,13 @@ void WorldNode::refreshShapeFrameNode(dart::dynamics::Frame* frame)
     // update the group that ShapeFrameNode should be
     if ((!node->getShapeFrame()->hasVisualAspect()
          || !node->getShapeFrame()->getVisualAspect(true)->getShadowed())
-        && node->getParent(0) != mNormalGroup)
-    {
+        && node->getParent(0) != mNormalGroup) {
       mShadowedGroup->removeChild(node);
       mNormalGroup->addChild(node);
-    }
-    else if (
+    } else if (
         node->getShapeFrame()->hasVisualAspect()
         && node->getShapeFrame()->getVisualAspect(true)->getShadowed()
-        && node->getParent(0) != mShadowedGroup)
-    {
+        && node->getParent(0) != mShadowedGroup) {
       mNormalGroup->removeChild(node);
       mShadowedGroup->addChild(node);
     }
@@ -308,8 +298,7 @@ void WorldNode::refreshShapeFrameNode(dart::dynamics::Frame* frame)
     return;
   }
 
-  if (!frame->isShapeFrame())
-  {
+  if (!frame->isShapeFrame()) {
     dtwarn << "[WorldNode::refreshShapeFrameNode] Frame named ["
            << frame->getName() << "] (" << frame << ") claims to be a "
            << "ShapeFrame, but failed to be converted. Please report this as a "
@@ -321,11 +310,9 @@ void WorldNode::refreshShapeFrameNode(dart::dynamics::Frame* frame)
       = new ShapeFrameNode(frame->asShapeFrame(), this);
   it->second = node;
   if (!node->getShapeFrame()->hasVisualAspect()
-      || !node->getShapeFrame()->getVisualAspect(true)->getShadowed())
-  {
+      || !node->getShapeFrame()->getVisualAspect(true)->getShadowed()) {
     mNormalGroup->addChild(node);
-  }
-  else
+  } else
     mShadowedGroup->addChild(node);
 }
 
@@ -339,13 +326,10 @@ bool WorldNode::isShadowed() const
 void WorldNode::setShadowTechnique(
     ::osg::ref_ptr<osgShadow::ShadowTechnique> shadowTechnique)
 {
-  if (!shadowTechnique)
-  {
+  if (!shadowTechnique) {
     mShadowed = false;
     mShadowedGroup->setShadowTechnique(nullptr);
-  }
-  else
-  {
+  } else {
     mShadowed = true;
     mShadowedGroup->setShadowTechnique(shadowTechnique);
   }
@@ -363,7 +347,7 @@ void WorldNode::setShadowTechnique(
 ::osg::ref_ptr<osgShadow::ShadowTechnique>
 WorldNode::createDefaultShadowTechnique(const Viewer* viewer)
 {
-  assert(viewer);
+  DART_ASSERT(viewer);
 
   ::osg::ref_ptr<osgShadow::ShadowMap> sm = new osgShadow::ShadowMap;
   // increase the resolution of default shadow texture for higher quality

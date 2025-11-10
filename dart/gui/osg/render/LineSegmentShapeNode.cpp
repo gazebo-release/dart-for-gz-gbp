@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,17 +32,17 @@
 
 #include "dart/gui/osg/render/LineSegmentShapeNode.hpp"
 
+#include "dart/dynamics/LineSegmentShape.hpp"
+#include "dart/dynamics/SimpleFrame.hpp"
+#include "dart/gui/osg/ShapeFrameNode.hpp"
+#include "dart/gui/osg/Utils.hpp"
+
 #include <osg/CullFace>
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/LineWidth>
 #include <osg/ShapeDrawable>
-
-#include "dart/dynamics/LineSegmentShape.hpp"
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/gui/osg/ShapeFrameNode.hpp"
-#include "dart/gui/osg/Utils.hpp"
 
 namespace dart {
 namespace gui {
@@ -116,8 +116,7 @@ void LineSegmentShapeNode::refresh()
 //==============================================================================
 void LineSegmentShapeNode::extractData(bool /*firstTime*/)
 {
-  if (nullptr == mGeode)
-  {
+  if (nullptr == mGeode) {
     mGeode
         = new LineSegmentShapeGeode(mLineSegmentShape, mParentShapeFrameNode);
     addChild(mGeode);
@@ -161,14 +160,12 @@ void LineSegmentShapeGeode::extractData(bool firstTime)
 {
   if (mLineSegmentShape->checkDataVariance(
           dart::dynamics::Shape::DYNAMIC_PRIMITIVE)
-      || firstTime)
-  {
+      || firstTime) {
     mLineWidth->setWidth(mLineSegmentShape->getThickness());
     getOrCreateStateSet()->setAttributeAndModes(mLineWidth);
   }
 
-  if (nullptr == mDrawable)
-  {
+  if (nullptr == mDrawable) {
     mDrawable
         = new LineSegmentShapeDrawable(mLineSegmentShape.get(), mVisualAspect);
     addDrawable(mDrawable);
@@ -208,16 +205,14 @@ void LineSegmentShapeDrawable::refresh(bool firstTime)
 
   if (mLineSegmentShape->checkDataVariance(
           dart::dynamics::Shape::DYNAMIC_ELEMENTS)
-      || firstTime)
-  {
+      || firstTime) {
     const common::aligned_vector<Eigen::Vector2i>& connections
         = mLineSegmentShape->getConnections();
 
     mElements->clear();
     mElements->reserve(2 * connections.size());
 
-    for (std::size_t i = 0; i < connections.size(); ++i)
-    {
+    for (std::size_t i = 0; i < connections.size(); ++i) {
       const Eigen::Vector2i& c = connections[i];
       mElements->push_back(static_cast<unsigned int>(c[0]));
       mElements->push_back(static_cast<unsigned int>(c[1]));
@@ -230,8 +225,7 @@ void LineSegmentShapeDrawable::refresh(bool firstTime)
           dart::dynamics::Shape::DYNAMIC_VERTICES)
       || mLineSegmentShape->checkDataVariance(
           dart::dynamics::Shape::DYNAMIC_ELEMENTS)
-      || firstTime)
-  {
+      || firstTime) {
     const std::vector<Eigen::Vector3d>& vertices
         = mLineSegmentShape->getVertices();
 
@@ -245,8 +239,7 @@ void LineSegmentShapeDrawable::refresh(bool firstTime)
   }
 
   if (mLineSegmentShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_COLOR)
-      || firstTime)
-  {
+      || firstTime) {
     // Set color
     const ::osg::Vec4d color = eigToOsgVec4d(mVisualAspect->getRGBA());
     mColors->resize(1);
@@ -255,16 +248,13 @@ void LineSegmentShapeDrawable::refresh(bool firstTime)
 
     // Set alpha specific properties
     ::osg::StateSet* ss = getOrCreateStateSet();
-    if (std::abs(color.a()) > 1 - getAlphaThreshold())
-    {
+    if (std::abs(color.a()) > 1 - getAlphaThreshold()) {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::OFF);
       ss->setRenderingHint(::osg::StateSet::OPAQUE_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;
       depth->setWriteMask(true);
       ss->setAttributeAndModes(depth, ::osg::StateAttribute::ON);
-    }
-    else
-    {
+    } else {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::ON);
       ss->setRenderingHint(::osg::StateSet::TRANSPARENT_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;

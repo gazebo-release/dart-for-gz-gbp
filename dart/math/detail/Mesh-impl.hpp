@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_MATH_DETAIL_MESH_IMPL_HPP_
 #define DART_MATH_DETAIL_MESH_IMPL_HPP_
 
-#include "dart/math/Mesh.hpp"
+#include <dart/math/Mesh.hpp>
 
 namespace dart {
 namespace math {
@@ -92,8 +92,7 @@ bool Mesh<S>::isEmpty() const
 template <typename S>
 void Mesh<S>::translate(const Vector3& translation)
 {
-  for (auto& vertex : mVertices)
-  {
+  for (auto& vertex : mVertices) {
     vertex += translation;
   }
 }
@@ -114,15 +113,12 @@ Mesh<S>& Mesh<S>::operator+=(const Mesh& other)
 
   // Insert vertex normals if both meshes have normals. Otherwise, clean the
   // vertex normals.
-  if ((isEmpty() || hasVertexNormals()) && other.hasVertexNormals())
-  {
+  if ((isEmpty() || hasVertexNormals()) && other.hasVertexNormals()) {
     mVertexNormals.insert(
         mVertexNormals.end(),
         other.mVertexNormals.begin(),
         other.mVertexNormals.end());
-  }
-  else
-  {
+  } else {
     mVertexNormals.clear();
   }
 
@@ -144,8 +140,7 @@ Mesh<S>::Mesh()
 template <typename S>
 void Mesh<S>::normalizeVertexNormals()
 {
-  for (auto& normal : mVertexNormals)
-  {
+  for (auto& normal : mVertexNormals) {
     normal.normalize();
   }
 }
