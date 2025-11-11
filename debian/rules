@@ -4,12 +4,13 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all reproducible=+all future=+lfs
 # Needed to inject correctly the python versions supported
 export PYBUILD_SYSTEM=cmake
 export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
+		-DCMAKE_CXX_FLAGS="-DNDEBUG=1" \
 		-DBUILD_SHARED_LIBS=ON \
 		-DCMAKE_SKIP_INSTALL_RPATH=ON \
-		-DDART_SKIP_FLANN=ON \
-		-DDART_SKIP_PAGMO=ON \
 		-DDART_VERBOSE=ON \
 		-DDART_USE_SYSTEM_GOOGLETEST=ON \
+		-DDART_BUILD_DARTPY=ON \
+		-DDART_USE_SYSTEM_PYBIND11=ON \
 		-DDARTPY_PYTHON_VERSION={version}
 
 ifneq (,$(filter $(DEB_HOST_ARCH),mips mipsel))
@@ -23,7 +24,9 @@ execute_after_dh_auto_install:
 	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
 
 execute_before_dh_auto_test:
-	PYBUILD_BUILD_ARGS="tests" dh_auto_build
+	PYBUILD_BUILD_ARGS="dartpy" dh_auto_build
+	# python/dartpy/dartpy.cpython-312-x86_64-linux-gnu.so
+
 
 override_dh_auto_test:
 	 true
