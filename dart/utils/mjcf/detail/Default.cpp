@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/utils/mjcf/detail/Default.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/utils/XmlHelpers.hpp"
 #include "dart/utils/mjcf/detail/Utils.hpp"
 
@@ -69,8 +70,7 @@ Errors Default::read(tinyxml2::XMLElement* element, const Default* parent)
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "default")
-  {
+  if (std::string(element->Name()) != "default") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <Default> from the provided element");
@@ -78,16 +78,14 @@ Errors Default::read(tinyxml2::XMLElement* element, const Default* parent)
   }
 
   // Inherit from the parent
-  if (parent != nullptr)
-  {
+  if (parent != nullptr) {
     mGeomAttributes = parent->mGeomAttributes;
     mJointAttributes = parent->mJointAttributes;
     mMeshAttributes = parent->mMeshAttributes;
   }
 
   // Read <geom>
-  if (hasElement(element, "geom"))
-  {
+  if (hasElement(element, "geom")) {
     auto geomElement = getElement(element, "geom");
     const Errors geomErrors
         = appendGeomAttributes(mGeomAttributes, geomElement);
@@ -95,8 +93,7 @@ Errors Default::read(tinyxml2::XMLElement* element, const Default* parent)
   }
 
   // Read <joint>
-  if (hasElement(element, "joint"))
-  {
+  if (hasElement(element, "joint")) {
     auto jointElement = getElement(element, "joint");
     const Errors jointErrors
         = appendJointAttributes(mJointAttributes, jointElement);
@@ -104,8 +101,7 @@ Errors Default::read(tinyxml2::XMLElement* element, const Default* parent)
   }
 
   // Read <mesh>
-  if (hasElement(element, "mesh"))
-  {
+  if (hasElement(element, "mesh")) {
     auto meshElement = getElement(element, "mesh");
     const Errors meshErrors
         = appendMeshAttributes(mMeshAttributes, meshElement);
@@ -113,12 +109,10 @@ Errors Default::read(tinyxml2::XMLElement* element, const Default* parent)
   }
 
   // Read <mesh>
-  if (hasElement(element, "equality"))
-  {
+  if (hasElement(element, "equality")) {
     auto equalityElement = getElement(element, "equality");
 
-    if (hasElement(equalityElement, "weld"))
-    {
+    if (hasElement(equalityElement, "weld")) {
       auto weldElement = getElement(equalityElement, "weld");
       const Errors weldErrors
           = appendWeldAttributes(mWeldAttributes, weldElement);
@@ -140,8 +134,7 @@ const Default* Defaults::getDefault(const std::string& className) const
 {
   const auto result = mDefaultMap.find(className);
 
-  if (result == mDefaultMap.end())
-  {
+  if (result == mDefaultMap.end()) {
     return nullptr;
   }
 
@@ -151,7 +144,7 @@ const Default* Defaults::getDefault(const std::string& className) const
 //==============================================================================
 const Default* Defaults::getRootDefault() const
 {
-  assert(hasDefault(mRootClassName));
+  DART_ASSERT(hasDefault(mRootClassName));
   return getDefault(mRootClassName);
 }
 
@@ -160,8 +153,7 @@ Errors Defaults::read(tinyxml2::XMLElement* element, const Default* parent)
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "default")
-  {
+  if (std::string(element->Name()) != "default") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <default> from the provided element");
@@ -169,19 +161,14 @@ Errors Defaults::read(tinyxml2::XMLElement* element, const Default* parent)
   }
 
   std::string className;
-  if (hasAttribute(element, "class"))
-  {
+  if (hasAttribute(element, "class")) {
     className = getAttributeString(element, "class");
 
-    if (parent == nullptr)
-    {
+    if (parent == nullptr) {
       mRootClassName = className;
     }
-  }
-  else
-  {
-    if (parent != nullptr)
-    {
+  } else {
+    if (parent != nullptr) {
       errors.push_back(Error(
           ErrorCode::ATTRIBUTE_MISSING,
           "Class name for non-root <default> is not specified."));
@@ -191,8 +178,7 @@ Errors Defaults::read(tinyxml2::XMLElement* element, const Default* parent)
 
   auto newDefault = Default();
   const Errors defaultErrors = newDefault.read(element, parent);
-  if (!defaultErrors.empty())
-  {
+  if (!defaultErrors.empty()) {
     errors.insert(errors.end(), defaultErrors.begin(), defaultErrors.end());
     return errors;
   }
@@ -200,11 +186,9 @@ Errors Defaults::read(tinyxml2::XMLElement* element, const Default* parent)
 
   // Read multiple <default>
   ElementEnumerator defaultElements(element, "default");
-  while (defaultElements.next())
-  {
+  while (defaultElements.next()) {
     const Errors defaultErrors = read(defaultElements.get(), &newDefault);
-    if (!defaultErrors.empty())
-    {
+    if (!defaultErrors.empty()) {
       errors.insert(errors.end(), defaultErrors.begin(), defaultErrors.end());
       return errors;
     }

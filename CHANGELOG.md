@@ -2,6 +2,143 @@
 
 ## DART 6
 
+### [DART 6.16.0 (2025-11-09)](https://github.com/dartsim/dart/milestone/83?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Simulation
+  * Allow servo joints to recover from position limits: [#2086](https://github.com/dartsim/dart/pull/2086)
+  * Fix passive joint commands to respect joint actuation limits: [#1997](https://github.com/dartsim/dart/pull/1997)
+
+* Core
+  * Replace legacy `assert` macros with `DART_ASSERT` on release-6.16 (backport of #2109): [#2117](https://github.com/dartsim/dart/pull/2117)
+
+* Build
+  * Fix pybind11 detection and assert include handling with pixi builds: [#2118](https://github.com/dartsim/dart/pull/2118)
+  * Port Eigen compatibility guard to keep 3.4+ builds working on release-6.16: [#2108](https://github.com/dartsim/dart/pull/2108)
+  * Add `DART_USE_SYSTEM_TRACY`, `DART_USE_SYSTEM_PYBIND11`, and `DART_USE_SYSTEM_GOOGLEBENCHMARK` toggles: [#1911](https://github.com/dartsim/dart/pull/1911), [#1907](https://github.com/dartsim/dart/pull/1907), [#1904](https://github.com/dartsim/dart/pull/1904)
+  * Fix absolute install directory handling in CMake exports: [#2006](https://github.com/dartsim/dart/pull/2006)
+
+* Tooling and Docs
+  * Use system `googletest` and `googlebenchmark` in pixi environments and upgrade bundled dependencies: [#1905](https://github.com/dartsim/dart/pull/1905)
+  * Switch coverage and API docs workflows to pixi tasks and GitHub Pages deploy actions: [#2036](https://github.com/dartsim/dart/pull/2036), [#2032](https://github.com/dartsim/dart/pull/2032)
+  * Install OpenSceneGraph from source on macOS builds to avoid flaky CI: [#2037](https://github.com/dartsim/dart/pull/2037)
+  * Restructure documentation to clearly separate C++ and Python guidance: [#2040](https://github.com/dartsim/dart/pull/2040)
+  * Add pixi-powered developer tasks (including Python workflows) and refresh GitHub templates: [#2034](https://github.com/dartsim/dart/pull/2034), [#2039](https://github.com/dartsim/dart/pull/2039)
+  * Add gz-physics integration tests to CI to guard the public plugin: [#2000](https://github.com/dartsim/dart/pull/2000)
+
+### [DART 6.15.0 (2024-11-15)](https://github.com/dartsim/dart/milestone/77?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Build
+  * Added ImGui 1.91.5 support: [#1872](https://github.com/dartsim/dart/pull/1872)
+  * Added nlopt 2.9.0 support: [#1875](https://github.com/dartsim/dart/pull/1875)
+  * Fixed imgui is not added as transitive dependency: [#1877](https://github.com/dartsim/dart/pull/1877)
+
+### [DART 6.14.5 (2024-09-08)](https://github.com/dartsim/dart/milestone/82?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Fixed missing parentheses in config.hpp: [#1838](https://github.com/dartsim/dart/pull/1838)
+* Allowed negative scale for MeshShape: [#1841](https://github.com/dartsim/dart/pull/1841)
+
+### [DART 6.14.4 (2024-07-06)](https://github.com/dartsim/dart/milestone/81?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Fixed GLUT dependency handling on Windows: [#1827](https://github.com/dartsim/dart/pull/1827)
+
+### [DART 6.14.3 (2024-07-05)](https://github.com/dartsim/dart/milestone/80?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Changed the default CMake option to DART_ENABLE_SIMD=OFF: [#1825](https://github.com/dartsim/dart/pull/1825)
+
+### [DART 6.14.2 (2024-06-28)](https://github.com/dartsim/dart/milestone/79?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Fixed version definitions: [#1820](https://github.com/dartsim/dart/pull/1820)
+
+### [DART 6.14.2 (2024-06-26)](https://github.com/dartsim/dart/milestone/78?closed=1)
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Included CTest for BUILD_TESTING option: [#1819](https://github.com/dartsim/dart/pull/1819)
+
+### [DART 6.14.0 (2024-06-24)](https://github.com/dartsim/dart/milestone/73?closed=1)
+
+This release is mostly a maintenance update, including various CI updates and build fixes for recent development environment toolsets and dependencies.
+
+* Tested Platforms
+
+  * Linux
+    * Ubuntu 22.04 LTS / GCC 11.4 / x86_64
+    * Ubuntu 24.04 LTS / GCC 13.2 / x86_64
+  * macOS 14 / Clang 15 / arm64
+  * Windows / MSVC 19.40 / x86_64
+
+* Breaking Changes
+
+  * Removed planning component
+
+* Build
+  
+  * Added Pixi support
+
+* General
+
+  * Added profile interface with Tracy backend support
+  * Added benchmark setup, including boxes and kinematics benchmarks
+
+* Dynamics
+
+  * Allowed specifying mimic joint properties per DoF: [#1752](https://github.com/dartsim/dart/pull/1752)
+  * [Improved performance in constructing LCP problem](https://github.com/dartsim/dart/commit/76d8fe1a72f6925c06f64eea3d2cd135234b59de)
+
 ### [DART 6.13.2 (2024-03-17)](https://github.com/dartsim/dart/milestone/75?closed=1)
 
 * Tested Platforms

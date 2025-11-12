@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "Humanoid.hpp"
 
 #include "State.hpp"
+#include "dart/common/Macros.hpp"
 
 // Macro for functions not implemented yet
 #define NOT_YET(FUNCTION)                                                      \
@@ -107,9 +108,9 @@ AtlasRobot::~AtlasRobot()
   mLeftThigh = mSkeleton->getBodyNode("l_uleg");
   mRightThigh = mSkeleton->getBodyNode("r_uleg");
 
-  assert(mPelvis != nullptr);
-  assert(mLeftFoot != nullptr);
-  assert(mRightFoot != nullptr);
-  assert(mLeftThigh != nullptr);
-  assert(mRightThigh != nullptr);
+  DART_ASSERT(mPelvis != nullptr);
+  DART_ASSERT(mLeftFoot != nullptr);
+  DART_ASSERT(mRightFoot != nullptr);
+  DART_ASSERT(mLeftThigh != nullptr);
+  DART_ASSERT(mRightThigh != nullptr);
 }

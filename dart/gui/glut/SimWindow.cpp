@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -38,10 +38,6 @@
 
 #include "dart/gui/glut/SimWindow.hpp"
 
-#include <cstdio>
-#include <iostream>
-#include <string>
-
 #include "dart/collision/CollisionDetector.hpp"
 #include "dart/constraint/ConstraintSolver.hpp"
 #include "dart/dynamics/BoxShape.hpp"
@@ -64,6 +60,11 @@
 #include "dart/gui/glut/LoadGlut.hpp"
 #include "dart/simulation/World.hpp"
 #include "dart/utils/FileInfoWorld.hpp"
+
+#include <iostream>
+#include <string>
+
+#include <cstdio>
 
 namespace dart {
 namespace gui {
@@ -130,16 +131,12 @@ void SimWindow::drawEntities()
 void SimWindow::displayTimer(int _val)
 {
   int numIter = mDisplayTimeout / (mWorld->getTimeStep() * 1000);
-  if (mPlay)
-  {
+  if (mPlay) {
     mPlayFrame += 16;
     if (mPlayFrame >= mWorld->getRecording()->getNumFrames())
       mPlayFrame = 0;
-  }
-  else if (mSimulating)
-  {
-    for (int i = 0; i < numIter; i++)
-    {
+  } else if (mSimulating) {
+    for (int i = 0; i < numIter; i++) {
       timeStepping();
       mWorld->bake();
     }
@@ -152,24 +149,19 @@ void SimWindow::draw()
 {
   glDisable(GL_LIGHTING);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  if (!mSimulating)
-  {
-    if (mPlayFrame < mWorld->getRecording()->getNumFrames())
-    {
+  if (!mSimulating) {
+    if (mPlayFrame < mWorld->getRecording()->getNumFrames()) {
       std::size_t nSkels = mWorld->getNumSkeletons();
-      for (std::size_t i = 0; i < nSkels; i++)
-      {
+      for (std::size_t i = 0; i < nSkels; i++) {
         // std::size_t start = mWorld->getIndex(i);
         // std::size_t size = mWorld->getSkeleton(i)->getNumDofs();
         mWorld->getSkeleton(i)->setPositions(
             mWorld->getRecording()->getConfig(mPlayFrame, i));
       }
-      if (mShowMarkers)
-      {
+      if (mShowMarkers) {
         // std::size_t sumDofs = mWorld->getIndex(nSkels);
         int nContact = mWorld->getRecording()->getNumContacts(mPlayFrame);
-        for (int i = 0; i < nContact; i++)
-        {
+        for (int i = 0; i < nContact; i++) {
           Eigen::Vector3d v
               = mWorld->getRecording()->getContactPoint(mPlayFrame, i);
           Eigen::Vector3d f
@@ -187,15 +179,11 @@ void SimWindow::draw()
         }
       }
     }
-  }
-  else
-  {
-    if (mShowMarkers)
-    {
+  } else {
+    if (mShowMarkers) {
       const auto result
           = mWorld->getConstraintSolver()->getLastCollisionResult();
-      for (const auto& contact : result.getContacts())
-      {
+      for (const auto& contact : result.getContacts()) {
         Eigen::Vector3d v = contact.point;
         Eigen::Vector3d f = contact.force / 10.0;
         glBegin(GL_LINES);
@@ -235,8 +223,7 @@ void SimWindow::draw()
 
 void SimWindow::keyboard(unsigned char _key, int _x, int _y)
 {
-  switch (_key)
-  {
+  switch (_key) {
     case ' ': // use space key to play or stop the motion
       mSimulating = !mSimulating;
       if (mSimulating)
@@ -248,8 +235,7 @@ void SimWindow::keyboard(unsigned char _key, int _x, int _y)
         mSimulating = false;
       break;
     case '[': // step backward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame--;
         if (mPlayFrame < 0)
           mPlayFrame = 0;
@@ -257,8 +243,7 @@ void SimWindow::keyboard(unsigned char _key, int _x, int _y)
       }
       break;
     case ']': // step forwardward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame++;
         if (mPlayFrame >= mWorld->getRecording()->getNumFrames())
           mPlayFrame = 0;
@@ -322,15 +307,13 @@ void SimWindow::drawEntity(
     return;
 
   const auto& bodyNode = dynamic_cast<const dynamics::BodyNode*>(entity);
-  if (bodyNode)
-  {
+  if (bodyNode) {
     drawBodyNode(bodyNode, color, useDefaultColor, true);
     return;
   }
 
   const auto& shapeFrame = dynamic_cast<const dynamics::ShapeFrame*>(entity);
-  if (shapeFrame)
-  {
+  if (shapeFrame) {
     drawShapeFrame(shapeFrame, color, useDefaultColor);
     return;
   }
@@ -364,23 +347,20 @@ void SimWindow::drawBodyNode(
       });
   // _ri.popName();
 
-  if (mShowPointMasses)
-  {
+  if (mShowPointMasses) {
     const auto& softBodyNode
         = dynamic_cast<const dynamics::SoftBodyNode*>(bodyNode);
     if (softBodyNode)
       drawPointMasses(softBodyNode->getPointMasses(), color);
   }
 
-  if (mShowMarkers)
-  {
+  if (mShowMarkers) {
     bodyNode->eachMarker(
         [this](const dynamics::Marker* marker) { drawMarker(marker); });
   }
 
   // render the subtree
-  if (recursive)
-  {
+  if (recursive) {
     for (const auto& entity : bodyNode->getChildEntities())
       drawEntity(entity, color, useDefaultColor);
   }
@@ -445,59 +425,37 @@ void SimWindow::drawShape(
   using dynamics::SoftMeshShape;
   using dynamics::SphereShape;
 
-  if (const auto* sphere = shape->as<SphereShape>())
-  {
+  if (const auto* sphere = shape->as<SphereShape>()) {
     mRI->drawSphere(sphere->getRadius());
-  }
-  else if (const auto* box = shape->as<BoxShape>())
-  {
+  } else if (const auto* box = shape->as<BoxShape>()) {
     mRI->drawCube(box->getSize());
-  }
-  else if (const auto* ellipsoid = shape->as<EllipsoidShape>())
-  {
+  } else if (const auto* ellipsoid = shape->as<EllipsoidShape>()) {
     mRI->drawEllipsoid(ellipsoid->getDiameters());
-  }
-  else if (const auto* cylinder = shape->as<CylinderShape>())
-  {
+  } else if (const auto* cylinder = shape->as<CylinderShape>()) {
     mRI->drawCylinder(cylinder->getRadius(), cylinder->getHeight());
-  }
-  else if (const auto* capsule = shape->as<CapsuleShape>())
-  {
+  } else if (const auto* capsule = shape->as<CapsuleShape>()) {
     mRI->drawCapsule(capsule->getRadius(), capsule->getHeight());
-  }
-  else if (const auto* cone = shape->as<ConeShape>())
-  {
+  } else if (const auto* cone = shape->as<ConeShape>()) {
     mRI->drawCone(cone->getRadius(), cone->getHeight());
-  }
-  else if (const auto* pyramid = shape->as<PyramidShape>())
-  {
+  } else if (const auto* pyramid = shape->as<PyramidShape>()) {
     mRI->drawPyramid(
         pyramid->getBaseWidth(), pyramid->getBaseDepth(), pyramid->getHeight());
-  }
-  else if (const auto* multiSphere = shape->as<MultiSphereConvexHullShape>())
-  {
+  } else if (
+      const auto* multiSphere = shape->as<MultiSphereConvexHullShape>()) {
     mRI->drawMultiSphereConvexHull(multiSphere->getSpheres(), 3u);
-  }
-  else if (const auto* mesh = shape->as<MeshShape>())
-  {
+  } else if (const auto* mesh = shape->as<MeshShape>()) {
     glDisable(GL_COLOR_MATERIAL); // Use mesh colors to draw
 
     if (mesh->getDisplayList())
       mRI->drawList(mesh->getDisplayList());
     else
       mRI->drawMesh(mesh->getScale(), mesh->getMesh());
-  }
-  else if (const auto* softMesh = shape->as<SoftMeshShape>())
-  {
+  } else if (const auto* softMesh = shape->as<SoftMeshShape>()) {
     mRI->drawSoftMesh(softMesh->getAssimpMesh());
-  }
-  else if (const auto* lineSegmentShape = shape->as<LineSegmentShape>())
-  {
+  } else if (const auto* lineSegmentShape = shape->as<LineSegmentShape>()) {
     mRI->drawLineSegments(
         lineSegmentShape->getVertices(), lineSegmentShape->getConnections());
-  }
-  else
-  {
+  } else {
     dterr << "[SimWindow::drawShape] Attempting to draw an unsupported shape "
           << "type [" << shape->getType() << "].\n";
   }
@@ -514,8 +472,7 @@ void SimWindow::drawPointMasses(
   if (!mRI)
     return;
 
-  for (const auto& pointMass : pointMasses)
-  {
+  for (const auto& pointMass : pointMasses) {
     Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
 
     // render point at the current position
@@ -556,16 +513,11 @@ void SimWindow::drawMarker(
 
   mRI->pushName(marker->getID());
 
-  if (marker->getConstraintType() == dynamics::Marker::HARD)
-  {
+  if (marker->getConstraintType() == dynamics::Marker::HARD) {
     mRI->setPenColor(Color::Red(1.0));
-  }
-  else if (marker->getConstraintType() == dynamics::Marker::SOFT)
-  {
+  } else if (marker->getConstraintType() == dynamics::Marker::SOFT) {
     mRI->setPenColor(Color::Green(1.0));
-  }
-  else
-  {
+  } else {
     if (useDefaultColor)
       mRI->setPenColor(marker->getColor());
     else

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,13 +30,14 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
 #include "eigen_geometry_pybind.h"
 #include "eigen_pybind.h"
 #include "pointers.hpp"
+
+#include <dart/dart.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -48,7 +49,7 @@ void Node(py::module& m)
   ::py::class_<
       dart::dynamics::Node,
       /*dart::common::VersionCounter,*/ dart::common::Subject,
-      std::shared_ptr<dart::dynamics::Node> >(m, "Node")
+      std::shared_ptr<dart::dynamics::Node>>(m, "Node")
       .def(
           "setName",
           +[](dart::dynamics::Node* self, const std::string& newName)

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_COLLISION_FCL_FCLTTYPES_HPP_
 #define DART_COLLISION_FCL_FCLTTYPES_HPP_
 
-#include <Eigen/Dense>
+#include <dart/collision/fcl/BackwardCompatibility.hpp>
 
-#include "dart/collision/fcl/BackwardCompatibility.hpp"
+#include <Eigen/Dense>
 
 namespace dart {
 namespace collision {
@@ -43,11 +43,6 @@ namespace collision {
 class FCLTypes
 {
 public:
-#if !FCL_VERSION_AT_LEAST(0, 6, 0)
-  /// Convert Eigen vector3 type to FCL vector3 type
-  static dart::collision::fcl::Vector3 convertVector3(
-      const Eigen::Vector3d& _vec);
-#endif
   /// Convert FCL vector3 type to Eigen vector3 type
   static Eigen::Vector3d convertVector3(
       const dart::collision::fcl::Vector3& _vec);

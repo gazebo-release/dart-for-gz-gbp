@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/constraint/WeldJointConstraint.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 #include "dart/external/odelcpsolver/lcp.h"
@@ -68,7 +69,7 @@ WeldJointConstraint::WeldJointConstraint(
     mAppliedImpulseIndex(0)
 {
   // The bodies should be different bodies.
-  assert(_body1 != _body2);
+  DART_ASSERT(_body1 != _body2);
 
   mDim = 6;
 
@@ -115,27 +116,23 @@ const std::string& WeldJointConstraint::getStaticType()
 void WeldJointConstraint::update()
 {
   // mBodyNode1 should not be null pointer ever
-  assert(mBodyNode1);
+  DART_ASSERT(mBodyNode1);
 
   // Update Jacobian for body2
-  if (mBodyNode2)
-  {
+  if (mBodyNode2) {
     Eigen::Isometry3d T12
         = mBodyNode1->getTransform().inverse() * mBodyNode2->getTransform();
     mJacobian2 = math::AdTJac(T12, mJacobian1);
   }
 
   // Update position constraint error
-  if (mBodyNode2)
-  {
+  if (mBodyNode2) {
     const Eigen::Isometry3d& violationT = mRelativeTransform.inverse()
                                           * mBodyNode2->getTransform().inverse()
                                           * mBodyNode1->getTransform();
 
     mViolation = math::logMap(violationT);
-  }
-  else
-  {
+  } else {
     const Eigen::Isometry3d& violationT
         = mRelativeTransform.inverse() * mBodyNode1->getTransform();
 
@@ -146,21 +143,21 @@ void WeldJointConstraint::update()
 //==============================================================================
 void WeldJointConstraint::getInformation(ConstraintInfo* _lcp)
 {
-  assert(isActive());
+  DART_ASSERT(isActive());
 
-  assert(_lcp->w[0] == 0.0);
-  assert(_lcp->w[1] == 0.0);
-  assert(_lcp->w[2] == 0.0);
-  assert(_lcp->w[3] == 0.0);
-  assert(_lcp->w[4] == 0.0);
-  assert(_lcp->w[5] == 0.0);
+  DART_ASSERT(_lcp->w[0] == 0.0);
+  DART_ASSERT(_lcp->w[1] == 0.0);
+  DART_ASSERT(_lcp->w[2] == 0.0);
+  DART_ASSERT(_lcp->w[3] == 0.0);
+  DART_ASSERT(_lcp->w[4] == 0.0);
+  DART_ASSERT(_lcp->w[5] == 0.0);
 
-  assert(_lcp->findex[0] == -1);
-  assert(_lcp->findex[1] == -1);
-  assert(_lcp->findex[2] == -1);
-  assert(_lcp->findex[3] == -1);
-  assert(_lcp->findex[4] == -1);
-  assert(_lcp->findex[5] == -1);
+  DART_ASSERT(_lcp->findex[0] == -1);
+  DART_ASSERT(_lcp->findex[1] == -1);
+  DART_ASSERT(_lcp->findex[2] == -1);
+  DART_ASSERT(_lcp->findex[3] == -1);
+  DART_ASSERT(_lcp->findex[4] == -1);
+  DART_ASSERT(_lcp->findex[5] == -1);
 
   _lcp->lo[0] = -dInfinity;
   _lcp->lo[1] = -dInfinity;
@@ -200,72 +197,56 @@ void WeldJointConstraint::getInformation(ConstraintInfo* _lcp)
 //==============================================================================
 void WeldJointConstraint::applyUnitImpulse(std::size_t _index)
 {
-  assert(_index < mDim && "Invalid Index.");
-  assert(isActive());
+  DART_ASSERT(_index < mDim && "Invalid Index.");
+  DART_ASSERT(isActive());
 
-  if (mBodyNode2)
-  {
-    assert(mBodyNode1->isReactive() || mBodyNode2->isReactive());
+  if (mBodyNode2) {
+    DART_ASSERT(mBodyNode1->isReactive() || mBodyNode2->isReactive());
 
     // Weld joint between two bodies in one skeleton
-    if (mBodyNode1->getSkeleton() == mBodyNode2->getSkeleton())
-    {
+    if (mBodyNode1->getSkeleton() == mBodyNode2->getSkeleton()) {
       mBodyNode1->getSkeleton()->clearConstraintImpulses();
 
-      if (mBodyNode1->isReactive())
-      {
-        if (mBodyNode2->isReactive())
-        {
+      if (mBodyNode1->isReactive()) {
+        if (mBodyNode2->isReactive()) {
           mBodyNode1->getSkeleton()->updateBiasImpulse(
               mBodyNode1,
               mJacobian1.row(_index),
               mBodyNode2,
               -mJacobian2.row(_index));
-        }
-        else
-        {
+        } else {
           mBodyNode1->getSkeleton()->updateBiasImpulse(
               mBodyNode1, mJacobian1.row(_index));
         }
-      }
-      else
-      {
-        if (mBodyNode2->isReactive())
-        {
+      } else {
+        if (mBodyNode2->isReactive()) {
           mBodyNode2->getSkeleton()->updateBiasImpulse(
               mBodyNode2, -mJacobian2.row(_index));
-        }
-        else
-        {
-          assert(0);
+        } else {
+          DART_ASSERT(0);
         }
       }
 
       mBodyNode1->getSkeleton()->updateVelocityChange();
     }
     // Weld joint between two bodies in different skeletons
-    else
-    {
-      if (mBodyNode1->isReactive())
-      {
+    else {
+      if (mBodyNode1->isReactive()) {
         mBodyNode1->getSkeleton()->clearConstraintImpulses();
         mBodyNode1->getSkeleton()->updateBiasImpulse(
             mBodyNode1, mJacobian1.row(_index));
         mBodyNode1->getSkeleton()->updateVelocityChange();
       }
 
-      if (mBodyNode2->isReactive())
-      {
+      if (mBodyNode2->isReactive()) {
         mBodyNode2->getSkeleton()->clearConstraintImpulses();
         mBodyNode2->getSkeleton()->updateBiasImpulse(
             mBodyNode2, -mJacobian2.row(_index));
         mBodyNode2->getSkeleton()->updateVelocityChange();
       }
     }
-  }
-  else
-  {
-    assert(mBodyNode1->isReactive());
+  } else {
+    DART_ASSERT(mBodyNode1->isReactive());
 
     mBodyNode1->getSkeleton()->clearConstraintImpulses();
     mBodyNode1->getSkeleton()->updateBiasImpulse(
@@ -279,18 +260,17 @@ void WeldJointConstraint::applyUnitImpulse(std::size_t _index)
 //==============================================================================
 void WeldJointConstraint::getVelocityChange(double* _vel, bool _withCfm)
 {
-  assert(_vel != nullptr && "Null pointer is not allowed.");
-  assert(isActive());
+  DART_ASSERT(_vel != nullptr && "Null pointer is not allowed.");
+  DART_ASSERT(isActive());
 
   Eigen::Vector6d velChange = Eigen::Vector6d::Zero();
-  if (mBodyNode1->getSkeleton()->isImpulseApplied() && mBodyNode1->isReactive())
-  {
+  if (mBodyNode1->getSkeleton()->isImpulseApplied()
+      && mBodyNode1->isReactive()) {
     velChange += mBodyNode1->getBodyVelocityChange();
   }
 
   if (mBodyNode2 && mBodyNode2->getSkeleton()->isImpulseApplied()
-      && mBodyNode2->isReactive())
-  {
+      && mBodyNode2->isReactive()) {
     velChange -= mJacobian2 * mBodyNode2->getBodyVelocityChange();
   }
 
@@ -299,8 +279,7 @@ void WeldJointConstraint::getVelocityChange(double* _vel, bool _withCfm)
 
   // Add small values to diagnal to keep it away from singular, similar to cfm
   // varaible in ODE
-  if (_withCfm)
-  {
+  if (_withCfm) {
     _vel[mAppliedImpulseIndex]
         += _vel[mAppliedImpulseIndex] * mConstraintForceMixing;
   }
@@ -358,22 +337,16 @@ dynamics::SkeletonPtr WeldJointConstraint::getRootSkeleton() const
     return ConstraintBase::getRootSkeleton(
         mBodyNode1->getSkeleton()->getSkeleton());
 
-  if (mBodyNode2)
-  {
-    if (mBodyNode2->isReactive())
-    {
+  if (mBodyNode2) {
+    if (mBodyNode2->isReactive()) {
       return ConstraintBase::getRootSkeleton(
           mBodyNode2->getSkeleton()->getSkeleton());
-    }
-    else
-    {
-      assert(0);
+    } else {
+      DART_ASSERT(0);
       return nullptr;
     }
-  }
-  else
-  {
-    assert(0);
+  } else {
+    DART_ASSERT(0);
     return nullptr;
   }
 }
@@ -398,14 +371,11 @@ void WeldJointConstraint::uniteSkeletons()
   if (unionId1 == unionId2)
     return;
 
-  if (unionId1->mUnionSize < unionId2->mUnionSize)
-  {
+  if (unionId1->mUnionSize < unionId2->mUnionSize) {
     // Merge root1 --> root2
     unionId1->mUnionRootSkeleton = unionId2;
     unionId2->mUnionSize += unionId1->mUnionSize;
-  }
-  else
-  {
+  } else {
     // Merge root2 --> root1
     unionId2->mUnionRootSkeleton = unionId1;
     unionId1->mUnionSize += unionId2->mUnionSize;
@@ -418,15 +388,12 @@ bool WeldJointConstraint::isActive() const
   if (mBodyNode1->isReactive())
     return true;
 
-  if (mBodyNode2)
-  {
+  if (mBodyNode2) {
     if (mBodyNode2->isReactive())
       return true;
     else
       return false;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }

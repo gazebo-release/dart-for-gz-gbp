@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,20 +33,23 @@
 #ifndef DART_DYNAMICS_INVERSEKINEMATICS_HPP_
 #define DART_DYNAMICS_INVERSEKINEMATICS_HPP_
 
-#include <functional>
-#include <memory>
+#include <dart/dynamics/JacobianNode.hpp>
+#include <dart/dynamics/SmartPointer.hpp>
+
+#include <dart/optimizer/Function.hpp>
+#include <dart/optimizer/Problem.hpp>
+#include <dart/optimizer/Solver.hpp>
+
+#include <dart/math/Geometry.hpp>
+
+#include <dart/common/Signal.hpp>
+#include <dart/common/Subject.hpp>
+#include <dart/common/sub_ptr.hpp>
 
 #include <Eigen/SVD>
 
-#include "dart/common/Signal.hpp"
-#include "dart/common/Subject.hpp"
-#include "dart/common/sub_ptr.hpp"
-#include "dart/dynamics/JacobianNode.hpp"
-#include "dart/dynamics/SmartPointer.hpp"
-#include "dart/math/Geometry.hpp"
-#include "dart/optimizer/Function.hpp"
-#include "dart/optimizer/Problem.hpp"
-#include "dart/optimizer/Solver.hpp"
+#include <functional>
+#include <memory>
 
 namespace dart {
 namespace dynamics {
@@ -1076,7 +1079,7 @@ public:
   /// not needed in this case.
   ///
   /// If you want the extra DOFs to use a different method than Jacobian
-  /// transpose, you can create two seperate IK modules (one which is
+  /// transpose, you can create two separate IK modules (one which is
   /// analytical and one with the iterative method of your choice) and combine
   /// them in a HierarchicalIK.
   enum ExtraDofUtilization
@@ -1393,6 +1396,6 @@ protected:
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/InverseKinematics.hpp"
+#include <dart/dynamics/detail/InverseKinematics.hpp>
 
 #endif // DART_DYNAMICS_INVERSEKINEMATICS_HPP_

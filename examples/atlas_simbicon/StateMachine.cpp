@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "StateMachine.hpp"
 
 #include "State.hpp"
+#include "dart/common/Macros.hpp"
 
 // Macro for functions not implemented yet
 #define NOT_YET(FUNCTION)                                                      \
@@ -59,8 +60,8 @@ StateMachine::StateMachine(const std::string& _name)
 //==============================================================================
 StateMachine::~StateMachine()
 {
-  for (vector<State*>::iterator it = mStates.begin(); it != mStates.end(); ++it)
-  {
+  for (vector<State*>::iterator it = mStates.begin(); it != mStates.end();
+       ++it) {
     delete *it;
   }
 }
@@ -80,8 +81,8 @@ const std::string& StateMachine::getName() const
 //==============================================================================
 void StateMachine::addState(State* _state)
 {
-  assert(_state != nullptr && "Invalid state");
-  assert(!_containState(_state) && "_state shouldn't be in mStates");
+  DART_ASSERT(_state != nullptr && "Invalid state");
+  DART_ASSERT(!_containState(_state) && "_state shouldn't be in mStates");
 
   mStates.push_back(_state);
 }
@@ -89,8 +90,8 @@ void StateMachine::addState(State* _state)
 //==============================================================================
 void StateMachine::setInitialState(State* _state)
 {
-  assert(_state != nullptr);
-  assert(_containState(_state));
+  DART_ASSERT(_state != nullptr);
+  DART_ASSERT(_containState(_state));
 
   mCurrentState = _state;
 }
@@ -108,7 +109,7 @@ void StateMachine::begin(double _currentTime)
 //==============================================================================
 void StateMachine::computeControlForce(double _dt)
 {
-  assert(mCurrentState != nullptr && "Invaild current state.");
+  DART_ASSERT(mCurrentState != nullptr && "Invaild current state.");
 
   // Check transition is needed from current state
   if (mCurrentState->isTerminalConditionSatisfied())
@@ -144,7 +145,7 @@ void StateMachine::transiteToNextState(double _currentTime)
 //==============================================================================
 void StateMachine::transiteTo(State* _state, double _currentTime)
 {
-  assert(_containState(_state) && "_state should be in mStates");
+  DART_ASSERT(_containState(_state) && "_state should be in mStates");
 
   string prevStateName = mCurrentState->getName();
   string nextStateName = _state->getName();
@@ -156,8 +157,7 @@ void StateMachine::transiteTo(State* _state, double _currentTime)
   mCurrentState = _state;
   mCurrentState->begin(_currentTime);
 
-  if (mVerbosity)
-  {
+  if (mVerbosity) {
     dtmsg << "Transition: [" << prevStateName << "] --> [" << nextStateName
           << "]." << endl;
   }
@@ -169,7 +169,7 @@ void StateMachine::transiteTo(string& _stateName, double _currentTime)
   // _state should be in mStates
   State* state = _findState(_stateName);
 
-  assert(state != nullptr && "Invaild state.");
+  DART_ASSERT(state != nullptr && "Invaild state.");
 
   transiteTo(state, _currentTime);
 }
@@ -177,7 +177,7 @@ void StateMachine::transiteTo(string& _stateName, double _currentTime)
 //==============================================================================
 void StateMachine::transiteTo(std::size_t _idx, double _currentTime)
 {
-  assert(_idx <= mStates.size() && "Invalid index of State.");
+  DART_ASSERT(_idx <= mStates.size() && "Invalid index of State.");
 
   transiteTo(mStates[_idx], _currentTime);
 }
@@ -192,8 +192,7 @@ void StateMachine::setVerbosity(bool verbosity)
 bool StateMachine::_containState(const State* _state) const
 {
   for (vector<State*>::const_iterator it = mStates.begin(); it != mStates.end();
-       ++it)
-  {
+       ++it) {
     if (*it == _state)
       return true;
   }
@@ -213,10 +212,8 @@ State* StateMachine::_findState(const string& _name) const
   State* state = nullptr;
 
   for (vector<State*>::const_iterator it = mStates.begin(); it != mStates.end();
-       ++it)
-  {
-    if ((*it)->getName() == _name)
-    {
+       ++it) {
+    if ((*it)->getName() == _name) {
       state = *it;
       break;
     }

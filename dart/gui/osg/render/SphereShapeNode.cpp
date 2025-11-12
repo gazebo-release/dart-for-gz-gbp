@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,10 @@
 
 #include "dart/gui/osg/render/SphereShapeNode.hpp"
 
+#include "dart/dynamics/SimpleFrame.hpp"
+#include "dart/dynamics/SphereShape.hpp"
+#include "dart/gui/osg/Utils.hpp"
+
 #include <osg/BlendFunc>
 #include <osg/CullFace>
 #include <osg/Depth>
@@ -39,10 +43,6 @@
 #include <osg/Light>
 #include <osg/Material>
 #include <osg/ShapeDrawable>
-
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/dynamics/SphereShape.hpp"
-#include "dart/gui/osg/Utils.hpp"
 
 namespace dart {
 namespace gui {
@@ -112,8 +112,7 @@ void SphereShapeNode::refresh()
 //==============================================================================
 void SphereShapeNode::extractData(bool /*firstTime*/)
 {
-  if (nullptr == mGeode)
-  {
+  if (nullptr == mGeode) {
     mGeode
         = new SphereShapeGeode(mSphereShape.get(), mParentShapeFrameNode, this);
     addChild(mGeode);
@@ -155,8 +154,7 @@ void SphereShapeGeode::refresh()
 //==============================================================================
 void SphereShapeGeode::extractData()
 {
-  if (nullptr == mDrawable)
-  {
+  if (nullptr == mDrawable) {
     mDrawable = new SphereShapeDrawable(mSphereShape, mVisualAspect, this);
     addDrawable(mDrawable);
     return;
@@ -190,8 +188,7 @@ void SphereShapeDrawable::refresh(bool firstTime)
     setDataVariance(::osg::Object::DYNAMIC);
 
   if (mSphereShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_PRIMITIVE)
-      || firstTime)
-  {
+      || firstTime) {
     ::osg::ref_ptr<::osg::Sphere> osg_shape = nullptr;
     osg_shape
         = new ::osg::Sphere(::osg::Vec3(0, 0, 0), mSphereShape->getRadius());
@@ -201,24 +198,20 @@ void SphereShapeDrawable::refresh(bool firstTime)
   }
 
   if (mSphereShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_COLOR)
-      || firstTime)
-  {
+      || firstTime) {
     // Set color
     const ::osg::Vec4d color = eigToOsgVec4d(mVisualAspect->getRGBA());
     setColor(color);
 
     // Set alpha specific properties
     ::osg::StateSet* ss = getOrCreateStateSet();
-    if (std::abs(color.a()) > 1 - getAlphaThreshold())
-    {
+    if (std::abs(color.a()) > 1 - getAlphaThreshold()) {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::OFF);
       ss->setRenderingHint(::osg::StateSet::OPAQUE_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;
       depth->setWriteMask(true);
       ss->setAttributeAndModes(depth, ::osg::StateAttribute::ON);
-    }
-    else
-    {
+    } else {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::ON);
       ss->setRenderingHint(::osg::StateSet::TRANSPARENT_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;

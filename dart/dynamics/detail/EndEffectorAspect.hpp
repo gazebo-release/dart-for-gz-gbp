@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,10 +33,11 @@
 #ifndef DART_DYNAMICS_DETAIL_ENDEFFECTORASPECT_HPP_
 #define DART_DYNAMICS_DETAIL_ENDEFFECTORASPECT_HPP_
 
-#include <Eigen/Geometry>
+#include <dart/dynamics/CompositeNode.hpp>
 
-#include "dart/common/SpecializedForAspect.hpp"
-#include "dart/dynamics/CompositeNode.hpp"
+#include <dart/common/SpecializedForAspect.hpp>
+
+#include <Eigen/Geometry>
 
 namespace dart {
 namespace dynamics {
@@ -96,7 +97,7 @@ void SupportUpdate(Support* support);
 
 using EndEffectorCompositeBase = CompositeNode<common::CompositeJoiner<
     FixedJacobianNode,
-    common::SpecializedForAspect<Support> > >;
+    common::SpecializedForAspect<Support>>>;
 
 } // namespace detail
 } // namespace dynamics

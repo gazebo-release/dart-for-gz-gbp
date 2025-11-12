@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_DYNAMICS_TEMPLATEDJACOBIANENTITY_HPP_
 #define DART_DYNAMICS_TEMPLATEDJACOBIANENTITY_HPP_
 
-#include "dart/dynamics/JacobianNode.hpp"
+#include <dart/dynamics/JacobianNode.hpp>
 
 namespace dart {
 namespace dynamics {
@@ -123,6 +123,6 @@ protected:
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/TemplatedJacobianNode.hpp"
+#include <dart/dynamics/detail/TemplatedJacobianNode.hpp>
 
 #endif // DART_DYNAMICS_TEMPLATEDJACOBIANENTITY_HPP_

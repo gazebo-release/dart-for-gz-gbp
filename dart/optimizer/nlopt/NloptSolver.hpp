@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,17 +33,24 @@
 #ifndef DART_OPTIMIZER_NLOPT_NLOPTSOLVER_HPP_
 #define DART_OPTIMIZER_NLOPT_NLOPTSOLVER_HPP_
 
+#include <dart/optimizer/Solver.hpp>
+
+#include <dart/common/Deprecated.hpp>
+
 #include <nlopt.hpp>
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/optimizer/Solver.hpp"
+#define NLOPT_VERSION_GE(x, y, z)                                              \
+  ((NLOPT_MAJOR_VERSION > (x))                                                 \
+   || (NLOPT_MAJOR_VERSION == (x) && NLOPT_MINOR_VERSION > (y))                \
+   || (NLOPT_MAJOR_VERSION == (x) && NLOPT_MINOR_VERSION == (y)                \
+       && NLOPT_PATCH_VERSION >= (z)))
 
 namespace dart {
 namespace optimizer {
 
 class Problem;
 
-/// NloptSolver is a nonlinear programming solver that provides many unlerlying
+/// NloptSolver is a nonlinear programming solver that provides many underlying
 /// algorithms through nlopt (an third-party library:
 /// https://nlopt.readthedocs.io/).
 ///
@@ -72,7 +79,9 @@ public:
     GN_ORIG_DIRECT_L,
     GD_STOGO,
     GD_STOGO_RAND,
+#if !NLOPT_VERSION_GE(2, 9, 0)
     LD_LBFGS_NOCEDAL,
+#endif
     LD_LBFGS,
     LN_PRAXIS,
     LD_VAR1,

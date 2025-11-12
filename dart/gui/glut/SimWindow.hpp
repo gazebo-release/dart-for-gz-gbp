@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,13 +33,15 @@
 #ifndef DART_GUI_GLUT_SIMWINDOW_HPP_
 #define DART_GUI_GLUT_SIMWINDOW_HPP_
 
-#include <vector>
+#include <dart/gui/glut/Win3D.hpp>
+
+#include <dart/simulation/World.hpp>
+
+#include <dart/common/Deprecated.hpp>
 
 #include <Eigen/Dense>
 
-#include "dart/common/Deprecated.hpp"
-#include "dart/gui/glut/Win3D.hpp"
-#include "dart/simulation/World.hpp"
+#include <vector>
 
 namespace dart {
 namespace gui {

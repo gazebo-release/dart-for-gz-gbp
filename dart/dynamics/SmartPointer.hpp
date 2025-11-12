@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,12 +33,13 @@
 #ifndef DART_DYNAMICS_SMARTPOINTER_HPP_
 #define DART_DYNAMICS_SMARTPOINTER_HPP_
 
-#include "dart/common/SmartPointer.hpp"
-#include "dart/dynamics/detail/BodyNodePtr.hpp"
-#include "dart/dynamics/detail/DegreeOfFreedomPtr.hpp"
-#include "dart/dynamics/detail/InverseKinematicsPtr.hpp"
-#include "dart/dynamics/detail/JointPtr.hpp"
-#include "dart/dynamics/detail/NodePtr.hpp"
+#include <dart/dynamics/detail/BodyNodePtr.hpp>
+#include <dart/dynamics/detail/DegreeOfFreedomPtr.hpp>
+#include <dart/dynamics/detail/InverseKinematicsPtr.hpp>
+#include <dart/dynamics/detail/JointPtr.hpp>
+#include <dart/dynamics/detail/NodePtr.hpp>
+
+#include <dart/common/SmartPointer.hpp>
 
 // This file is a lightweight means of providing the smart pointers which are
 // commonly used within the dart::dynamics namespace. It is 'lightweight' in the

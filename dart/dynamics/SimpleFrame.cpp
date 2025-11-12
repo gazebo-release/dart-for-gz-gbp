@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -132,8 +132,7 @@ void SimpleFrame::copy(
   setRelativeSpatialVelocity(relativeVelocity, Frame::World());
   setRelativeSpatialAcceleration(relativeAcceleration, Frame::World());
 
-  if (_copyProperties)
-  {
+  if (_copyProperties) {
     const auto shapeFrame = dynamic_cast<const ShapeFrame*>(_otherFrame);
     if (shapeFrame)
       setCompositeProperties(shapeFrame->getCompositeProperties());

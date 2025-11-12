@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,16 @@
 #ifndef DART_GUI_OSG_RENDER_HEIGHTMAPSHAPENODE_HPP_
 #define DART_GUI_OSG_RENDER_HEIGHTMAPSHAPENODE_HPP_
 
+#include "dart/common/Macros.hpp"
+
+#include <dart/config.hpp>
+
+#include <dart/gui/osg/Utils.hpp>
+#include <dart/gui/osg/render/ShapeNode.hpp>
+
+#include <dart/dynamics/HeightmapShape.hpp>
+#include <dart/dynamics/SimpleFrame.hpp>
+
 #include <osg/CullFace>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -40,12 +50,6 @@
 #include <osg/Material>
 #include <osg/MatrixTransform>
 #include <osg/ShapeDrawable>
-
-#include "dart/config.hpp"
-#include "dart/dynamics/HeightmapShape.hpp"
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/gui/osg/Utils.hpp"
-#include "dart/gui/osg/render/ShapeNode.hpp"
 
 namespace dart {
 namespace gui {
@@ -172,8 +176,7 @@ void HeightmapShapeNode<S>::refresh()
 template <typename S>
 void HeightmapShapeNode<S>::extractData(bool /*firstTime*/)
 {
-  if (nullptr == mGeode)
-  {
+  if (nullptr == mGeode) {
     mGeode = new HeightmapShapeGeode<S>(
         mHeightmapShape.get(), mParentShapeFrameNode, this);
     addChild(mGeode);
@@ -222,8 +225,7 @@ void HeightmapShapeGeode<S>::refresh()
 template <typename S>
 void HeightmapShapeGeode<S>::extractData()
 {
-  if (nullptr == mDrawable)
-  {
+  if (nullptr == mDrawable) {
     mDrawable
         = new HeightmapShapeDrawable<S>(mHeightmapShape, mVisualAspect, this);
     addDrawable(mDrawable);
@@ -313,8 +315,7 @@ void setVertices(
 
   faces.clear();
   normals.clear();
-  if (rows < 2 || cols < 2)
-  {
+  if (rows < 2 || cols < 2) {
     vertices.clear();
     return;
   }
@@ -323,10 +324,8 @@ void setVertices(
 
   // Note that heightmap(i, j) represents the height value at (j, -i) in XY
   // coordinates.
-  for (auto i = 0; i < rows; ++i)
-  {
-    for (auto j = 0; j < cols; ++j)
-    {
+  for (auto i = 0; i < rows; ++i) {
+    for (auto j = 0; j < cols; ++j) {
       const auto index = cols * i + j;
       vertices[index].set(
           j * scale.x(), -(i * scale.y()), heightmap(i, j) * scale.z());
@@ -360,10 +359,8 @@ void setVertices(
 
   // For row-major matrix
   faces.reserve(6 * (rows - 1) * (cols - 1));
-  for (auto i = 1; i < rows; ++i)
-  {
-    for (auto j = 1; j < cols; ++j)
-    {
+  for (auto i = 1; i < rows; ++i) {
+    for (auto j = 1; j < cols; ++j) {
       // Indices for matrix
       const auto p1i = i - 1;
       const auto p1j = j - 1;
@@ -393,10 +390,8 @@ void setVertices(
   }
 
   normals.reserve(heightmap.size());
-  for (auto i = 0; i < rows; ++i)
-  {
-    for (auto j = 0; j < cols; ++j)
-    {
+  for (auto i = 0; i < rows; ++i) {
+    for (auto j = 0; j < cols; ++j) {
       // Indices for matrix
       const auto p2i = i - 1;
       const auto p2j = j;
@@ -457,8 +452,8 @@ void HeightmapShapeDrawable<S>::refresh(bool /*firstTime*/)
   // the heightmap could be updated in the version up. So we always update the
   // heightmap.
   {
-    assert(mElements);
-    assert(mNormals);
+    DART_ASSERT(mElements);
+    DART_ASSERT(mNormals);
     setVertices<S>(
         heightmap,
         *mVertices,

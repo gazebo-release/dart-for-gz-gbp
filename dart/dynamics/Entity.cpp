@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/dynamics/Entity.hpp"
 
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/common/StlHelpers.hpp"
 #include "dart/dynamics/Frame.hpp"
 #include "dart/dynamics/Shape.hpp"
@@ -102,8 +103,7 @@ bool Entity::descendsFrom(const Frame* _someFrame) const
     return true;
 
   const Frame* descentCheck = getParentFrame();
-  while (descentCheck)
-  {
+  while (descentCheck) {
     if (descentCheck->isWorld())
       break;
 
@@ -226,7 +226,7 @@ Entity::Entity(ConstructAbstractTag)
 {
   dterr << "[Entity::Entity] Your class implementation is calling the Entity "
         << "constructor that is meant to be reserved for abstract classes!\n";
-  assert(false);
+  DART_ASSERT(false);
 }
 
 //==============================================================================
@@ -237,13 +237,11 @@ void Entity::changeParentFrame(Frame* _newParentFrame)
 
   const Frame* oldParentFrame = mParentFrame;
 
-  if (!mAmQuiet && nullptr != mParentFrame && !mParentFrame->isWorld())
-  {
+  if (!mAmQuiet && nullptr != mParentFrame && !mParentFrame->isWorld()) {
     // If this entity has a parent Frame, tell that parent that it is losing
     // this child
     EntityPtrSet::iterator it = mParentFrame->mChildEntities.find(this);
-    if (it != mParentFrame->mChildEntities.end())
-    {
+    if (it != mParentFrame->mChildEntities.end()) {
       mParentFrame->mChildEntities.erase(it);
       mParentFrame->processRemovedEntity(this);
     }
@@ -251,10 +249,8 @@ void Entity::changeParentFrame(Frame* _newParentFrame)
 
   mParentFrame = _newParentFrame;
 
-  if (!mAmQuiet && nullptr != mParentFrame)
-  {
-    if (!mParentFrame->isWorld())
-    {
+  if (!mAmQuiet && nullptr != mParentFrame) {
+    if (!mParentFrame->isWorld()) {
       // The WorldFrame should not keep track of its children, or else we get
       // concurrency issues (race conditions).
       mParentFrame->mChildEntities.insert(this);

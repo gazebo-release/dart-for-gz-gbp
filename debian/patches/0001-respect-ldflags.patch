@@ -12,11 +12,9 @@ Last-Update: 2021-12-20
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a3389d8..a4cdb80 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -249,7 +249,7 @@ elseif(CMAKE_COMPILER_IS_GNUCXX)
+@@ -304,7 +304,7 @@
    endif()
    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_DEBUG}")
    set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_DEBUG} -pg")

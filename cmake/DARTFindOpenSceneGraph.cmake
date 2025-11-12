@@ -1,22 +1,23 @@
-# Copyright (c) 2011-2022, The DART development contributors
+# Copyright (c) 2011-2025, The DART development contributors
 # All rights reserved.
 #
 # The list of contributors can be found at:
-#   https://github.com/dartsim/dart/blob/master/LICENSE
+#   https://github.com/dartsim/dart/blob/main/LICENSE
 #
 # This file is provided under the "BSD-style" License
 
-if (CMAKE_VERSION VERSION_LESS 3.12)
-  get_property(old_find_library_use_lib64_paths GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
-  set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS TRUE)
-endif()
-
-find_package(OpenSceneGraph 3.0 QUIET
+find_package(OpenSceneGraph 3.0.0 QUIET
   COMPONENTS osg osgViewer osgManipulator osgGA osgDB osgShadow osgUtil
 )
 
-if (CMAKE_VERSION VERSION_LESS 3.12)
-  set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ${old_find_library_use_lib64_paths})
+# OpenSceneGraph 3.6.5 or less are not compatible with macOS 10.15 (Catalina) or greater
+# See:
+#   - https://github.com/openscenegraph/OpenSceneGraph/issues/926
+#   - https://github.com/dartsim/dart/issues/1439
+if(APPLE)
+  if(OPENSCENEGRAPH_VERSION VERSION_LESS 3.7.0)
+    message(WARNING "OSG (${OPENSCENEGRAPH_VERSION} < 3.7.0) doesn't work on macOS 10.15 or greater. See: https://github.com/openscenegraph/OpenSceneGraph/issues/926")
+  endif()
 endif()
 
 # It seems that OPENSCENEGRAPH_FOUND will inadvertently get set to true when
@@ -56,13 +57,6 @@ endif()
 # where the system that DART is built and where the system that consumes DART.
 if((OPENSCENEGRAPH_FOUND OR OpenSceneGraph_FOUND) AND NOT TARGET osg::osg)
   add_library(osg::osg INTERFACE IMPORTED)
-  if(CMAKE_VERSION VERSION_LESS 3.11)
-    set_target_properties(osg::osg PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${OPENSCENEGRAPH_INCLUDE_DIRS}"
-      INTERFACE_LINK_LIBRARIES "${OPENSCENEGRAPH_LIBRARIES}"
-    )
-  else()
-    target_include_directories(osg::osg INTERFACE ${OPENSCENEGRAPH_INCLUDE_DIRS})
-    target_link_libraries(osg::osg INTERFACE ${OPENSCENEGRAPH_LIBRARIES})
-  endif()
+  target_include_directories(osg::osg INTERFACE ${OPENSCENEGRAPH_INCLUDE_DIRS})
+  target_link_libraries(osg::osg INTERFACE ${OPENSCENEGRAPH_LIBRARIES})
 endif()

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,12 +33,13 @@
 #ifndef DART_DYNAMICS_POINTMASS_HPP_
 #define DART_DYNAMICS_POINTMASS_HPP_
 
-#include <vector>
+#include <dart/dynamics/Entity.hpp>
+
+#include <dart/math/Helpers.hpp>
 
 #include <Eigen/Dense>
 
-#include "dart/dynamics/Entity.hpp"
-#include "dart/math/Helpers.hpp"
+#include <vector>
 
 namespace dart {
 namespace dynamics {

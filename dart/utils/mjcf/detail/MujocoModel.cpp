@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
 #include "dart/utils/mjcf/detail/MujocoModel.hpp"
 
 #include "dart/common/LocalResourceRetriever.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/utils/CompositeResourceRetriever.hpp"
 #include "dart/utils/DartResourceRetriever.hpp"
 #include "dart/utils/XmlHelpers.hpp"
@@ -51,8 +52,7 @@ Errors MujocoModel::read(
 {
   Errors errors;
 
-  if (std::string(element->Name()) != "mujoco")
-  {
+  if (std::string(element->Name()) != "mujoco") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <Mujoco> from the provided element");
@@ -64,17 +64,15 @@ Errors MujocoModel::read(
   errors.insert(errors.end(), includeErrors.begin(), includeErrors.end());
 
   // Read 'model' attribute
-  if (hasAttribute(element, "model"))
-  {
+  if (hasAttribute(element, "model")) {
     const std::string model = getAttributeString(element, "model");
     mModel = model;
   }
 
   // Read <compiler>
-  if (hasElement(element, "compiler"))
-  {
+  if (hasElement(element, "compiler")) {
     auto compilerElement = getElement(element, "compiler");
-    assert(compilerElement);
+    DART_ASSERT(compilerElement);
     const auto compilerErrors = mCompiler.read(compilerElement);
     errors.insert(errors.end(), compilerErrors.begin(), compilerErrors.end());
   }
@@ -82,46 +80,41 @@ Errors MujocoModel::read(
   mCompiler.setResourceRetriever(retriever);
 
   // Read <option>
-  if (hasElement(element, "option"))
-  {
+  if (hasElement(element, "option")) {
     auto optionElement = getElement(element, "option");
-    assert(optionElement);
+    DART_ASSERT(optionElement);
     const auto optionErrors = mOption.read(optionElement);
     errors.insert(errors.end(), optionErrors.begin(), optionErrors.end());
   }
 
   // Read <size>
-  if (hasElement(element, "size"))
-  {
+  if (hasElement(element, "size")) {
     auto sizeElement = getElement(element, "size");
-    assert(sizeElement);
+    DART_ASSERT(sizeElement);
     const auto sizeErrors = mSize.read(sizeElement);
     errors.insert(errors.end(), sizeErrors.begin(), sizeErrors.end());
   }
 
   // Read <asset>
-  if (hasElement(element, "asset"))
-  {
+  if (hasElement(element, "asset")) {
     auto assetElement = getElement(element, "asset");
-    assert(assetElement);
+    DART_ASSERT(assetElement);
     const auto assetErrors = mAsset.read(assetElement);
     errors.insert(errors.end(), assetErrors.begin(), assetErrors.end());
   }
 
   // Read <default>
-  if (hasElement(element, "default"))
-  {
+  if (hasElement(element, "default")) {
     auto defaultElement = getElement(element, "default");
-    assert(defaultElement);
+    DART_ASSERT(defaultElement);
     const auto defaultErrors = mDefaults.read(defaultElement, nullptr);
     errors.insert(errors.end(), defaultErrors.begin(), defaultErrors.end());
   }
 
   // Read <worldbody>
-  if (hasElement(element, "worldbody"))
-  {
+  if (hasElement(element, "worldbody")) {
     auto worldnodeElement = getElement(element, "worldbody");
-    assert(worldnodeElement);
+    DART_ASSERT(worldnodeElement);
     mWorldbody = Worldbody();
     const auto worldbodyErrors = mWorldbody.read(
         worldnodeElement,
@@ -166,10 +159,9 @@ Errors MujocoModel::read(
       worldbodyPostprocessErrors.end());
 
   // Read <equality>
-  if (hasElement(element, "equality"))
-  {
+  if (hasElement(element, "equality")) {
     auto equalityElement = getElement(element, "equality");
-    assert(equalityElement);
+    DART_ASSERT(equalityElement);
     const auto equalityErrors = mEquality.read(equalityElement, mDefaults);
     errors.insert(errors.end(), equalityErrors.begin(), equalityErrors.end());
   }
@@ -185,8 +177,7 @@ Errors MujocoModel::read(
 
   // Create DART resource retriever if not passed
   common::ResourceRetrieverPtr retriever = retrieverOrNull;
-  if (retriever == nullptr)
-  {
+  if (retriever == nullptr) {
     auto newRetriever = std::make_shared<utils::CompositeResourceRetriever>();
     newRetriever->addSchemaRetriever(
         "file", std::make_shared<common::LocalResourceRetriever>());
@@ -195,8 +186,7 @@ Errors MujocoModel::read(
   }
 
   tinyxml2::XMLDocument mjcfDoc;
-  if (!readXmlFile(mjcfDoc, uri, retriever))
-  {
+  if (!readXmlFile(mjcfDoc, uri, retriever)) {
     errors.emplace_back(
         ErrorCode::FILE_READ, "Failed to load '" + uri.toString() + "'.");
     return errors;
@@ -204,8 +194,7 @@ Errors MujocoModel::read(
 
   // Get root <mujoco> element
   tinyxml2::XMLElement* mujocoElement = mjcfDoc.FirstChildElement("mujoco");
-  if (mujocoElement == nullptr)
-  {
+  if (mujocoElement == nullptr) {
     errors.emplace_back(
         ErrorCode::ELEMENT_MISSING, "Failed to find <mujoco> at the root");
     return errors;

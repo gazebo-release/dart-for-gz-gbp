@@ -18,16 +18,13 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends \
     libeigen3-dev \
     libassimp-dev \
-    libccd-dev \
     libfcl-dev \
     libfmt-dev \
     libnlopt-cxx-dev \
     coinor-libipopt-dev \
     libbullet-dev \
-    liblz4-dev \
     libode-dev \
     liboctomap-dev \
-    libflann-dev \
     libtinyxml2-dev \
     liburdfdom-dev \
     libxi-dev \

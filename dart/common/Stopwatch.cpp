@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -53,8 +53,7 @@ double toc(bool print)
 //==============================================================================
 double tocS(bool print)
 {
-  if (!print)
-  {
+  if (!print) {
     return sw.elapsedS();
   }
 
@@ -68,8 +67,7 @@ double tocS(bool print)
 //==============================================================================
 double tocMS(bool print)
 {
-  if (!print)
-  {
+  if (!print) {
     return sw.elapsedMS();
   }
 
@@ -83,8 +81,7 @@ double tocMS(bool print)
 //==============================================================================
 double tocUS(bool print)
 {
-  if (!print)
-  {
+  if (!print) {
     return sw.elapsedUS();
   }
 
@@ -98,8 +95,7 @@ double tocUS(bool print)
 //==============================================================================
 double tocNS(bool print)
 {
-  if (!print)
-  {
+  if (!print) {
     return sw.elapsedNS();
   }
 

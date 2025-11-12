@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_COMMON_DETAIL_ASPECTWITHVERSION_HPP_
 #define DART_COMMON_DETAIL_ASPECTWITHVERSION_HPP_
 
-#include "dart/common/Aspect.hpp"
-#include "dart/common/Deprecated.hpp"
-#include "dart/common/StlHelpers.hpp"
+#include <dart/common/Aspect.hpp>
+#include <dart/common/Deprecated.hpp>
+#include <dart/common/StlHelpers.hpp>
 
 namespace dart {
 namespace common {
@@ -49,7 +49,7 @@ template <
     class DerivedT,
     typename StateDataT,
     class CompositeT = Composite,
-    void (*updateState)(DerivedT*) = &NoOp<DerivedT*> >
+    void (*updateState)(DerivedT*) = &NoOp<DerivedT*>>
 class AspectWithState : public BaseT
 {
 public:
@@ -104,7 +104,7 @@ template <
     class DerivedT,
     typename PropertiesDataT,
     class CompositeT = Composite,
-    void (*updateProperties)(DerivedT*) = &NoOp<DerivedT*> >
+    void (*updateProperties)(DerivedT*) = &NoOp<DerivedT*>>
 class AspectWithVersionedProperties : public BaseT
 {
 public:

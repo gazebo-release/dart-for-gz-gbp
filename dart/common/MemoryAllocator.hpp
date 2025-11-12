@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,14 @@
 #ifndef DART_COMMON_MEMORYALLOCATOR_HPP_
 #define DART_COMMON_MEMORYALLOCATOR_HPP_
 
-#include <cstddef>
+#include <dart/config.hpp>
+
+#include <dart/common/Castable.hpp>
+
 #include <iostream>
 #include <string>
 
-#include "dart/common/Castable.hpp"
+#include <cstddef>
 
 namespace dart::common {
 
@@ -112,6 +115,6 @@ public:
 
 } // namespace dart::common
 
-#include "dart/common/detail/MemoryAllocator-impl.hpp"
+#include <dart/common/detail/MemoryAllocator-impl.hpp>
 
 #endif // DART_COMMON_MEMORYALLOCATOR_HPP_

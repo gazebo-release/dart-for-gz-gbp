@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,12 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "Joint.hpp"
+
 #include <dart/dart.hpp>
+
 #include <eigen_geometry_pybind.h>
 #include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
-
-#include "Joint.hpp"
 
 namespace py = pybind11;
 
@@ -54,7 +55,7 @@ void ZeroDofJoint(py::module& m)
   ::py::class_<
       dart::dynamics::ZeroDofJoint,
       dart::dynamics::Joint,
-      std::shared_ptr<dart::dynamics::ZeroDofJoint> >(m, "ZeroDofJoint")
+      std::shared_ptr<dart::dynamics::ZeroDofJoint>>(m, "ZeroDofJoint")
       .def(
           "getZeroDofJointProperties",
           +[](const dart::dynamics::ZeroDofJoint* self)

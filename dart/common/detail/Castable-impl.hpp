@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,8 +33,10 @@
 #ifndef DART_COMMON_DETAIL_CASTABLE_HPP_
 #define DART_COMMON_DETAIL_CASTABLE_HPP_
 
-#include "dart/common/Castable.hpp"
-#include "dart/common/Metaprogramming.hpp"
+#include "dart/common/Macros.hpp"
+
+#include <dart/common/Castable.hpp>
+#include <dart/common/Metaprogramming.hpp>
 
 namespace dart::common {
 
@@ -49,12 +51,9 @@ bool Castable<Base>::is() const
 {
   if constexpr (
       has_member_getType<Base>::value
-      && has_member_getStaticType<Derived>::value)
-  {
+      && has_member_getStaticType<Derived>::value) {
     return (base().getType() == Derived::getStaticType());
-  }
-  else
-  {
+  } else {
     return (dynamic_cast<const Derived*>(&base()) != nullptr);
   }
 }
@@ -80,7 +79,7 @@ template <typename Base>
 template <typename Derived>
 const Derived& Castable<Base>::asRef() const
 {
-  assert(is<Derived>());
+  DART_ASSERT(is<Derived>());
   return *as<Derived>();
 }
 
@@ -89,7 +88,7 @@ template <typename Base>
 template <typename Derived>
 Derived& Castable<Base>::asRef()
 {
-  assert(is<Derived>());
+  DART_ASSERT(is<Derived>());
   return *as<Derived>();
 }
 

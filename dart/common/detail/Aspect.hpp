@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,13 @@
 #ifndef DART_COMMON_DETAIL_ASPECT_HPP_
 #define DART_COMMON_DETAIL_ASPECT_HPP_
 
-#include <cassert>
-
-#include "dart/common/Aspect.hpp"
-#include "dart/common/Console.hpp"
 #include "dart/common/Macros.hpp"
+
+#include <dart/common/Aspect.hpp>
+#include <dart/common/Console.hpp>
+#include <dart/common/Macros.hpp>
+
+#include <cassert>
 
 namespace dart {
 namespace common {
@@ -78,7 +80,7 @@ template <class CompositeType>
 void CompositeTrackingAspect<CompositeType>::setComposite(
     Composite* newComposite)
 {
-  assert(nullptr == mComposite);
+  DART_ASSERT(nullptr == mComposite);
 
   mComposite = dynamic_cast<CompositeType*>(newComposite);
   // Note: Derived classes should be responsible for handling the case in which
@@ -92,7 +94,7 @@ void CompositeTrackingAspect<CompositeType>::loseComposite(
     Composite* oldComposite)
 {
   DART_UNUSED(oldComposite);
-  assert(oldComposite == mComposite);
+  DART_ASSERT(oldComposite == mComposite);
   mComposite = nullptr;
 }
 

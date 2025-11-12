@@ -1,0 +1,16 @@
+Description: Disable benchamark tests in CMake
+  No package for googlebenchmark in Debian. Unsure if a benchamark
+  needs to be run as part of the .deb testsuite.
+Author: Jose Luis Rivero <jrivero@honurobotics.com>
+Forwarded: not-needed
+Last-Update: 2025-11-10
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -153,5 +153,3 @@
+ endif()
+ 
+ dart_format_add(GTestUtils.hpp)
+-
+-add_subdirectory(benchmark)

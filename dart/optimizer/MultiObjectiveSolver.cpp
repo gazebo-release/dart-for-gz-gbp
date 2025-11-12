@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,10 +32,11 @@
 
 #include "dart/optimizer/MultiObjectiveSolver.hpp"
 
-#include <fstream>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/optimizer/MultiObjectiveProblem.hpp"
+
+#include <fstream>
 
 namespace dart {
 namespace optimizer {
@@ -124,7 +125,7 @@ void MultiObjectiveSolver::setNumPopulations(std::size_t size)
 //==============================================================================
 std::size_t MultiObjectiveSolver::getNumPopulations() const
 {
-  //  assert(mPopulations.size() == mProperties.mNumPopulations);
+  //  DART_ASSERT(mPopulations.size() == mProperties.mNumPopulations);
   return mProperties.mNumPopulations;
 }
 

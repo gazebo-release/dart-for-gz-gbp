@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/dynamics/SphereShape.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/math/Helpers.hpp"
 
 namespace dart {
@@ -65,7 +66,7 @@ const std::string& SphereShape::getStaticType()
 //==============================================================================
 void SphereShape::setRadius(double radius)
 {
-  assert(radius > 0.0);
+  DART_ASSERT(radius > 0.0);
 
   mRadius = radius;
 

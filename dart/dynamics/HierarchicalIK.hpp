@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_DYNAMICS_HIERARCHICALIK_HPP_
 #define DART_DYNAMICS_HIERARCHICALIK_HPP_
 
-#include <unordered_set>
+#include <dart/dynamics/InverseKinematics.hpp>
 
-#include "dart/dynamics/InverseKinematics.hpp"
+#include <unordered_set>
 
 namespace dart {
 namespace dynamics {
@@ -45,7 +45,7 @@ namespace dynamics {
 /// their gradients added. Precedence of the modules decreases as the index of
 /// the outer vector increases. Modules with lower precedence will be projected
 /// through the null spaces of modules with higher precedence.
-typedef std::vector<std::vector<std::shared_ptr<InverseKinematics> > >
+typedef std::vector<std::vector<std::shared_ptr<InverseKinematics>>>
     IKHierarchy;
 
 /// The HierarchicalIK class provides a convenient way of setting up a
@@ -351,8 +351,8 @@ public:
 class CompositeIK : public HierarchicalIK
 {
 public:
-  typedef std::unordered_set<std::shared_ptr<InverseKinematics> > ModuleSet;
-  typedef std::unordered_set<std::shared_ptr<const InverseKinematics> >
+  typedef std::unordered_set<std::shared_ptr<InverseKinematics>> ModuleSet;
+  typedef std::unordered_set<std::shared_ptr<const InverseKinematics>>
       ConstModuleSet;
 
   /// Create a CompositeIK module
@@ -385,7 +385,7 @@ protected:
   CompositeIK(const SkeletonPtr& _skel);
 
   /// The set of modules being used by this CompositeIK
-  std::unordered_set<std::shared_ptr<InverseKinematics> > mModuleSet;
+  std::unordered_set<std::shared_ptr<InverseKinematics>> mModuleSet;
 };
 
 /// The WholeBodyIK class provides an interface for simultaneously solving all

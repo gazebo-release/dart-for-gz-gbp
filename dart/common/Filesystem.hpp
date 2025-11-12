@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors:
+ * Copyright (c) 2011-2025, The DART development contributors:
  * https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 #ifndef DART_COMMON_FILESYSTEM_HPP_
 #define DART_COMMON_FILESYSTEM_HPP_
 
-#include "dart/common/Platform.hpp"
+#include <dart/common/Platform.hpp>
 
 #if !defined(DART_INCLUDE_STD_FILESYSTEM_EXPERIMENTAL)
 

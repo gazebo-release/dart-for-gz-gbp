@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_DYNAMICS_NODEMANAGERJOINER_HPP_
 #define DART_DYNAMICS_NODEMANAGERJOINER_HPP_
 
-#include <string>
+#include <dart/common/Empty.hpp>
 
-#include "dart/common/Empty.hpp"
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -101,7 +101,7 @@ template <class Base1, class Base2, class... OtherBases>
 class NodeManagerJoinerForBodyNode<Base1, Base2, OtherBases...>
   : public NodeManagerJoinerForBodyNode<
         Base1,
-        NodeManagerJoinerForBodyNode<Base2, OtherBases...> >
+        NodeManagerJoinerForBodyNode<Base2, OtherBases...>>
 {
 public:
   NodeManagerJoinerForBodyNode() = default;
@@ -173,7 +173,7 @@ template <class Base1, class Base2, class... OtherBases>
 class NodeManagerJoinerForSkeleton<Base1, Base2, OtherBases...>
   : public NodeManagerJoinerForSkeleton<
         Base1,
-        NodeManagerJoinerForSkeleton<Base2, OtherBases...> >
+        NodeManagerJoinerForSkeleton<Base2, OtherBases...>>
 {
 public:
   NodeManagerJoinerForSkeleton() = default;
@@ -185,6 +185,6 @@ public:
 } // namespace dynamics
 } // namespace dart
 
-#include "dart/dynamics/detail/NodeManagerJoiner.hpp"
+#include <dart/dynamics/detail/NodeManagerJoiner.hpp>
 
 #endif // DART_DYNAMICS_NODEMANAGERJOINER_HPP_

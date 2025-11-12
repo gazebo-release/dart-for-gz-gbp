@@ -4,12 +4,16 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all reproducible=+all future=+lfs
 # Needed to inject correctly the python versions supported
 export PYBUILD_SYSTEM=cmake
 export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
+		-DCMAKE_CXX_FLAGS="-DNDEBUG=1" \
 		-DBUILD_SHARED_LIBS=ON \
 		-DCMAKE_SKIP_INSTALL_RPATH=ON \
-		-DDART_SKIP_FLANN=ON \
-		-DDART_SKIP_PAGMO=ON \
 		-DDART_VERBOSE=ON \
+		-DDART_USE_SYSTEM_GOOGLETEST=ON \
+		-DDART_BUILD_DARTPY=ON \
+		-DDART_USE_SYSTEM_PYBIND11=ON \
 		-DDARTPY_PYTHON_VERSION={version}
+
+export PYBUILD_AFTER_INSTALL=cp {build_dir}/python/dartpy/dartpy.*.so debian/tmp/usr/lib/python3/dist-packages/dartpy/
 
 ifneq (,$(filter $(DEB_HOST_ARCH),mips mipsel))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
@@ -18,11 +22,16 @@ endif
 %:
 	dh $@ --buildsystem=pybuild
 
-execute_after_dh_auto_install:
-	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
+execute_after_dh_auto_build:
+	PYBUILD_BUILD_ARGS="dartpy" dh_auto_build
 
-execute_before_dh_auto_test:
-	PYBUILD_BUILD_ARGS="tests" dh_auto_build
+execute_before_dh_auto_install:
+	mkdir -p debian/tmp/usr/lib/python3/dist-packages/dartpy
+
+execute_after_dh_auto_install:
+	# Remove RPATH from Python module
+	chrpath -d debian/tmp/usr/lib/python3/dist-packages/dartpy/dartpy.*.so || true
+	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
 
 # s390 assimp support is broken for STL https://github.com/assimp/assimp/issues/5509
 ifeq ($(DEB_HOST_ARCH),s390x)

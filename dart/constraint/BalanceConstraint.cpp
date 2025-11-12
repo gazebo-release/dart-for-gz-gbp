@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/constraint/BalanceConstraint.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/EndEffector.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 
@@ -67,37 +68,33 @@ double BalanceConstraint::eval(const Eigen::VectorXd& _x)
 {
   const std::shared_ptr<dynamics::HierarchicalIK>& ik = mIK.lock();
 
-  if (nullptr == ik)
-  {
+  if (nullptr == ik) {
     dterr << "[BalanceConstraint::eval] Attempting to call a BalanceConstraint "
           << "function associated to a HierarchicalIK that no longer exists!\n";
-    assert(false);
+    DART_ASSERT(false);
     return 0.0;
   }
 
   const dynamics::SkeletonPtr& skel = ik->getSkeleton();
 
-  if (nullptr == skel)
-  {
+  if (nullptr == skel) {
     dterr << "[BalanceConstraint::eval] Attempting to call a BalanceConstraint "
           << "function on a Skeleton which no longer exists!\n";
-    assert(false);
+    DART_ASSERT(false);
     return 0.0;
   }
 
   skel->setPositions(_x);
 
   const Eigen::Vector3d& com = skel->getCOM();
-  if (skel->getSupportVersion() == mLastSupportVersion)
-  {
+  if (skel->getSupportVersion() == mLastSupportVersion) {
     // Nothing has moved since the last time error was computed, so we just
     // return our last result
     return mLastError.norm();
   }
 
   const math::SupportPolygon& polygon = skel->getSupportPolygon();
-  if (polygon.empty())
-  {
+  if (polygon.empty()) {
     mLastError.setZero();
     return 0.0;
   }
@@ -107,33 +104,26 @@ double BalanceConstraint::eval(const Eigen::VectorXd& _x)
   Eigen::Vector2d projected_com(com.dot(axes.first), com.dot(axes.second));
   Eigen::Vector2d projected_error(Eigen::Vector2d::Zero());
 
-  if (FROM_CENTROID == mErrorMethod || OPTIMIZE_BALANCE == mErrorMethod)
-  {
+  if (FROM_CENTROID == mErrorMethod || OPTIMIZE_BALANCE == mErrorMethod) {
     bool zeroError = false;
-    if (FROM_CENTROID == mErrorMethod)
-    {
+    if (FROM_CENTROID == mErrorMethod) {
       zeroError = math::isInsideSupportPolygon(projected_com, polygon, true);
     }
 
-    if (!zeroError)
-    {
+    if (!zeroError) {
       const Eigen::Vector2d& centroid = skel->getSupportCentroid();
       projected_error = projected_com - centroid;
     }
 
     if (OPTIMIZE_BALANCE == mErrorMethod
-        && projected_error.norm() < mOptimizationTolerance)
-    {
+        && projected_error.norm() < mOptimizationTolerance) {
       // Drop the error to zero if we're within the tolerance
       projected_error.setZero();
     }
-  }
-  else if (FROM_EDGE == mErrorMethod)
-  {
+  } else if (FROM_EDGE == mErrorMethod) {
     bool zeroError = math::isInsideSupportPolygon(projected_com, polygon, true);
 
-    if (!zeroError)
-    {
+    if (!zeroError) {
       std::size_t closestIndex1, closestIndex2;
       const Eigen::Vector2d closestPoint
           = math::computeClosestPointOnSupportPolygon(
@@ -165,16 +155,13 @@ static void addDampedPseudoInverseToGradient(
     double damping)
 {
   int rows = J.rows(), cols = J.cols();
-  if (rows <= cols)
-  {
+  if (rows <= cols) {
     grad += nullspace * J.transpose()
             * (pow(damping, 2) * Eigen::MatrixXd::Identity(rows, rows)
                + J * J.transpose())
                   .inverse()
             * error;
-  }
-  else
-  {
+  } else {
     grad += nullspace
             * (pow(damping, 2) * Eigen::MatrixXd::Identity(cols, cols)
                + J.transpose() * J)
@@ -196,8 +183,7 @@ void BalanceConstraint::evalGradient(
   const dynamics::SkeletonPtr& skel = mIK.lock()->getSkeleton();
   const std::size_t nDofs = skel->getNumDofs();
 
-  if (SHIFT_COM == mBalanceMethod)
-  {
+  if (SHIFT_COM == mBalanceMethod) {
     // Compute the gradient whose negative will move the center of mass
     // towards the support polygon without moving the supporting end effector
     // locations
@@ -205,8 +191,7 @@ void BalanceConstraint::evalGradient(
     mNullSpaceCache.setIdentity(nDofs, nDofs);
     std::size_t numEE = skel->getNumEndEffectors();
     // Build up the null space of the supporting end effectors
-    for (std::size_t i = 0; i < numEE; ++i)
-    {
+    for (std::size_t i = 0; i < numEE; ++i) {
       const dynamics::EndEffector* ee = skel->getEndEffector(i);
 
       // Skip this EndEffector if it is not being used for support
@@ -219,13 +204,10 @@ void BalanceConstraint::evalGradient(
       math::extractNullSpace(mSVDCache, mPartialNullSpaceCache);
 
       if (mPartialNullSpaceCache.rows() > 0
-          && mPartialNullSpaceCache.cols() > 0)
-      {
+          && mPartialNullSpaceCache.cols() > 0) {
         mNullSpaceCache
             *= mPartialNullSpaceCache * mPartialNullSpaceCache.transpose();
-      }
-      else
-      {
+      } else {
         // There is no null space anymore
         mNullSpaceCache.setZero();
         break;
@@ -236,11 +218,8 @@ void BalanceConstraint::evalGradient(
 
     addDampedPseudoInverseToGradient(
         _grad, mComJacCache, mNullSpaceCache, mLastError, mDamping);
-  }
-  else if (SHIFT_SUPPORT == mBalanceMethod)
-  {
-    if (FROM_CENTROID == mErrorMethod || OPTIMIZE_BALANCE == mErrorMethod)
-    {
+  } else if (SHIFT_SUPPORT == mBalanceMethod) {
+    if (FROM_CENTROID == mErrorMethod || OPTIMIZE_BALANCE == mErrorMethod) {
       // Compute the gradient whose negative will move all the supporting end
       // effectors towards the center of mass without moving the center of mass
       // location
@@ -251,19 +230,15 @@ void BalanceConstraint::evalGradient(
       math::extractNullSpace(mSVDCache, mPartialNullSpaceCache);
 
       if (mPartialNullSpaceCache.rows() > 0
-          && mPartialNullSpaceCache.cols() > 0)
-      {
+          && mPartialNullSpaceCache.cols() > 0) {
         mNullSpaceCache
             = mPartialNullSpaceCache * mPartialNullSpaceCache.transpose();
-      }
-      else
-      {
+      } else {
         mNullSpaceCache.setZero(nDofs, nDofs);
       }
 
       std::size_t numEE = skel->getNumEndEffectors();
-      for (std::size_t i = 0; i < numEE; ++i)
-      {
+      for (std::size_t i = 0; i < numEE; ++i) {
         const dynamics::EndEffector* ee = skel->getEndEffector(i);
 
         if (!ee->getSupport() || !ee->getSupport()->isActive())
@@ -276,9 +251,7 @@ void BalanceConstraint::evalGradient(
         // Error is negative because we want to move the supports towards the
         // center of mass, not the center of mass towards the support
       }
-    }
-    else if (FROM_EDGE == mErrorMethod)
-    {
+    } else if (FROM_EDGE == mErrorMethod) {
       // Compute the gradient that will shift the end effectors that are closest
       // to the center of mass
 
@@ -288,23 +261,18 @@ void BalanceConstraint::evalGradient(
       math::extractNullSpace(mSVDCache, mPartialNullSpaceCache);
 
       if (mPartialNullSpaceCache.rows() > 0
-          && mPartialNullSpaceCache.cols() > 0)
-      {
+          && mPartialNullSpaceCache.cols() > 0) {
         mNullSpaceCache
             = mPartialNullSpaceCache * mPartialNullSpaceCache.transpose();
-      }
-      else
-      {
+      } else {
         mNullSpaceCache.setZero(nDofs, nDofs);
       }
 
-      for (std::size_t i = 0; i < 2; ++i)
-      {
+      for (std::size_t i = 0; i < 2; ++i) {
         const dynamics::EndEffector* ee
             = skel->getEndEffector(mClosestEndEffector[i]);
 
-        if (!ee->getSupport() || !ee->getSupport()->isActive())
-        {
+        if (!ee->getSupport() || !ee->getSupport()->isActive()) {
           dtwarn << "[BalanceConstraint::evalGradient] The EndEffector named ["
                  << ee->getName() << "] was identified as the closest "
                  << "supporting EndEffector, but it does not appear to be a "

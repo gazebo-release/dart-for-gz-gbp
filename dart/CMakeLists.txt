@@ -33,14 +33,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DART_BINARY_DIR}/lib")
 # gui
 #   osg
 #     render
-# planning
 
 #===============================================================================
 # Targets - {dependency targets}, source directories, [external dependency libs]
 #===============================================================================
 # dart - common, math, integration, lcpsolver, optimizer, dynamics, collision,
 #        collision/dart, collision/fcl, constraint, simulation, [assimp, eigen3,
-#        fcl, fmt, libccd]
+#        fcl, fmt]
 # dart-optimizer-ipopt - {dart}, optimizer/ipopt, [ipopt]
 # dart-optimizer-nlopt - {dart}, optimizer/nlopt, [nlopt]
 # dart-collision-bullet - {dart}, collision/bullet, [bullet]
@@ -48,7 +47,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DART_BINARY_DIR}/lib")
 # dart-utils-urdf - {dart-utils}, utils/urdf, [urdfdom]
 # dart-gui - {dart}, gui, [opengl, glut]
 # dart-gui-osg - {dart-gui}, gui/osg, gui/osg/render, [openscenegraph]
-# dart-planning - {dart}, planning, [flann]
 
 #===============================================================================
 # Components - (dependency component), {dependency targets}
@@ -61,7 +59,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DART_BINARY_DIR}/lib")
 # utils-urdf - (utils), {dart-utils-urdf}
 # gui - (utils), {dart-gui}
 # gui-osg - (gui), {dart-gui-osg}
-# planning - (dart), {dart-planning}
 
 # Component. This should be called before adding subdirectories.
 add_component(${PROJECT_NAME} dart)
@@ -84,7 +81,6 @@ add_subdirectory(dynamics)
 add_subdirectory(collision)
 add_subdirectory(constraint)
 add_subdirectory(simulation)
-add_subdirectory(planning) # flann
 add_subdirectory(utils) # tinyxml2, bullet
 add_subdirectory(gui) # opengl, glut, bullet
 
@@ -129,7 +125,6 @@ target_link_libraries(dart
     ${CMAKE_DL_LIBS}
     ${PROJECT_NAME}-external-odelcpsolver
     Eigen3::Eigen
-    ccd
     fcl
     assimp
 )
@@ -158,6 +153,9 @@ else()
   target_compile_definitions(dart PUBLIC -DDART_HAVE_spdlog=0)
 endif()
 
+# Boost gdb helper scripts embed inline asm that breaks GCC with our flags.
+target_compile_definitions(dart PUBLIC BOOST_ALL_NO_EMBEDDED_GDB_SCRIPTS)
+
 # octomap settings
 if(TARGET octomap)
   target_link_libraries(dart PUBLIC octomap)
@@ -165,9 +163,6 @@ endif()
 
 # C++ standard settings
 target_compile_features(dart PUBLIC cxx_std_17)
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-  target_link_libraries(dart PUBLIC "stdc++fs")
-endif()
 
 # Build DART with all available SIMD instructions
 if(DART_ENABLE_SIMD)
@@ -185,6 +180,16 @@ if(DART_ENABLE_SIMD)
     endif()
   elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     target_compile_options(dart PUBLIC -march=native -faligned-new)
+  endif()
+else()
+  # TODO: Improve this part to detect the system's architecture and apply the
+  # appropriate SIMD instructions.
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    # Remove SSE flags if set elsewhere
+    string(REPLACE "-msse" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-msse2" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-msse3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-mssse3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   endif()
 endif()
 
@@ -211,7 +216,7 @@ endif()
 add_component_targets(${PROJECT_NAME} dart dart)
 add_component_dependencies(${PROJECT_NAME} dart external-odelcpsolver)
 add_component_dependency_packages(${PROJECT_NAME} dart
-  assimp Eigen3 ccd fcl fmt
+  assimp Eigen3 fcl fmt
 )
 if(TARGET octomap)
   add_component_dependency_packages(${PROJECT_NAME} dart octomap)
@@ -222,9 +227,17 @@ endif()
 
 if(MSVC)
   set_target_properties(
-    ${target} PROPERTIES
+    dart PROPERTIES
     STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
   )
+endif()
+
+if(DART_CODECOV)
+  target_link_libraries(dart PUBLIC coverage_config)
+endif()
+
+if(DART_BUILD_PROFILE)
+  target_link_libraries(dart PUBLIC Tracy::TracyClient)
 endif()
 
 install(FILES dart.hpp DESTINATION include/dart/ COMPONENT headers)

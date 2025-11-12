@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/dynamics/Node.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/BodyNode.hpp"
 
 #define REPORT_INVALID_NODE(func)                                              \
   dterr << "[Node::" #func "] This Node was not constructed correctly. It "    \
         << "needs to specify a valid BodyNode pointer during construction. "   \
         << "Please report this as a bug if it is not a custom node type!\n";   \
-  assert(false);
+  DART_ASSERT(false);
 
 namespace dart {
 namespace dynamics {
@@ -113,8 +114,7 @@ ConstBodyNodePtr Node::getBodyNodePtr() const
 //==============================================================================
 bool Node::isRemoved() const
 {
-  if (nullptr == mBodyNode)
-  {
+  if (nullptr == mBodyNode) {
     REPORT_INVALID_NODE(isRemoved);
     return true;
   }
@@ -138,8 +138,7 @@ std::shared_ptr<const Skeleton> Node::getSkeleton() const
 std::shared_ptr<NodeDestructor> Node::getOrCreateDestructor()
 {
   std::shared_ptr<NodeDestructor> destructor = mDestructor.lock();
-  if (nullptr == destructor)
-  {
+  if (nullptr == destructor) {
     destructor = std::shared_ptr<NodeDestructor>(new NodeDestructor(this));
     mDestructor = destructor;
   }
@@ -155,8 +154,7 @@ Node::Node(BodyNode* _bn)
     mIndexInSkeleton(INVALID_INDEX),
     mIndexInTree(INVALID_INDEX)
 {
-  if (nullptr == mBodyNode)
-  {
+  if (nullptr == mBodyNode) {
     REPORT_INVALID_NODE(Node);
     return;
   }
@@ -185,15 +183,14 @@ std::string Node::registerNameChange(const std::string& newName)
 //==============================================================================
 void Node::attach()
 {
-  if (nullptr == mBodyNode)
-  {
+  if (nullptr == mBodyNode) {
     REPORT_INVALID_NODE(attach);
     return;
   }
 
   // If we are in release mode, and the Node believes it is attached, then we
   // can shortcut this procedure
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
   if (mAmAttached)
     return;
 #endif
@@ -210,15 +207,14 @@ void Node::attach()
   BodyNode::NodeDestructorSet& destructors = mBodyNode->mNodeDestructors;
 
   NodeDestructorPtr destructor = getOrCreateDestructor();
-  if (INVALID_INDEX == mIndexInBodyNode)
-  {
+  if (INVALID_INDEX == mIndexInBodyNode) {
     // If the Node was not in the map, then its destructor should not be in the
     // set
-    assert(destructors.find(destructor) == destructors.end());
+    DART_ASSERT(destructors.find(destructor) == destructors.end());
 
     // If this Node believes its index is invalid, then it should not exist
     // anywhere in the vector
-    assert(std::find(nodes.begin(), nodes.end(), this) == nodes.end());
+    DART_ASSERT(std::find(nodes.begin(), nodes.end(), this) == nodes.end());
 
     nodes.push_back(this);
     mIndexInBodyNode = nodes.size() - 1;
@@ -226,8 +222,8 @@ void Node::attach()
     destructors.insert(destructor);
   }
 
-  assert(std::find(nodes.begin(), nodes.end(), this) != nodes.end());
-  assert(destructors.find(destructor) != destructors.end());
+  DART_ASSERT(std::find(nodes.begin(), nodes.end(), this) != nodes.end());
+  DART_ASSERT(destructors.find(destructor) != destructors.end());
 
   const SkeletonPtr& skel = mBodyNode->getSkeleton();
   if (skel)
@@ -239,15 +235,14 @@ void Node::attach()
 //==============================================================================
 void Node::stageForRemoval()
 {
-  if (nullptr == mBodyNode)
-  {
+  if (nullptr == mBodyNode) {
     REPORT_INVALID_NODE(stageForRemoval);
     return;
   }
 
   // If we are in release mode, and the Node believes it is detached, then we
   // can shortcut this procedure.
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
   if (!mAmAttached)
     return;
 #endif
@@ -258,26 +253,25 @@ void Node::stageForRemoval()
 
   BodyNode::NodeDestructorSet& destructors = mBodyNode->mNodeDestructors;
 
-  if (mBodyNode->mNodeMap.end() == it)
-  {
+  if (mBodyNode->mNodeMap.end() == it) {
     // If the Node was not in the map, then its index should be invalid
-    assert(INVALID_INDEX == mIndexInBodyNode);
+    DART_ASSERT(INVALID_INDEX == mIndexInBodyNode);
 
     // If the Node was not in the map, then its destructor should not be in the
     // set
-    assert(destructors.find(destructor) == destructors.end());
+    DART_ASSERT(destructors.find(destructor) == destructors.end());
     return;
   }
 
   BodyNode::NodeDestructorSet::iterator destructor_iter
       = destructors.find(destructor);
   // This Node's destructor should be in the set of destructors
-  assert(destructors.end() != destructor_iter);
+  DART_ASSERT(destructors.end() != destructor_iter);
 
   std::vector<Node*>& nodes = it->second;
 
   // This Node's index in the vector should be referring to this Node
-  assert(nodes[mIndexInBodyNode] == this);
+  DART_ASSERT(nodes[mIndexInBodyNode] == this);
   nodes.erase(nodes.begin() + mIndexInBodyNode);
   destructors.erase(destructor_iter);
 
@@ -285,7 +279,7 @@ void Node::stageForRemoval()
   for (std::size_t i = mIndexInBodyNode; i < nodes.size(); ++i)
     nodes[i]->mIndexInBodyNode = i;
 
-  assert(std::find(nodes.begin(), nodes.end(), this) == nodes.end());
+  DART_ASSERT(std::find(nodes.begin(), nodes.end(), this) == nodes.end());
 
   const SkeletonPtr& skel = mBodyNode->getSkeleton();
   if (skel)

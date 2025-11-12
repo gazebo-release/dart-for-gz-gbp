@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,12 +32,13 @@
 
 #include "dart/dynamics/PlanarJoint.hpp"
 
-#include <string>
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/dynamics/DegreeOfFreedom.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -204,7 +205,7 @@ Eigen::Matrix<double, 6, 3> PlanarJoint::getRelativeJacobianStatic(
       = math::AdTJac(Joint::mAspectProperties.mT_ChildBodyToJoint, J.col(2));
 
   // Verification
-  assert(!math::isNan(J));
+  DART_ASSERT(!math::isNan(J));
 
   return J;
 }
@@ -230,8 +231,7 @@ Joint* PlanarJoint::clone() const
 void PlanarJoint::updateDegreeOfFreedomNames()
 {
   std::vector<std::string> affixes;
-  switch (mAspectProperties.mPlaneType)
-  {
+  switch (mAspectProperties.mPlaneType) {
     case PlaneType::XY:
       affixes.push_back("_x");
       affixes.push_back("_y");
@@ -254,10 +254,8 @@ void PlanarJoint::updateDegreeOfFreedomNames()
             << static_cast<int>(mAspectProperties.mPlaneType) << ")\n";
   }
 
-  if (affixes.size() == 2)
-  {
-    for (std::size_t i = 0; i < 2; ++i)
-    {
+  if (affixes.size() == 2) {
+    for (std::size_t i = 0; i < 2; ++i) {
       if (!mDofs[i]->isNamePreserved())
         mDofs[i]->setName(Joint::mAspectProperties.mName + affixes[i], false);
     }
@@ -275,7 +273,7 @@ void PlanarJoint::updateRelativeTransform() const
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
 
   // Verification
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -310,9 +308,9 @@ void PlanarJoint::updateRelativeJacobianTimeDeriv() const
                   mAspectProperties.mRotAxis * -getPositionsStatic()[2]),
           J.col(1)));
 
-  assert(mJacobianDeriv.col(2) == Eigen::Vector6d::Zero());
-  assert(!math::isNan(mJacobianDeriv.col(0)));
-  assert(!math::isNan(mJacobianDeriv.col(1)));
+  DART_ASSERT(mJacobianDeriv.col(2) == Eigen::Vector6d::Zero());
+  DART_ASSERT(!math::isNan(mJacobianDeriv.col(0)));
+  DART_ASSERT(!math::isNan(mJacobianDeriv.col(1)));
 }
 
 } // namespace dynamics

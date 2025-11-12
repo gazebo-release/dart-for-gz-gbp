@@ -6,11 +6,9 @@ Subject: Reduce test result accuracy to fix i386
  unittests/regression/test_Issue1445.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/unittests/regression/test_Issue1445.cpp b/unittests/regression/test_Issue1445.cpp
-index dba1940..e0738d8 100644
---- a/unittests/regression/test_Issue1445.cpp
-+++ b/unittests/regression/test_Issue1445.cpp
-@@ -162,7 +162,7 @@ TEST(Issue1445, Collision)
+--- a/tests/regression/test_Issue1445.cpp
++++ b/tests/regression/test_Issue1445.cpp
+@@ -164,7 +164,7 @@
      world->step();
  
    // Expect both bodies to remain in contact with the ground with zero velocity.

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,14 +33,15 @@
 #ifndef DART_UTILS_MJCF_DETAIL_COMPILER_HPP_
 #define DART_UTILS_MJCF_DETAIL_COMPILER_HPP_
 
+#include <dart/utils/mjcf/detail/Error.hpp>
+#include <dart/utils/mjcf/detail/Types.hpp>
+
+#include <dart/common/Platform.hpp>
+#include <dart/common/ResourceRetriever.hpp>
+#include <dart/common/Uri.hpp>
+
 #include <Eigen/Core>
 #include <tinyxml2.h>
-
-#include "dart/common/Platform.hpp"
-#include "dart/common/ResourceRetriever.hpp"
-#include "dart/common/Uri.hpp"
-#include "dart/utils/mjcf/detail/Error.hpp"
-#include "dart/utils/mjcf/detail/Types.hpp"
 
 namespace dart {
 namespace utils {
@@ -99,11 +100,7 @@ private:
   bool mConvexHull{true};
   bool mUserThread{true};
   bool mFuseStatic{false};
-#if DART_OS_WINDOWS
   InertiaFromGeom mInertiaFromGeom{InertiaFromGeom::IFG_AUTO};
-#else
-  InertiaFromGeom mInertiaFromGeom{InertiaFromGeom::AUTO};
-#endif
   Eigen::Vector2i mInertiaGroupRange{Eigen::Vector2i(0, 5)};
 };
 

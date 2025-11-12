@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2017, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -39,7 +39,7 @@
 #ifndef DART_SIMULATION_DETAIL_WORLD_IMPL_HPP_
 #define DART_SIMULATION_DETAIL_WORLD_IMPL_HPP_
 
-#include "dart/simulation/World.hpp"
+#include <dart/simulation/World.hpp>
 
 namespace dart {
 namespace simulation {
@@ -57,18 +57,13 @@ void World::eachSkeleton(Func func) const
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, const dynamics::Skeleton*>,
-                    bool>)
-  {
-    for (auto skel : mSkeletons)
-    {
+                    bool>) {
+    for (auto skel : mSkeletons) {
       if (!func(skel.get()))
         return;
     }
-  }
-  else
-  {
-    for (auto skel : mSkeletons)
-    {
+  } else {
+    for (auto skel : mSkeletons) {
       func(skel.get());
     }
   }
@@ -80,18 +75,13 @@ void World::eachSkeleton(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, dynamics::Skeleton*>,
-                    bool>)
-  {
-    for (auto skel : mSkeletons)
-    {
+                    bool>) {
+    for (auto skel : mSkeletons) {
       if (!func(skel.get()))
         return;
     }
-  }
-  else
-  {
-    for (auto skel : mSkeletons)
-    {
+  } else {
+    for (auto skel : mSkeletons) {
       func(skel.get());
     }
   }
@@ -103,18 +93,13 @@ void World::eachSimpleFrame(Func func) const
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, const dynamics::SimpleFrame*>,
-                    bool>)
-  {
-    for (auto simpleFrame : mSimpleFrames)
-    {
+                    bool>) {
+    for (auto simpleFrame : mSimpleFrames) {
       if (!func(simpleFrame.get()))
         return;
     }
-  }
-  else
-  {
-    for (auto simpleFrame : mSimpleFrames)
-    {
+  } else {
+    for (auto simpleFrame : mSimpleFrames) {
       func(simpleFrame.get());
     }
   }
@@ -126,18 +111,13 @@ void World::eachSimpleFrame(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, dynamics::SimpleFrame*>,
-                    bool>)
-  {
-    for (auto simpleFrame : mSimpleFrames)
-    {
+                    bool>) {
+    for (auto simpleFrame : mSimpleFrames) {
       if (!func(simpleFrame.get()))
         return;
     }
-  }
-  else
-  {
-    for (auto simpleFrame : mSimpleFrames)
-    {
+  } else {
+    for (auto simpleFrame : mSimpleFrames) {
       func(simpleFrame.get());
     }
   }

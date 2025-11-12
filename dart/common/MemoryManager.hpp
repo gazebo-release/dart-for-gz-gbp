@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,13 +33,13 @@
 #ifndef DART_COMMON_MEMORYMANAGER_HPP_
 #define DART_COMMON_MEMORYMANAGER_HPP_
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
   #include <mutex>
 #endif
-#include <iostream>
+#include <dart/common/FreeListAllocator.hpp>
+#include <dart/common/PoolAllocator.hpp>
 
-#include "dart/common/FreeListAllocator.hpp"
-#include "dart/common/PoolAllocator.hpp"
+#include <iostream>
 
 namespace dart::common {
 
@@ -151,7 +151,7 @@ public:
   template <typename T>
   void destroyUsingPool(T* pointer) noexcept;
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
   /// Returns true if a pointer is allocated by the internal allocator.
   [[nodiscard]] bool hasAllocated(void* pointer, size_t size) const noexcept;
 #endif
@@ -164,10 +164,10 @@ public:
       std::ostream& os, const MemoryManager& memoryManager);
 
 private:
-  /// The base allocator to allocate memory chunck.
+  /// The base allocator to allocate memory chunk.
   MemoryAllocator& mBaseAllocator;
 
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
   /// The free list allocator.
   FreeListAllocator mFreeListAllocator;
 
@@ -184,6 +184,6 @@ private:
 
 } // namespace dart::common
 
-#include "dart/common/detail/MemoryManager-impl.hpp"
+#include <dart/common/detail/MemoryManager-impl.hpp>
 
 #endif // DART_COMMON_MEMORYMANAGER_HPP_

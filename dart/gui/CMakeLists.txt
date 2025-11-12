@@ -14,11 +14,6 @@ if(WIN32 AND NOT CYGWIN)
 else()
   dart_check_optional_package(GLUT "dart-gui" "freeglut3")
 endif()
-if(GLUT_FOUND)
-  set(HAVE_GLUT TRUE)
-else()
-  set(HAVE_GLUT FALSE)
-endif()
 
 # Search all header and source files
 file(GLOB hdrs "*.hpp" "*.h" "detail/*.hpp")
@@ -49,7 +44,6 @@ target_link_libraries(${target_name}
     OpenGL::GLU
     GLUT::GLUT
     ${PROJECT_NAME}-external-lodepng
-    ${PROJECT_NAME}-external-imgui
 )
 if(APPLE)
   # Suppress "deprecated-declarations" until we abandon glut.
@@ -67,12 +61,8 @@ add_component_dependencies(
   ${component_name}
   utils
   external-lodepng
-  external-imgui
 )
-add_component_dependency_packages(${PROJECT_NAME} ${component_name} OpenGL)
-if(NOT WIN32 OR CYGWIN)
-  add_component_dependency_packages(${PROJECT_NAME} ${component_name} GLUT)
-endif()
+add_component_dependency_packages(${PROJECT_NAME} ${component_name} OpenGL GLUT)
 
 # Add subdirectories
 add_subdirectory(osg)

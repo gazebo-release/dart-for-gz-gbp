@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,14 +32,14 @@
 
 #include "dart/gui/osg/render/PlaneShapeNode.hpp"
 
+#include "dart/dynamics/PlaneShape.hpp"
+#include "dart/dynamics/SimpleFrame.hpp"
+#include "dart/gui/osg/Utils.hpp"
+
 #include <osg/CullFace>
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/ShapeDrawable>
-
-#include "dart/dynamics/PlaneShape.hpp"
-#include "dart/dynamics/SimpleFrame.hpp"
-#include "dart/gui/osg/Utils.hpp"
 
 namespace dart {
 namespace gui {
@@ -108,8 +108,7 @@ void PlaneShapeNode::refresh()
 //==============================================================================
 void PlaneShapeNode::extractData(bool /*firstTime*/)
 {
-  if (nullptr == mGeode)
-  {
+  if (nullptr == mGeode) {
     mGeode
         = new PlaneShapeGeode(mPlaneShape.get(), mParentShapeFrameNode, this);
     addChild(mGeode);
@@ -150,8 +149,7 @@ void PlaneShapeGeode::refresh()
 //==============================================================================
 void PlaneShapeGeode::extractData()
 {
-  if (nullptr == mDrawable)
-  {
+  if (nullptr == mDrawable) {
     mDrawable = new PlaneShapeDrawable(mPlaneShape, mVisualAspect, this);
     addDrawable(mDrawable);
     return;
@@ -185,8 +183,7 @@ void PlaneShapeDrawable::refresh(bool firstTime)
     setDataVariance(::osg::Object::DYNAMIC);
 
   if (mPlaneShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_PRIMITIVE)
-      || firstTime)
-  {
+      || firstTime) {
     const Eigen::Vector3d& n = mPlaneShape->getNormal();
     const Eigen::Vector3d& p = mPlaneShape->getOffset() * n;
     ::osg::ref_ptr<::osg::InfinitePlane> osg_shape = new ::osg::InfinitePlane;
@@ -198,24 +195,20 @@ void PlaneShapeDrawable::refresh(bool firstTime)
   }
 
   if (mPlaneShape->checkDataVariance(dart::dynamics::Shape::DYNAMIC_COLOR)
-      || firstTime)
-  {
+      || firstTime) {
     // Set color
     const ::osg::Vec4d color = eigToOsgVec4d(mVisualAspect->getRGBA());
     setColor(color);
 
     // Set alpha specific properties
     ::osg::StateSet* ss = getOrCreateStateSet();
-    if (std::abs(color.a()) > 1 - getAlphaThreshold())
-    {
+    if (std::abs(color.a()) > 1 - getAlphaThreshold()) {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::OFF);
       ss->setRenderingHint(::osg::StateSet::OPAQUE_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;
       depth->setWriteMask(true);
       ss->setAttributeAndModes(depth, ::osg::StateAttribute::ON);
-    }
-    else
-    {
+    } else {
       ss->setMode(GL_BLEND, ::osg::StateAttribute::ON);
       ss->setRenderingHint(::osg::StateSet::TRANSPARENT_BIN);
       ::osg::ref_ptr<::osg::Depth> depth = new ::osg::Depth;

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -54,8 +54,7 @@ void MyWindow::timeStepping()
 
   // for perturbation test
   mImpulseDuration--;
-  if (mImpulseDuration <= 0)
-  {
+  if (mImpulseDuration <= 0) {
     mImpulseDuration = 0;
     mForce.setZero();
   }
@@ -66,8 +65,7 @@ void MyWindow::drawWorld() const
   SimWindow::drawWorld();
 
   // draw arrow
-  if (mImpulseDuration > 0)
-  {
+  if (mImpulseDuration > 0) {
     Eigen::Vector3d poa
         = mWorld->getSkeleton(1)->getBodyNode("h_spine")->getTransform()
           * Eigen::Vector3d(0.0, 0.0, 0.0);
@@ -79,8 +77,7 @@ void MyWindow::drawWorld() const
 
 void MyWindow::keyboard(unsigned char _key, int _x, int _y)
 {
-  switch (_key)
-  {
+  switch (_key) {
     case ' ': // use space key to play or stop the motion
       mSimulating = !mSimulating;
       if (mSimulating)
@@ -92,8 +89,7 @@ void MyWindow::keyboard(unsigned char _key, int _x, int _y)
         mSimulating = false;
       break;
     case '[': // step backward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame--;
         if (mPlayFrame < 0)
           mPlayFrame = 0;
@@ -101,8 +97,7 @@ void MyWindow::keyboard(unsigned char _key, int _x, int _y)
       }
       break;
     case ']': // step forwardward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame++;
         if (mPlayFrame >= mWorld->getRecording()->getNumFrames())
           mPlayFrame = 0;
@@ -150,14 +145,12 @@ void MyWindow::plotCOMX()
 {
   int nFrame = mWorld->getRecording()->getNumFrames();
   Eigen::VectorXd data(nFrame);
-  for (int i = 0; i < nFrame; i++)
-  {
+  for (int i = 0; i < nFrame; i++) {
     Eigen::VectorXd pose = mWorld->getRecording()->getConfig(i, 1);
     mWorld->getSkeleton(1)->setPositions(pose);
     data[i] = mWorld->getSkeleton(1)->getCOM()[0];
   }
-  if (nFrame != 0)
-  {
+  if (nFrame != 0) {
     Eigen::VectorXd pose = mWorld->getRecording()->getConfig(mPlayFrame, 1);
     mWorld->getSkeleton(1)->setPositions(pose);
   }

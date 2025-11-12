@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,14 @@
 #ifndef DART_COMMON_STLHELPERS_HPP_
 #define DART_COMMON_STLHELPERS_HPP_
 
-#include <cassert>
-#include <cstddef>
+#include "dart/common/Macros.hpp"
+
+#include <dart/common/Memory.hpp>
+
 #include <vector>
 
-#include "dart/common/Memory.hpp"
+#include <cassert>
+#include <cstddef>
 
 namespace dart {
 namespace common {
@@ -47,7 +50,7 @@ template <typename T>
 static T getVectorObjectIfAvailable(
     std::size_t index, const std::vector<T>& vec)
 {
-  assert(index < vec.size());
+  DART_ASSERT(index < vec.size());
   if (index < vec.size())
     return vec[index];
 

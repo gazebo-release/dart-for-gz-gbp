@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,7 +32,7 @@
 
 #include "dart/common/MemoryManager.hpp"
 
-#ifndef NDEBUG // debug
+#if DART_BUILD_MODE_DEBUG
   #include "dart/common/Logging.hpp"
 #endif
 
@@ -49,7 +49,7 @@ MemoryManager& MemoryManager::GetDefault()
 MemoryManager::MemoryManager(MemoryAllocator& baseAllocator)
   : mBaseAllocator(baseAllocator),
     mFreeListAllocator(mBaseAllocator),
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
     mPoolAllocator(mFreeListAllocator)
 #else
     mPoolAllocator(mFreeListAllocator.getInternalAllocator())
@@ -73,7 +73,7 @@ MemoryAllocator& MemoryManager::getBaseAllocator()
 //==============================================================================
 FreeListAllocator& MemoryManager::getFreeListAllocator()
 {
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
   return mFreeListAllocator;
 #else
   return mFreeListAllocator.getInternalAllocator();
@@ -83,7 +83,7 @@ FreeListAllocator& MemoryManager::getFreeListAllocator()
 //==============================================================================
 PoolAllocator& MemoryManager::getPoolAllocator()
 {
-#ifdef NDEBUG
+#if DART_BUILD_MODE_RELEASE
   return mPoolAllocator;
 #else
   return mPoolAllocator.getInternalAllocator();
@@ -93,8 +93,7 @@ PoolAllocator& MemoryManager::getPoolAllocator()
 //==============================================================================
 void* MemoryManager::allocate(Type type, size_t bytes)
 {
-  switch (type)
-  {
+  switch (type) {
     case Type::Base:
       return mBaseAllocator.allocate(bytes);
     case Type::Free:
@@ -120,8 +119,7 @@ void* MemoryManager::allocateUsingPool(size_t bytes)
 //==============================================================================
 void MemoryManager::deallocate(Type type, void* pointer, size_t bytes)
 {
-  switch (type)
-  {
+  switch (type) {
     case Type::Base:
       mBaseAllocator.deallocate(pointer, bytes);
       break;
@@ -146,7 +144,7 @@ void MemoryManager::deallocateUsingPool(void* pointer, size_t bytes)
   deallocate(Type::Pool, pointer, bytes);
 }
 
-#ifndef NDEBUG
+#if DART_BUILD_MODE_DEBUG
 //==============================================================================
 bool MemoryManager::hasAllocated(void* pointer, size_t size) const noexcept
 {
@@ -163,8 +161,7 @@ bool MemoryManager::hasAllocated(void* pointer, size_t size) const noexcept
 //==============================================================================
 void MemoryManager::print(std::ostream& os, int indent) const
 {
-  if (indent == 0)
-  {
+  if (indent == 0) {
     os << "[MemoryManager]\n";
   }
   const std::string spaces(indent, ' ');

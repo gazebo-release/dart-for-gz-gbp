@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -38,29 +38,31 @@
 
 #include "dart/gui/osg/ImGuiHandler.hpp"
 
-#include <algorithm>
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+#include "dart/gui/osg/ImGuiWidget.hpp"
+#include "dart/gui/osg/IncludeImGui.hpp"
 
 #include <osg/Camera>
 #include <osg/RenderInfo>
 
-#include "dart/common/Console.hpp"
-#include "dart/external/imgui/imgui.h"
-#include "dart/external/imgui/imgui_impl_opengl2.h"
-#include "dart/gui/osg/ImGuiWidget.hpp"
+#include <algorithm>
 
 namespace dart {
 namespace gui {
 namespace osg {
 
-//==============================================================================
+#if IMGUI_VERSION_NUM < 19150
+
 // Special keys that are usually greater than 512 in osgGA
 //
-// Imporant Note: Dear ImGui expects the control Keys indices not to be greater
+// Important Note: Dear ImGui expects the control Keys indices not to be greater
 // thant 511. It actually uses an array of 512 elements. However, OSG has
 // indices greater than that. So here I do a conversion for special keys between
 // ImGui and OSG.
 enum ConvertedKey : int
 {
+  ConvertedKey_None = -1,
   ConvertedKey_Tab = 257,
   ConvertedKey_Left,
   ConvertedKey_Right,
@@ -84,15 +86,74 @@ enum ConvertedKey : int
   ConvertedKey_RightSuper,
 };
 
+#endif
+
 //==============================================================================
 // Check for a special key and return the converted code (range [257, 511]) if
 // so. Otherwise returns -1
-int convertFromOSGKey(int key)
+#if IMGUI_VERSION_NUM >= 19150
+ImGuiKey convertFromOSGKey(int key)
+#else
+ConvertedKey convertFromOSGKey(int key)
+#endif
 {
   using KeySymbol = osgGA::GUIEventAdapter::KeySymbol;
 
-  switch (key)
-  {
+  switch (key) {
+#if IMGUI_VERSION_NUM >= 19150
+    case KeySymbol::KEY_Tab:
+      return ImGuiKey_Tab;
+    case KeySymbol::KEY_Left:
+      return ImGuiKey_LeftArrow;
+    case KeySymbol::KEY_Right:
+      return ImGuiKey_RightArrow;
+    case KeySymbol::KEY_Up:
+      return ImGuiKey_UpArrow;
+    case KeySymbol::KEY_Down:
+      return ImGuiKey_DownArrow;
+    case KeySymbol::KEY_Page_Up:
+      return ImGuiKey_PageUp;
+    case KeySymbol::KEY_Page_Down:
+      return ImGuiKey_PageDown;
+    case KeySymbol::KEY_Home:
+      return ImGuiKey_Home;
+    case KeySymbol::KEY_End:
+      return ImGuiKey_End;
+    case KeySymbol::KEY_Delete:
+      return ImGuiKey_Delete;
+    case KeySymbol::KEY_BackSpace:
+      return ImGuiKey_Backspace;
+    case KeySymbol::KEY_Return:
+      return ImGuiKey_Enter;
+    case KeySymbol::KEY_Escape:
+      return ImGuiKey_Escape;
+    case KeySymbol::KEY_Control_L:
+    case KeySymbol::KEY_Control_R:
+      return ImGuiKey_ModCtrl;
+    case KeySymbol::KEY_Shift_L:
+    case KeySymbol::KEY_Shift_R:
+      return ImGuiKey_ModShift;
+    case KeySymbol::KEY_Alt_L:
+    case KeySymbol::KEY_Alt_R:
+      return ImGuiKey_ModAlt;
+    case KeySymbol::KEY_Super_L:
+    case KeySymbol::KEY_Super_R:
+      return ImGuiKey_ModSuper;
+    case KeySymbol::KEY_A:
+      return ImGuiKey_A;
+    case KeySymbol::KEY_C:
+      return ImGuiKey_C;
+    case KeySymbol::KEY_V:
+      return ImGuiKey_V;
+    case KeySymbol::KEY_X:
+      return ImGuiKey_X;
+    case KeySymbol::KEY_Y:
+      return ImGuiKey_Y;
+    case KeySymbol::KEY_Z:
+      return ImGuiKey_Z;
+    default:
+      return ImGuiKey_None;
+#else
     case KeySymbol::KEY_Tab:
       return ConvertedKey_Tab;
     case KeySymbol::KEY_Left:
@@ -136,7 +197,8 @@ int convertFromOSGKey(int key)
     case KeySymbol::KEY_Super_R:
       return ConvertedKey_RightSuper;
     default:
-      return -1;
+      return ConvertedKey_None;
+#endif
   }
 }
 
@@ -184,6 +246,7 @@ ImGuiHandler::ImGuiHandler()
 
   ImGui_ImplOpenGL2_Init();
 
+#if IMGUI_VERSION_NUM < 19150
   // Keyboard mapping. ImGui will use those indices to peek into the
   // io.KeyDown[] array.
   ImGuiIO& io = ImGui::GetIO();
@@ -206,6 +269,7 @@ ImGuiHandler::ImGuiHandler()
   io.KeyMap[ImGuiKey_X] = osgGA::GUIEventAdapter::KeySymbol::KEY_X;
   io.KeyMap[ImGuiKey_Y] = osgGA::GUIEventAdapter::KeySymbol::KEY_Y;
   io.KeyMap[ImGuiKey_Z] = osgGA::GUIEventAdapter::KeySymbol::KEY_Z;
+#endif
 }
 
 //==============================================================================
@@ -237,8 +301,7 @@ bool ImGuiHandler::hasWidget(const std::shared_ptr<ImGuiWidget>& widget) const
 void ImGuiHandler::addWidget(
     const std::shared_ptr<ImGuiWidget>& widget, bool visible)
 {
-  if (hasWidget(widget))
-  {
+  if (hasWidget(widget)) {
     dtwarn
         << "[ImGuiHandler::addWidget] Attempting to add existing widget to the "
            "viewer. Ignoring this action.";
@@ -252,8 +315,7 @@ void ImGuiHandler::addWidget(
 //==============================================================================
 void ImGuiHandler::removeWidget(const std::shared_ptr<ImGuiWidget>& widget)
 {
-  if (!hasWidget(widget))
-  {
+  if (!hasWidget(widget)) {
     dtwarn << "[ImGuiHandler::removeWidget] Attempting to remove not existing "
               "widget from the viewer. Ignoring this action.\n";
     return;
@@ -276,24 +338,31 @@ bool ImGuiHandler::handle(
     ::osg::Object* /*object*/,
     ::osg::NodeVisitor* /*nodeVisitor*/)
 {
-  auto& io = ImGui::GetIO();
-  const auto wantCapureMouse = io.WantCaptureMouse;
-  const auto wantCapureKeyboard = io.WantCaptureKeyboard;
+  ImGuiIO& io = ImGui::GetIO();
+  const bool wantCaptureMouse = io.WantCaptureMouse;
+  const bool wantCaptureKeyboard = io.WantCaptureKeyboard;
 
-  switch (eventAdapter.getEventType())
-  {
+  switch (eventAdapter.getEventType()) {
     case osgGA::GUIEventAdapter::KEYDOWN: {
-      const auto c = eventAdapter.getUnmodifiedKey();
-      const auto special_key = convertFromOSGKey(c);
+      const int key = eventAdapter.getUnmodifiedKey();
 
-      if (special_key > 0)
-      {
-        assert(special_key < 512 && "ImGui KeysDown is an array of 512");
-        assert(
-            special_key > 256
+#if IMGUI_VERSION_NUM >= 19150
+      const ImGuiKey specialKey = convertFromOSGKey(key);
+      if (specialKey != ImGuiKey_None) {
+        io.AddKeyEvent(specialKey, true);
+      } else if (key != 0 && key < 0x10000) {
+        const ImWchar c = static_cast<ImWchar>(eventAdapter.getKey());
+        io.AddInputCharacter(c);
+      }
+#else
+      const ConvertedKey specialKey = convertFromOSGKey(key);
+      if (specialKey != ConvertedKey_None) {
+        DART_ASSERT(specialKey < 512 && "ImGui KeysDown is an array of 512");
+        DART_ASSERT(
+            specialKey > 256
             && "ASCII stop at 127, but we use the range [257, 511]");
 
-        io.KeysDown[special_key] = true;
+        io.KeysDown[specialKey] = true;
 
         io.KeyCtrl = io.KeysDown[ConvertedKey_LeftControl]
                      || io.KeysDown[ConvertedKey_RightControl];
@@ -303,27 +372,31 @@ bool ImGuiHandler::handle(
                     || io.KeysDown[ConvertedKey_RightAlt];
         io.KeySuper = io.KeysDown[ConvertedKey_LeftSuper]
                       || io.KeysDown[ConvertedKey_RightSuper];
+      } else if (0 < key && key < 0x10000) {
+        io.KeysDown[key] = true;
+        io.AddInputCharacter(static_cast<ImWchar>(key));
       }
-      else if (0 < c && c < 0x10000)
-      {
-        io.KeysDown[c] = true;
-        io.AddInputCharacter(static_cast<ImWchar>(c));
-      }
+#endif
 
-      return wantCapureKeyboard;
+      return wantCaptureKeyboard;
     }
     case osgGA::GUIEventAdapter::KEYUP: {
-      const auto c = eventAdapter.getUnmodifiedKey();
-      const auto special_key = convertFromOSGKey(c);
+      const int key = eventAdapter.getUnmodifiedKey();
 
-      if (special_key > 0)
-      {
-        assert(special_key < 512 && "ImGui KeysDown is an array of 512");
-        assert(
-            special_key > 256
+#if IMGUI_VERSION_NUM >= 19150
+      const ImGuiKey specialKey = convertFromOSGKey(key);
+      if (specialKey != ImGuiKey_None) {
+        io.AddKeyEvent(specialKey, false);
+      }
+#else
+      const ConvertedKey specialKey = convertFromOSGKey(key);
+      if (specialKey != ConvertedKey_None) {
+        DART_ASSERT(specialKey < 512 && "ImGui KeysDown is an array of 512");
+        DART_ASSERT(
+            specialKey > 256
             && "ASCII stop at 127, but we use the range [257, 511]");
 
-        io.KeysDown[special_key] = false;
+        io.KeysDown[specialKey] = false;
 
         io.KeyCtrl = io.KeysDown[ConvertedKey_LeftControl]
                      || io.KeysDown[ConvertedKey_RightControl];
@@ -333,50 +406,42 @@ bool ImGuiHandler::handle(
                     || io.KeysDown[ConvertedKey_RightAlt];
         io.KeySuper = io.KeysDown[ConvertedKey_LeftSuper]
                       || io.KeysDown[ConvertedKey_RightSuper];
+      } else if (0 < key && key < 0x10000) {
+        io.KeysDown[key] = false;
+        io.AddInputCharacter(static_cast<ImWchar>(key));
       }
-      else if (0 < c && c < 0x10000)
-      {
-        io.KeysDown[c] = false;
-        io.AddInputCharacter(static_cast<ImWchar>(c));
-      }
+#endif
 
-      return wantCapureKeyboard;
+      return wantCaptureKeyboard;
     }
     case osgGA::GUIEventAdapter::PUSH: {
       io.MousePos
           = ImVec2(eventAdapter.getX(), io.DisplaySize.y - eventAdapter.getY());
 
       if (eventAdapter.getButtonMask()
-          == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-      {
+          == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) {
         mMousePressed[0] = true;
-      }
-      else if (
+      } else if (
           eventAdapter.getButtonMask()
-          == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON)
-      {
+          == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
         mMousePressed[1] = true;
-      }
-      else if (
+      } else if (
           eventAdapter.getButtonMask()
-          == osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON)
-      {
+          == osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON) {
         mMousePressed[2] = true;
-      }
-      else
-      {
+      } else {
         // Shouldn't be reached to here. Mark left button by default.
         mMousePressed[0] = true;
       }
 
-      return wantCapureMouse;
+      return wantCaptureMouse;
     }
     case osgGA::GUIEventAdapter::DRAG:
     case osgGA::GUIEventAdapter::MOVE: {
       io.MousePos
           = ImVec2(eventAdapter.getX(), io.DisplaySize.y - eventAdapter.getY());
 
-      return wantCapureMouse;
+      return wantCaptureMouse;
     }
     case osgGA::GUIEventAdapter::RELEASE: {
       // When a mouse button is released no button mask is set. So we mark all
@@ -385,13 +450,12 @@ bool ImGuiHandler::handle(
       mMousePressed[1] = false;
       mMousePressed[2] = false;
 
-      return wantCapureMouse;
+      return wantCaptureMouse;
     }
     case osgGA::GUIEventAdapter::SCROLL: {
       constexpr float increment = 0.1f;
 
-      switch (eventAdapter.getScrollingMotion())
-      {
+      switch (eventAdapter.getScrollingMotion()) {
         case (osgGA::GUIEventAdapter::SCROLL_NONE):
           break;
         case (osgGA::GUIEventAdapter::SCROLL_LEFT):
@@ -409,7 +473,7 @@ bool ImGuiHandler::handle(
           break;
       }
 
-      return wantCapureMouse;
+      return wantCaptureMouse;
     }
     default: {
       return false;
@@ -434,7 +498,7 @@ void ImGuiHandler::newFrame(::osg::RenderInfo& renderInfo)
       = mTime > 0.0 ? static_cast<float>(currentTime - mTime) : 1.0f / 60.0f;
   io.DeltaTime = std::max(io.DeltaTime, std::numeric_limits<float>::min());
   mTime = currentTime;
-  assert(mTime >= 0.0);
+  DART_ASSERT(mTime >= 0.0);
 
   for (auto i = 0u; i < mMousePressed.size(); ++i)
     io.MouseDown[i] = mMousePressed[i];
@@ -448,8 +512,7 @@ void ImGuiHandler::newFrame(::osg::RenderInfo& renderInfo)
 //==============================================================================
 void ImGuiHandler::render(::osg::RenderInfo& /*renderInfo*/)
 {
-  for (const auto& widget : mWidgets)
-  {
+  for (const auto& widget : mWidgets) {
     if (widget->isVisible())
       widget->render();
   }

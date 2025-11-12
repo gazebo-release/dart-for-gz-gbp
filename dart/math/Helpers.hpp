@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -34,21 +34,22 @@
 #define DART_MATH_HELPERS_HPP_
 
 // Standard Libraries
+#include <iomanip>
+#include <iostream>
+#include <random>
+
 #include <cfloat>
 #include <climits>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <iomanip>
-#include <iostream>
-#include <random>
 
 // External Libraries
 #include <Eigen/Dense>
 // Local Headers
-#include "dart/math/Constants.hpp"
-#include "dart/math/MathTypes.hpp"
-#include "dart/math/Random.hpp"
+#include <dart/math/Constants.hpp>
+#include <dart/math/MathTypes.hpp>
+#include <dart/math/Random.hpp>
 
 namespace dart {
 namespace math {
@@ -141,11 +142,6 @@ inline double acotanh(double _X)
   return log((_X + 1) / (_X - 1)) / 2;
 }
 
-inline double round(double _x)
-{
-  return floor(_x + 0.5);
-}
-
 inline double round2(double _x)
 {
   int gintx = static_cast<int>(std::floor(_x));
@@ -236,15 +232,11 @@ inline bool isSymmetric(const Eigen::MatrixXd& _m, double _tol = 1e-6)
   if (rows != cols)
     return false;
 
-  for (std::size_t i = 0; i < rows; ++i)
-  {
-    for (std::size_t j = i + 1; j < cols; ++j)
-    {
-      if (std::abs(_m(i, j) - _m(j, i)) > _tol)
-      {
+  for (std::size_t i = 0; i < rows; ++i) {
+    for (std::size_t j = i + 1; j < cols; ++j) {
+      if (std::abs(_m(i, j) - _m(j, i)) > _tol) {
         std::cout << "A: " << std::endl;
-        for (std::size_t k = 0; k < rows; ++k)
-        {
+        for (std::size_t k = 0; k < rows; ++k) {
           for (std::size_t l = 0; l < cols; ++l)
             std::cout << std::setprecision(4) << _m(k, l) << " ";
           std::cout << std::endl;

@@ -1,16 +1,16 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: dart
 Source: http://github.com/dartsim/dart
-Files-Excluded: .ci
+Files-Excluded: .devcontainers
                .github
                .gitignore
                Brewfile
                data/screencap/.KEEP
                data/mjcf/openai/robotics/stls/.get
-               docs
-               extras
+               docker
+               docs/readthedocs
+               docs/*.pdf
                paper
-               unittests/gtest
 
 Files: *
 Copyright: 2011, Georgia Tech Graphics Lab

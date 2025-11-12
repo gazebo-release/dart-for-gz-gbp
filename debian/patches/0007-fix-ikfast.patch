@@ -12,15 +12,13 @@ Last-Update: 2021-12-19
  unittests/integration/test_IkFast.cpp | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/unittests/integration/test_IkFast.cpp b/unittests/integration/test_IkFast.cpp
-index 943d760..fdd16d5 100644
---- a/unittests/integration/test_IkFast.cpp
-+++ b/unittests/integration/test_IkFast.cpp
-@@ -132,9 +132,6 @@ TEST(IkFast, LoadWamArmIk)
+--- a/tests/integration/test_IkFast.cpp
++++ b/tests/integration/test_IkFast.cpp
+@@ -134,9 +134,6 @@
    ik->setHierarchyLevel(1);
    std::stringstream ss;
    ss << DART_SHARED_LIB_PREFIX << "GeneratedWamIkFast";
--#if (DART_OS_LINUX || DART_OS_MACOS) && !NDEBUG
+-#if (DART_OS_LINUX || DART_OS_MACOS) && DART_BUILD_MODE_DEBUG
 -  ss << "d";
 -#endif
    ss << "." << DART_SHARED_LIB_EXTENSION;

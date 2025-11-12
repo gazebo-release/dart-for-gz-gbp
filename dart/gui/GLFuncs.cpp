@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,16 +32,17 @@
 
 #include "dart/gui/GLFuncs.hpp"
 
-#include <cstdio>
-#include <iostream>
-#include <string>
-
-#include <Eigen/Eigen>
-
 #include "dart/common/Console.hpp"
 #include "dart/gui/LoadOpengl.hpp"
 #include "dart/gui/glut/GLUTFuncs.hpp"
 #include "dart/math/Constants.hpp"
+
+#include <Eigen/Eigen>
+
+#include <iostream>
+#include <string>
+
+#include <cstdio>
 // TODO(JS): remove once glut become an optional dependency
 
 namespace dart {

@@ -1,0 +1,85 @@
+# Copyright (c) 2011-2025, The DART development contributors
+# All rights reserved.
+
+[build-system]
+requires = ["setuptools>=42", "wheel", "ninja", "cmake>=3.12", "requests"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+exclude = '/(build|dist|docs|examples|external|python|\.pixi)/'
+
+[tool.isort]
+profile = "black"
+skip = ['build', 'dist', 'docs', 'examples', 'external', 'python', '.pixi']
+
+[tool.mypy]
+files = "setup.py"
+python_version = "3.7"
+strict = true
+show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["ninja"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
+xfail_strict = true
+filterwarnings = ["error"]
+testpaths = ["tests"]
+
+# https://cibuildwheel.readthedocs.io/en/stable/options/#before-all
+[tool.cibuildwheel]
+manylinux-x86_64-image = "jslee02/dart-dev:manylinux_2_28_x86_64-v6.15"
+manylinux-aarch64-image = "jslee02/dart-dev:manylinux_2_28_aarch64-v6.15"
+manylinux-pypy_x86_64-image = "jslee02/dart-dev:manylinux_2_28_x86_64-v6.15"
+manylinux-pypy_aarch64-image = "jslee02/dart-dev:manylinux_2_28_aarch64-v6.15"
+test-requires = "pytest"
+test-command = "pytest {project}/python/tests"
+# https://cibuildwheel.readthedocs.io/en/stable/options/#build-skip
+skip = [
+    # Common
+    "pp*",
+
+    # Linux
+    "*musllinux*",
+    "cp36-*linux*",
+    "cp37-*linux*",
+    "cp38-*linux*",
+    "cp39-*linux*",
+
+    # macOS
+    "cp36-macosx*",
+    "cp37-macosx*",
+    "cp38-macosx*",
+    "cp39-macosx*",
+    "cp310-macosx*",
+    "cp311-macosx*",
+
+    # Windows
+    "cp*-win32",
+    "cp36-win*",
+    "cp37-win*",
+    "cp38-win*",
+    "cp39-win*",
+    "cp310-win*",
+    "cp311-win*",
+]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+
+[tool.cibuildwheel.macos]
+archs = ["auto64"] # TODO: Add universal2 and arm64
+before-all = [
+    "brew update > /dev/null",
+    "brew bundle || brew bundle",
+    "brew install open-scene-graph", # TODO: --HEAD is needed to build the latest version, but it's currently broken
+    "sw_vers",
+]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64", "ARM64"]

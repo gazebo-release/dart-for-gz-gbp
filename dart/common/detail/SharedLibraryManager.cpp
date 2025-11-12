@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,10 +32,13 @@
 
 #include "dart/common/detail/SharedLibraryManager.hpp"
 
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+#include "dart/common/SharedLibrary.hpp"
+
 #include <fstream>
 
-#include "dart/common/Console.hpp"
-#include "dart/common/SharedLibrary.hpp"
+#include <cassert>
 
 namespace dart {
 namespace common {
@@ -54,8 +57,7 @@ std::shared_ptr<SharedLibrary> SharedLibraryManager::load(
 {
   // Check if the given path exits
   const bool exists = std::ifstream(path).good();
-  if (!exists)
-  {
+  if (!exists) {
     dtwarn << "[SharedLibraryManager::load] Failed to load the shared library '"
            << path.c_str() << "'. The file doesn't exist. Returning nullptr.\n";
     return nullptr;
@@ -67,8 +69,7 @@ std::shared_ptr<SharedLibrary> SharedLibraryManager::load(
   const auto iter = mSharedLibraries.find(canonicalPath);
 
   const auto found = iter != mSharedLibraries.end();
-  if (found)
-  {
+  if (found) {
     auto lib = iter->second.lock();
 
     // This check could fail if all instances to the library go out of scope,
@@ -87,7 +88,7 @@ std::shared_ptr<SharedLibrary> SharedLibraryManager::load(
     return nullptr;
 
   mSharedLibraries[canonicalPath] = newLib;
-  assert(canonicalPath == newLib->getCanonicalPath());
+  DART_ASSERT(canonicalPath == newLib->getCanonicalPath());
 
   return newLib;
 }

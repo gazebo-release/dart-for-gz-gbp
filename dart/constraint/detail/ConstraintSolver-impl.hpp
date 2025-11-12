@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,7 +33,7 @@
 #ifndef DART_CONSTRAINT_DETAIL_CONSTRAINTSOVER_IMPL_HPP_
 #define DART_CONSTRAINT_DETAIL_CONSTRAINTSOVER_IMPL_HPP_
 
-#include "dart/constraint/ConstraintSolver.hpp"
+#include <dart/constraint/ConstraintSolver.hpp>
 
 namespace dart::constraint {
 
@@ -43,18 +43,13 @@ void ConstraintSolver::eachConstraint(Func func) const
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, const ConstraintBase*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumConstraints(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumConstraints(); ++i) {
       if (!func(getConstraint(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumConstraints(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumConstraints(); ++i) {
       func(getConstraint(i));
     }
   }
@@ -66,18 +61,13 @@ void ConstraintSolver::eachConstraint(Func func)
 {
   if constexpr (std::is_same_v<
                     std::invoke_result_t<Func, ConstraintBase*>,
-                    bool>)
-  {
-    for (auto i = 0u; i < getNumConstraints(); ++i)
-    {
+                    bool>) {
+    for (auto i = 0u; i < getNumConstraints(); ++i) {
       if (!func(getConstraint(i)))
         return;
     }
-  }
-  else
-  {
-    for (auto i = 0u; i < getNumConstraints(); ++i)
-    {
+  } else {
+    for (auto i = 0u; i < getNumConstraints(); ++i) {
       func(getConstraint(i));
     }
   }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -56,8 +56,7 @@ void MyWindow::drawWorld() const
 
 void MyWindow::keyboard(unsigned char _key, int _x, int _y)
 {
-  switch (_key)
-  {
+  switch (_key) {
     case ' ': // use space key to play or stop the motion
       mSimulating = !mSimulating;
       if (mSimulating)
@@ -69,8 +68,7 @@ void MyWindow::keyboard(unsigned char _key, int _x, int _y)
         mSimulating = false;
       break;
     case '[': // step backward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame--;
         if (mPlayFrame < 0)
           mPlayFrame = 0;
@@ -78,8 +76,7 @@ void MyWindow::keyboard(unsigned char _key, int _x, int _y)
       }
       break;
     case ']': // step forwardward
-      if (!mSimulating)
-      {
+      if (!mSimulating) {
         mPlayFrame++;
         if (mPlayFrame >= mWorld->getRecording()->getNumFrames())
           mPlayFrame = 0;

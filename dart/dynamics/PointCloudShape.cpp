@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -185,16 +185,14 @@ void PointCloudShape::setOverallColor(const Eigen::Vector4d& color)
 //==============================================================================
 Eigen::Vector4d PointCloudShape::getOverallColor() const
 {
-  if (mColors.empty())
-  {
+  if (mColors.empty()) {
     dtwarn << "[PointCloudShape] Attempt to get the overall color when the "
            << "color array is empty. Returning (RGBA: [0.5, 0.5, 0.5, 0.5]) "
            << "color\n";
     return Eigen::Vector4d(0.5, 0.5, 0.5, 0.5);
   }
 
-  if (mColors.size() > 1)
-  {
+  if (mColors.size() > 1) {
     dtwarn << "[PointCloudShape] Attempting to get the overal color when the "
            << "color array contains more than one color. This is potentially "
            << "an error. Returning the first color in the color array.\n";
@@ -207,13 +205,13 @@ Eigen::Vector4d PointCloudShape::getOverallColor() const
 void PointCloudShape::setColors(
     const std::vector<
         Eigen::Vector4d,
-        Eigen::aligned_allocator<Eigen::Vector4d> >& colors)
+        Eigen::aligned_allocator<Eigen::Vector4d>>& colors)
 {
   mColors = colors;
 }
 
 //==============================================================================
-const std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> >&
+const std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d>>&
 PointCloudShape::getColors() const
 {
   return mColors;
@@ -260,8 +258,7 @@ void PointCloudShape::updateVolume() const
 //==============================================================================
 void PointCloudShape::updateBoundingBox() const
 {
-  if (mPoints.empty())
-  {
+  if (mPoints.empty()) {
     mBoundingBox.setMin(Eigen::Vector3d::Zero());
     mBoundingBox.setMax(Eigen::Vector3d::Zero());
     mIsBoundingBoxDirty = false;
@@ -273,8 +270,7 @@ void PointCloudShape::updateBoundingBox() const
   Eigen::Vector3d max
       = Eigen::Vector3d::Constant(-std::numeric_limits<double>::infinity());
 
-  for (const auto& vertex : mPoints)
-  {
+  for (const auto& vertex : mPoints) {
     min = min.cwiseMin(vertex);
     max = max.cwiseMax(vertex);
   }

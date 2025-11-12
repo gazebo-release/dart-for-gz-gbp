@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,11 +30,12 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/dart.hpp>
-#include <dart/gui/osg/osg.hpp>
-
 #include "TinkertoyWidget.hpp"
 #include "TinkertoyWorldNode.hpp"
+
+#include <dart/gui/osg/osg.hpp>
+
+#include <dart/dart.hpp>
 
 //==============================================================================
 class TinkertoyInputHandler : public osgGA::GUIEventHandler
@@ -50,55 +51,35 @@ public:
   bool handle(
       const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&) override
   {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
-    {
-      if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Tab)
-      {
+    if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
+      if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Tab) {
         mViewer->home();
         return true;
-      }
-      else if (ea.getKey() == '1')
-      {
+      } else if (ea.getKey() == '1') {
         mNode->addWeldJointBlock();
         return true;
-      }
-      else if (ea.getKey() == '2')
-      {
+      } else if (ea.getKey() == '2') {
         mNode->addRevoluteJointBlock();
         return true;
-      }
-      else if (ea.getKey() == '3')
-      {
+      } else if (ea.getKey() == '3') {
         mNode->addBallJointBlock();
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_BackSpace)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_BackSpace) {
         mNode->clearPick();
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Delete)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Delete) {
         mNode->deletePick();
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Up)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Up) {
         mNode->incrementForceCoeff();
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Down)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Down) {
         mNode->decrementForceCoeff();
         return true;
-      }
-      else if (ea.getKey() == '`')
-      {
+      } else if (ea.getKey() == '`') {
         mNode->reorientTarget();
         return true;
-      }
-      else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
-      {
+      } else if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return) {
         if (!mViewer->isRecording())
           mViewer->record(DART_DATA_PATH "/screencap");
         else
@@ -133,8 +114,7 @@ public:
         = viewer->getDefaultEventHandler()->getButtonEvent(
             dart::gui::osg::LEFT_MOUSE);
 
-    if (dart::gui::osg::BUTTON_PUSH == event)
-    {
+    if (dart::gui::osg::BUTTON_PUSH == event) {
       const std::vector<dart::gui::osg::PickInfo>& picks
           = viewer->getDefaultEventHandler()->getButtonPicks(
               dart::gui::osg::LEFT_MOUSE, dart::gui::osg::BUTTON_PUSH);

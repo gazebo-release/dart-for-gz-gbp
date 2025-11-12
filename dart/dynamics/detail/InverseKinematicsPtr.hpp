@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,9 +33,9 @@
 #ifndef DART_DYNAMICS_DETAIL_INVERSEKINEMATICSPTR_HPP_
 #define DART_DYNAMICS_DETAIL_INVERSEKINEMATICSPTR_HPP_
 
-#include <memory>
+#include <dart/dynamics/detail/NodePtr.hpp>
 
-#include "dart/dynamics/detail/NodePtr.hpp"
+#include <memory>
 
 namespace dart {
 namespace dynamics {
@@ -154,8 +154,7 @@ public:
   /// shared_ptr
   void set(const std::shared_ptr<IkType>& sptr)
   {
-    if (nullptr == sptr)
-    {
+    if (nullptr == sptr) {
       mIK = nullptr;
       mJacNodePtr = nullptr;
       return;
@@ -309,8 +308,7 @@ public:
   template <class OtherIkT, class OtherJacNodePtrT>
   void set(const TemplateInverseKinematicsPtr<OtherIkT, OtherJacNodePtrT>& _ptr)
   {
-    if (nullptr == _ptr)
-    {
+    if (nullptr == _ptr) {
       mWeakIK = nullptr;
       mWeakJacNode = nullptr;
       return;

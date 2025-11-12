@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,11 +30,15 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dart/collision/bullet/bullet.hpp>
-#include <dart/dart.hpp>
-#include <dart/external/imgui/imgui.h>
+#include "dart/common/Macros.hpp"
+
 #include <dart/gui/osg/osg.hpp>
+
 #include <dart/utils/utils.hpp>
+
+#include <dart/collision/bullet/bullet.hpp>
+
+#include <dart/dart.hpp>
 
 using namespace dart;
 
@@ -89,24 +93,20 @@ public:
     if (!ImGui::Begin(
             "Fetch robot example",
             nullptr,
-            ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_HorizontalScrollbar))
-    {
+            ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_HorizontalScrollbar)) {
       // Early out if the window is collapsed, as an optimization.
       ImGui::End();
       return;
     }
 
     // Menu
-    if (ImGui::BeginMenuBar())
-    {
-      if (ImGui::BeginMenu("Menu"))
-      {
+    if (ImGui::BeginMenuBar()) {
+      if (ImGui::BeginMenu("Menu")) {
         if (ImGui::MenuItem("Exit"))
           mViewer->setDone(true);
         ImGui::EndMenu();
       }
-      if (ImGui::BeginMenu("Help"))
-      {
+      if (ImGui::BeginMenu("Help")) {
         if (ImGui::MenuItem("About DART"))
           mViewer->showAbout();
         ImGui::EndMenu();
@@ -122,19 +122,16 @@ public:
         "invisible dummy object where the position is indicated at the cross "
         "of the two tranparent green bars.");
 
-    if (ImGui::CollapsingHeader("Help"))
-    {
+    if (ImGui::CollapsingHeader("Help")) {
       ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 320);
       ImGui::Text("User Guid:\n");
       ImGui::Text("%s", mViewer->getInstructions().c_str());
       ImGui::PopTextWrapPos();
     }
 
-    if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen))
-    {
+    if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
       int e = mViewer->isSimulating() ? 0 : 1;
-      if (mViewer->isAllowingSimulation())
-      {
+      if (mViewer->isAllowingSimulation()) {
         if (ImGui::RadioButton("Play", &e, 0) && !mViewer->isSimulating())
           mViewer->simulate(true);
         ImGui::SameLine();
@@ -159,13 +156,13 @@ int main()
   // Create a world from ant.xml
   auto world = utils::MjcfParser::readWorld(
       "dart://sample/mjcf/openai/robotics/fetch/pick_and_place.xml");
-  assert(world);
+  DART_ASSERT(world);
   world->getConstraintSolver()->setCollisionDetector(
       collision::BulletCollisionDetector::create());
 
   // Get Fetch robot and set properties
   auto robot = world->getSkeleton("robot0:base_link");
-  assert(robot);
+  DART_ASSERT(robot);
   robot->getJoint(0)->setActuatorType(dynamics::Joint::ActuatorType::LOCKED);
   robot->eachDof(
       [](dynamics::DegreeOfFreedom* dof) { dof->setSpringStiffness(1e+3); });
@@ -187,20 +184,20 @@ int main()
 
   // Get object and set initial object transform
   auto object = world->getSkeleton("object0");
-  assert(object);
+  DART_ASSERT(object);
   object->setPosition(3, 1.25);
   object->setPosition(4, 0.53);
   object->setPosition(5, 0.40);
 
   // Get mocap object
   auto mocap = world->getSkeleton("robot0:mocap");
-  assert(mocap);
+  DART_ASSERT(mocap);
 
   // Reset the relative transform constraint of mocap object and fetch's EE
   auto weldJointConstraint
       = std::dynamic_pointer_cast<constraint::WeldJointConstraint>(
           world->getConstraintSolver()->getConstraint(0));
-  assert(weldJointConstraint);
+  DART_ASSERT(weldJointConstraint);
   weldJointConstraint->setRelativeTransform(Eigen::Isometry3d::Identity());
 
   // Create interactive frame to control the EE of Fetch

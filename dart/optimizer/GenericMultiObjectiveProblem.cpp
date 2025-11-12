@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,13 +32,14 @@
 
 #include "dart/optimizer/GenericMultiObjectiveProblem.hpp"
 
+#include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
+#include "dart/math/Helpers.hpp"
+#include "dart/optimizer/Function.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <numeric>
-
-#include "dart/common/Console.hpp"
-#include "dart/math/Helpers.hpp"
-#include "dart/optimizer/Function.hpp"
 
 namespace dart {
 namespace optimizer {
@@ -101,7 +102,7 @@ void GenericMultiObjectiveProblem::setObjectiveFunctions(
 //==============================================================================
 void GenericMultiObjectiveProblem::addObjectiveFunction(FunctionPtr objective)
 {
-  assert(objective && "nullptr pointer is not allowed.");
+  DART_ASSERT(objective && "nullptr pointer is not allowed.");
   mObjectiveFunctions.emplace_back(std::move(objective));
   mObjectiveDimension = mObjectiveFunctions.size();
 }
@@ -116,7 +117,7 @@ GenericMultiObjectiveProblem::getObjectiveFunctions() const
 //==============================================================================
 void GenericMultiObjectiveProblem::addEqConstraintFunction(FunctionPtr eqConst)
 {
-  assert(eqConst);
+  DART_ASSERT(eqConst);
   mEqConstraintFunctions.push_back(eqConst);
   mEqConstraintDimension = mEqConstraintFunctions.size();
 }
@@ -125,7 +126,7 @@ void GenericMultiObjectiveProblem::addEqConstraintFunction(FunctionPtr eqConst)
 void GenericMultiObjectiveProblem::addIneqConstraintFunction(
     FunctionPtr ineqConst)
 {
-  assert(ineqConst);
+  DART_ASSERT(ineqConst);
   mIneqConstraintFunctions.push_back(ineqConst);
   mIneqConstraintDimension = mIneqConstraintFunctions.size();
 }
@@ -134,7 +135,7 @@ void GenericMultiObjectiveProblem::addIneqConstraintFunction(
 FunctionPtr GenericMultiObjectiveProblem::getEqConstraintFunction(
     std::size_t index) const
 {
-  assert(index < mEqConstraintFunctions.size());
+  DART_ASSERT(index < mEqConstraintFunctions.size());
   return getVectorObjectIfAvailable<FunctionPtr>(index, mEqConstraintFunctions);
 }
 
@@ -142,7 +143,7 @@ FunctionPtr GenericMultiObjectiveProblem::getEqConstraintFunction(
 FunctionPtr GenericMultiObjectiveProblem::getIneqConstraintFunction(
     std::size_t index) const
 {
-  assert(index < mIneqConstraintFunctions.size());
+  DART_ASSERT(index < mIneqConstraintFunctions.size());
   return getVectorObjectIfAvailable<FunctionPtr>(
       index, mIneqConstraintFunctions);
 }
@@ -225,8 +226,7 @@ static Eigen::VectorXd computeFunctions(
   Eigen::VectorXd val(dimension);
 
   std::size_t index = 0u;
-  for (const FunctionPtr& function : functions)
-  {
+  for (const FunctionPtr& function : functions) {
     const std::size_t size = 1u; // TODO(JS): Update this once Function can
                                  // return vector
     // objectives.segment(index, size) = objective->evaluate(x);

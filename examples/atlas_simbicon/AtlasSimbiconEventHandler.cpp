@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -44,30 +44,20 @@ AtlasSimbiconEventHandler::AtlasSimbiconEventHandler(
 bool AtlasSimbiconEventHandler::handle(
     const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&)
 {
-  if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
-  {
-    if (ea.getKey() == 'r' || ea.getKey() == 'R')
-    {
+  if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
+    if (ea.getKey() == 'r' || ea.getKey() == 'R') {
       mNode->reset();
       return true;
-    }
-    else if (ea.getKey() == 'a' || ea.getKey() == 'A')
-    {
+    } else if (ea.getKey() == 'a' || ea.getKey() == 'A') {
       mNode->pushForwardAtlas();
       return true;
-    }
-    else if (ea.getKey() == 's' || ea.getKey() == 'S')
-    {
+    } else if (ea.getKey() == 's' || ea.getKey() == 'S') {
       mNode->pushBackwardAtlas();
       return true;
-    }
-    else if (ea.getKey() == 'd' || ea.getKey() == 'D')
-    {
+    } else if (ea.getKey() == 'd' || ea.getKey() == 'D') {
       mNode->pushLeftAtlas();
       return true;
-    }
-    else if (ea.getKey() == 'f' || ea.getKey() == 'F')
-    {
+    } else if (ea.getKey() == 'f' || ea.getKey() == 'F') {
       mNode->pushRightAtlas();
       return true;
     }

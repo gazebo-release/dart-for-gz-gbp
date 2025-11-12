@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,17 +33,17 @@
 #ifndef DART_UTILS_MJCF_DETAIL_WORLDBODY_HPP_
 #define DART_UTILS_MJCF_DETAIL_WORLDBODY_HPP_
 
-#include <string>
-#include <vector>
+#include <dart/utils/mjcf/detail/Body.hpp>
+#include <dart/utils/mjcf/detail/Compiler.hpp>
+#include <dart/utils/mjcf/detail/Error.hpp>
+#include <dart/utils/mjcf/detail/Geom.hpp>
+#include <dart/utils/mjcf/detail/Site.hpp>
+#include <dart/utils/mjcf/detail/Size.hpp>
 
 #include <tinyxml2.h>
 
-#include "dart/utils/mjcf/detail/Body.hpp"
-#include "dart/utils/mjcf/detail/Compiler.hpp"
-#include "dart/utils/mjcf/detail/Error.hpp"
-#include "dart/utils/mjcf/detail/Geom.hpp"
-#include "dart/utils/mjcf/detail/Site.hpp"
-#include "dart/utils/mjcf/detail/Size.hpp"
+#include <string>
+#include <vector>
 
 namespace dart {
 namespace utils {

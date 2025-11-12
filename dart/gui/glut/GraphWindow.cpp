@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -38,12 +38,13 @@
 
 #include "dart/gui/glut/GraphWindow.hpp"
 
-#include <cstdio>
+#include "dart/gui/glut/GLUTFuncs.hpp"
+#include "dart/gui/glut/LoadGlut.hpp"
+
 #include <iostream>
 #include <string>
 
-#include "dart/gui/glut/GLUTFuncs.hpp"
-#include "dart/gui/glut/LoadGlut.hpp"
+#include <cstdio>
 
 namespace dart {
 namespace gui {
@@ -69,14 +70,12 @@ void GraphWindow::draw()
 
   double upperBound = +1.0;
   double lowerBound = -1.0;
-  if (nPoints > 0)
-  {
+  if (nPoints > 0) {
     upperBound = mData.maxCoeff();
     lowerBound = mData.minCoeff();
   }
 
-  for (int i = 0; i < nPoints; i++)
-  {
+  for (int i = 0; i < nPoints; i++) {
     glPushMatrix();
     glLoadIdentity();
     glBegin(GL_POINTS);
@@ -90,8 +89,7 @@ void GraphWindow::draw()
   glMatrixMode(GL_PROJECTION);
 
   double xPos = 0.1;
-  while (xPos < 1.0)
-  {
+  while (xPos < 1.0) {
     char buff[64];
     int v = xPos * nPoints;
 #ifdef _WIN32
@@ -106,8 +104,7 @@ void GraphWindow::draw()
   }
 
   double yPos = 0.1;
-  while (yPos < 1.0)
-  {
+  while (yPos < 1.0) {
     char buff[64];
     double v = yPos * (upperBound - lowerBound) + lowerBound;
 #ifdef _WIN32

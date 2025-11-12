@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -33,11 +33,13 @@
 #ifndef DART_CONSTRAINT_CONTACTSURFACE_HPP_
 #define DART_CONSTRAINT_CONTACTSURFACE_HPP_
 
-#include <Eigen/Core>
+#include <dart/constraint/SmartPointer.hpp>
 
-#include "dart/collision/Contact.hpp"
-#include "dart/constraint/SmartPointer.hpp"
-#include "dart/dynamics/ShapeNode.hpp"
+#include <dart/collision/Contact.hpp>
+
+#include <dart/dynamics/ShapeNode.hpp>
+
+#include <Eigen/Core>
 
 #define DART_RESTITUTION_COEFF_THRESHOLD 1e-3
 #define DART_FRICTION_COEFF_THRESHOLD 1e-3

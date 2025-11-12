@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
 
 #include "dart/utils/mjcf/detail/Worldbody.hpp"
 
+#include "dart/common/Macros.hpp"
 #include "dart/utils/XmlHelpers.hpp"
 #include "dart/utils/mjcf/detail/Compiler.hpp"
 #include "dart/utils/mjcf/detail/Size.hpp"
@@ -51,12 +52,11 @@ Errors Worldbody::read(
     const common::Uri& baseUri,
     const common::ResourceRetrieverPtr& retriever)
 {
-  assert(currentDefault != nullptr);
+  DART_ASSERT(currentDefault != nullptr);
 
   Errors errors;
 
-  if (std::string(element->Name()) != "worldbody")
-  {
+  if (std::string(element->Name()) != "worldbody") {
     errors.emplace_back(
         ErrorCode::INCORRECT_ELEMENT_TYPE,
         "Failed to find <worldbody> from the provided element");
@@ -64,16 +64,12 @@ Errors Worldbody::read(
   }
 
   // childclass
-  if (hasAttribute(element, "childclass"))
-  {
+  if (hasAttribute(element, "childclass")) {
     const std::string className = getAttributeString(element, "childclass");
     const auto& defaultClass = defaults.getDefault(className);
-    if (defaultClass)
-    {
+    if (defaultClass) {
       currentDefault = &(*defaultClass);
-    }
-    else
-    {
+    } else {
       errors.push_back(Error(
           ErrorCode::ATTRIBUTE_INVALID,
           "Failed to find default with childclass name '" + className + "'"));
@@ -86,44 +82,38 @@ Errors Worldbody::read(
 
   // Read multiple <geom>
   ElementEnumerator geomElements(element, "geom");
-  while (geomElements.next())
-  {
+  while (geomElements.next()) {
     Geom geom = Geom();
     const auto geomErrors = geom.read(
         geomElements.get(), defaults, currentDefault->getGeomAttributes());
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
 
-    if (geomErrors.empty())
-    {
+    if (geomErrors.empty()) {
       mGeoms.emplace_back(std::move(geom));
     }
   }
 
   // Read multiple <site>
   ElementEnumerator siteElements(element, "site");
-  while (siteElements.next())
-  {
+  while (siteElements.next()) {
     Site site = Site();
     const auto siteErrors = site.read(geomElements.get());
     errors.insert(errors.end(), siteErrors.begin(), siteErrors.end());
 
-    if (siteErrors.empty())
-    {
+    if (siteErrors.empty()) {
       mSites.emplace_back(std::move(site));
     }
   }
 
   // Read multiple <body>
   ElementEnumerator bodyElements(element, "body");
-  while (bodyElements.next())
-  {
+  while (bodyElements.next()) {
     Body rootBody = Body();
     const auto bodyErrors
         = rootBody.read(bodyElements.get(), size, defaults, currentDefault);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
 
-    if (bodyErrors.empty())
-    {
+    if (bodyErrors.empty()) {
       mRootBodies.emplace_back(std::move(rootBody));
     }
   }
@@ -136,14 +126,12 @@ Errors Worldbody::preprocess(const Compiler& compiler)
 {
   Errors errors;
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.preprocess(compiler);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Body& body : mRootBodies)
-  {
+  for (Body& body : mRootBodies) {
     const Errors bodyErrors = body.preprocess(compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }
@@ -156,14 +144,12 @@ Errors Worldbody::compile(const Compiler& compiler)
 {
   Errors errors;
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.compile(compiler);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Body& body : mRootBodies)
-  {
+  for (Body& body : mRootBodies) {
     const Errors bodyErrors = body.compile(compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }
@@ -176,14 +162,12 @@ Errors Worldbody::postprocess(const Compiler& compiler)
 {
   Errors errors;
 
-  for (Geom& geom : mGeoms)
-  {
+  for (Geom& geom : mGeoms) {
     const Errors geomErrors = geom.postprocess(nullptr, compiler);
     errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
   }
 
-  for (Body& body : mRootBodies)
-  {
+  for (Body& body : mRootBodies) {
     const Errors bodyErrors = body.postprocess(nullptr, compiler);
     errors.insert(errors.end(), bodyErrors.begin(), bodyErrors.end());
   }

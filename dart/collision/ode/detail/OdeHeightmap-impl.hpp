@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -30,10 +30,13 @@
  *   POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <type_traits>
+#include "dart/common/Macros.hpp"
 
-#include "dart/collision/ode/detail/OdeHeightmap.hpp"
-#include "dart/dynamics/HeightmapShape.hpp"
+#include <dart/collision/ode/detail/OdeHeightmap.hpp>
+
+#include <dart/dynamics/HeightmapShape.hpp>
+
+#include <type_traits>
 
 namespace dart {
 namespace collision {
@@ -52,10 +55,9 @@ void setOdeHeightfieldDetails(
     const Eigen::Matrix<S, 3, 1>& scale,
     typename std::enable_if<std::is_same<float, S>::value>::type* = 0)
 {
-  assert(width >= 2);
-  assert(height >= 2);
-  if ((width < 2) || (height < 2))
-  {
+  DART_ASSERT(width >= 2);
+  DART_ASSERT(height >= 2);
+  if ((width < 2) || (height < 2)) {
     dtwarn << "Cannot create height field of dimensions " << width << "x"
            << height << ", needs to be at least 2" << std::endl;
     return;
@@ -85,10 +87,9 @@ void setOdeHeightfieldDetails(
     const Eigen::Matrix<S, 3, 1>& scale,
     typename std::enable_if<std::is_same<double, S>::value>::type* = 0)
 {
-  assert(width >= 2);
-  assert(height >= 2);
-  if ((width < 2) || (height < 2))
-  {
+  DART_ASSERT(width >= 2);
+  DART_ASSERT(height >= 2);
+  if ((width < 2) || (height < 2)) {
     dtwarn << "Cannot create height field of dimensions " << width << "x"
            << height << ", needs to be at least 2" << std::endl;
     return;
@@ -115,7 +116,7 @@ OdeHeightmap<S>::OdeHeightmap(
     const dynamics::HeightmapShape<S>* heightMap)
   : OdeGeom(parent)
 {
-  assert(heightMap);
+  DART_ASSERT(heightMap);
 
   // get the heightmap parameters
   const auto& scale = heightMap->getScale();

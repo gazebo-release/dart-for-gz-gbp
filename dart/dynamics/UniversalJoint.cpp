@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2011-2022, The DART development contributors
+ * Copyright (c) 2011-2025, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
- *   https://github.com/dartsim/dart/blob/master/LICENSE
+ *   https://github.com/dartsim/dart/blob/main/LICENSE
  *
  * This file is provided under the following "BSD-style" License:
  *   Redistribution and use in source and binary forms, with or
@@ -32,10 +32,11 @@
 
 #include "dart/dynamics/UniversalJoint.hpp"
 
-#include <string>
-
+#include "dart/common/Macros.hpp"
 #include "dart/math/Geometry.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <string>
 
 namespace dart {
 namespace dynamics {
@@ -156,7 +157,7 @@ Eigen::Matrix<double, 6, 2> UniversalJoint::getRelativeJacobianStatic(
       getAxis1());
   J.col(1) = math::AdTAngular(
       Joint::mAspectProperties.mT_ChildBodyToJoint, getAxis2());
-  assert(!math::isNan(J));
+  DART_ASSERT(!math::isNan(J));
   return J;
 }
 
@@ -194,7 +195,7 @@ void UniversalJoint::updateRelativeTransform() const
        * Eigen::AngleAxisd(positions[0], getAxis1())
        * Eigen::AngleAxisd(positions[1], getAxis2())
        * Joint::mAspectProperties.mT_ChildBodyToJoint.inverse();
-  assert(math::verifyTransform(mT));
+  DART_ASSERT(math::verifyTransform(mT));
 }
 
 //==============================================================================
@@ -217,8 +218,8 @@ void UniversalJoint::updateRelativeJacobianTimeDeriv() const
 
   mJacobianDeriv.col(0) = -math::ad(tmpV1, tmpV2);
 
-  assert(!math::isNan(mJacobianDeriv.col(0)));
-  assert(mJacobianDeriv.col(1) == Eigen::Vector6d::Zero());
+  DART_ASSERT(!math::isNan(mJacobianDeriv.col(0)));
+  DART_ASSERT(mJacobianDeriv.col(1) == Eigen::Vector6d::Zero());
 }
 
 } // namespace dynamics
