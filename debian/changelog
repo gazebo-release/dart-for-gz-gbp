@@ -1,3 +1,9 @@
+dart (6.16.0+ds2-1~osrf2~noble) noble; urgency=medium
+
+  * Merged master branch. Imported all the changes from jammy.
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Wed, 12 Nov 2025 19:27:13 +0100
+
 dart (6.13.2+ds1-1~osrf2~noble) noble; urgency=medium
 
   * Use postfixes for distributions to have same version on the PPA for more
