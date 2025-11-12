@@ -5,6 +5,7 @@ Section: science
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
                cmake,
+               chrpath,
                coinor-libipopt-dev,
                doxygen,
                dh-sequence-python3,

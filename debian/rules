@@ -13,6 +13,8 @@ export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
 		-DDART_USE_SYSTEM_PYBIND11=ON \
 		-DDARTPY_PYTHON_VERSION={version}
 
+export PYBUILD_AFTER_INSTALL=cp {build_dir}/python/dartpy/dartpy.*.so debian/tmp/usr/lib/python3/dist-packages/dartpy/
+
 ifneq (,$(filter $(DEB_HOST_ARCH),mips mipsel))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
 endif
@@ -20,13 +22,16 @@ endif
 %:
 	dh $@ --buildsystem=pybuild
 
-execute_after_dh_auto_install:
-	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
-
-execute_before_dh_auto_test:
+execute_after_dh_auto_build:
 	PYBUILD_BUILD_ARGS="dartpy" dh_auto_build
-	# python/dartpy/dartpy.cpython-312-x86_64-linux-gnu.so
 
+execute_before_dh_auto_install:
+	mkdir -p debian/tmp/usr/lib/python3/dist-packages/dartpy
+
+execute_after_dh_auto_install:
+	# Remove RPATH from Python module
+	chrpath -d debian/tmp/usr/lib/python3/dist-packages/dartpy/dartpy.*.so || true
+	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
 
 override_dh_auto_test:
 	 true
