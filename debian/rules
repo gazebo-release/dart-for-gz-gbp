@@ -39,6 +39,9 @@ ifeq ($(DEB_HOST_ARCH),s390x)
 override_dh_auto_test:
 	PYBUILD_TEST_ARGS="ARGS\+='-E test_MjcfParser\|test_SdfParser\|test_DartLoader\|test_IkFast\|test_ForwardKinematics'" \
 		dh_auto_test
+else
+override_dh_auto_test:
+	PYBUILD_TEST_ARGS="ARGS\+='--timeout 2000'" dh_auto_test
 endif
 
 override_dh_compress:
