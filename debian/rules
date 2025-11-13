@@ -24,6 +24,7 @@ endif
 
 execute_after_dh_auto_build:
 	PYBUILD_BUILD_ARGS="dartpy" dh_auto_build
+	PYBUILD_BUILD_ARGS="tests" dh_auto_build
 
 execute_before_dh_auto_install:
 	mkdir -p debian/tmp/usr/lib/python3/dist-packages/dartpy
