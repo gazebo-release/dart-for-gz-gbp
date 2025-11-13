@@ -1,3 +1,9 @@
+dart (6.16.0+ds2-1~osrf3~noble) noble; urgency=medium
+
+  * Enable test build
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Thu, 13 Nov 2025 13:09:50 +0100
+
 dart (6.16.0+ds2-1~osrf2~noble) noble; urgency=medium
 
   * Merged master branch. Imported all the changes from jammy.
