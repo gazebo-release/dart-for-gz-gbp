@@ -34,8 +34,15 @@ execute_after_dh_auto_install:
 	chrpath -d debian/tmp/usr/lib/python3/dist-packages/dartpy/dartpy.*.so || true
 	rm -f debian/tmp/usr/share/doc/dart/data/screencap/.KEEP
 
+# s390 assimp support is broken for STL https://github.com/assimp/assimp/issues/5509
+ifeq ($(DEB_HOST_ARCH),s390x)
 override_dh_auto_test:
-	 true
+	PYBUILD_TEST_ARGS="ARGS\+='-E test_MjcfParser\|test_SdfParser\|test_DartLoader\|test_IkFast\|test_ForwardKinematics'" \
+		dh_auto_test
+else
+override_dh_auto_test:
+	PYBUILD_TEST_ARGS="ARGS\+='--timeout 2000'" dh_auto_test
+endif
 
 override_dh_compress:
 	dh_compress \
