@@ -1,3 +1,9 @@
+dart (6.16.0+ds2-1~osrf5~noble) noble; urgency=medium
+
+  * Rename packages and files to 6.16
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Fri, 14 Nov 2025 13:37:20 +0100
+
 dart (6.16.0+ds2-1~osrf4~noble) noble; urgency=medium
 
   * Increase test timeout
