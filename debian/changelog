@@ -1,3 +1,9 @@
+dart (6.16.0+ds2-1~osrf6~noble) noble; urgency=medium
+
+  * Declare B+R on 6.13 packages
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Fri, 14 Nov 2025 17:59:19 +0100
+
 dart (6.16.0+ds2-1~osrf5~noble) noble; urgency=medium
 
   * Rename packages and files to 6.16
