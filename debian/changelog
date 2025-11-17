@@ -1,3 +1,12 @@
+dart (6.16.0+ds2-1~osrf2~jammy) jammy; urgency=medium
+
+  * Enable tests build
+  * Increate timeout
+  * Use 6.16 version instead of 6.13 version
+  * Declare B+R on 6.13 packages
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Mon, 17 Nov 2025 18:35:37 +0100
+
 dart (6.16.0+ds2-1~osrf1~jammy) jammy; urgency=medium
 
   * Refresh the patches list
