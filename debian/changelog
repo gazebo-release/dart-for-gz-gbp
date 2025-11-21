@@ -1,3 +1,9 @@
+dart6.16 (6.16.0+ds2-1~osrf7~noble) noble; urgency=medium
+
+  * Change source package name to avoid overwriting previous
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Fri, 21 Nov 2025 12:43:13 +0100
+
 dart (6.16.0+ds2-1~osrf6~noble) noble; urgency=medium
 
   * Declare B+R on 6.13 packages
