@@ -11,17 +11,12 @@ export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
 		-DDART_USE_SYSTEM_GOOGLETEST=ON \
 		-DDART_BUILD_DARTPY=ON \
 		-DDART_USE_SYSTEM_PYBIND11=ON
-#		-DDARTPY_PYTHON_VERSION={version}
 
 export PYBUILD_AFTER_INSTALL=cp {build_dir}/python/dartpy/dartpy.*.so debian/tmp/usr/lib/python3/dist-packages/dartpy/
 
 ifneq (,$(filter $(DEB_HOST_ARCH),mips mipsel))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
 endif
-
-# Upgrade optimisation flags: see https://github.com/gazebosim/gz-physics/issues/816#issuecomment-3590052174
-export DEB_CFLAGS_MAINT_APPEND += -O3 -DNDEBUG=1
-export DEB_CXXFLAGS_MAINT_APPEND += -O3 -DNDEBUG=1
 
 %:
 	dh $@ --buildsystem=pybuild
