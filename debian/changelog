@@ -1,5 +1,11 @@
 dart (6.16.0+ds2-1~osrf8~noble) noble; urgency=medium
 
+  * Need NDEBUG per bug 2294
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Tue, 09 Dec 2025 13:51:23 +0100
+
+dart (6.16.0+ds2-1~osrf8~noble) noble; urgency=medium
+
   * Do not inject O3 and NDEBUG
 
  -- Jose Luis Rivero <jrivero@osrfoundation.org>  Tue, 09 Dec 2025 13:19:49 +0100
