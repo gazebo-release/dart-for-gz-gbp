@@ -2,6 +2,11 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all reproducible=+all future=+lfs
 
+# Bug in compilation https://github.com/dartsim/dart/issues/2294
+export DEB_CFLAGS_MAINT_APPEND += -DNDEBUG=1
+export DEB_CXXFLAGS_MAINT_APPEND += -DNDEBUG=1
+
+
 # Needed to inject correctly the python versions supported
 export PYBUILD_SYSTEM=cmake
 export PYBUILD_CONFIGURE_ARGS=-DPYVER={version} \
