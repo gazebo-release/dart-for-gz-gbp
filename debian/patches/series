@@ -6,3 +6,4 @@ fix-test_ForceDependentSlip-armel.patch
 0007-fix-ikfast.patch
 0006-Reduce-test-result-accuracy-to-fix-i386.patch
 0013-Deaktivate-assert-failing-with-Bullet-3.24.patch
+0003-fix-NDEBUG.patch

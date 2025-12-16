@@ -1,0 +1,35 @@
+diff --git a/dart/constraint/BoxedLcpConstraintSolver.cpp b/dart/constraint/BoxedLcpConstraintSolver.cpp
+index f05e7e8..aff97eb 100644
+--- a/dart/constraint/BoxedLcpConstraintSolver.cpp
++++ b/dart/constraint/BoxedLcpConstraintSolver.cpp
+@@ -240,7 +240,7 @@ void BoxedLcpConstraintSolver::solveConstrainedGroup(ConstrainedGroup& group)
+     }
+   }
+ 
+-  DART_ASSERT(isSymmetric(n, mA.data()));
++  DART_ASSERT(this->isSymmetric(n, mA.data()));
+ 
+   // Print LCP formulation
+   //  dtdbg << "Before solve:" << std::endl;
+diff --git a/dart/constraint/ConstrainedGroup.cpp b/dart/constraint/ConstrainedGroup.cpp
+index 41776f0..abfc29c 100644
+--- a/dart/constraint/ConstrainedGroup.cpp
++++ b/dart/constraint/ConstrainedGroup.cpp
+@@ -55,7 +55,7 @@ void ConstrainedGroup::addConstraint(const ConstraintBasePtr& _constraint)
+ {
+   DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
+   DART_ASSERT(
+-      !containConstraint(_constraint)
++      !this->containConstraint(_constraint)
+       && "Attempted to add a duplicate constraint.");
+   DART_ASSERT(_constraint->isActive());
+ 
+@@ -87,7 +87,7 @@ void ConstrainedGroup::removeConstraint(const ConstraintBasePtr& _constraint)
+ {
+   DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
+   DART_ASSERT(
+-      containConstraint(_constraint)
++      this->containConstraint(_constraint)
+       && "Attempted to remove not existing constraint.");
+ 
+   mConstraints.erase(
