@@ -1,3 +1,9 @@
+dart (6.16.1+ds-1~osrf10~noble) noble; urgency=medium
+
+  * Add patch for NDEBUG
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Tue, 16 Dec 2025 19:31:39 +0100
+
 dart (6.16.1+ds-1~osrf9~noble) noble; urgency=medium
 
   * New upstream version 6.16.1+ds
