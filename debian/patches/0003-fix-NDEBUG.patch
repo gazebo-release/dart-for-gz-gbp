@@ -1,35 +1,346 @@
+From 4d54b94e2e86263a9b2fc1f95fe30fe8c70d5ddb Mon Sep 17 00:00:00 2001
+From: Jose Luis Rivero <jrivero@honurobotics.com>
+Date: Wed, 17 Dec 2025 12:48:05 +0100
+Subject: [PATCH 1/3] Remove DART_BUILD_MODE_DEBUG guards to fix NDEBUG
+ compilation
+
+The build was failing with NDEBUG enabled because several functions
+(isSymmetric, containConstraint, and print) were guarded with
+DART_BUILD_MODE_DEBUG preprocessor directives, but were being called
+from code that was always compiled.
+
+This commit removes the guards from:
+- BoxedLcpConstraintSolver.cpp/.hpp
+- DantzigLCPSolver.cpp/.hpp
+- PGSLCPSolver.cpp/.hpp
+- ConstrainedGroup.cpp/.hpp
+
+Also removes guards from #include <iostream> and #include <iomanip>
+directives that are needed by the print() functions.
+
+Fixes compilation with current configuration where NDEBUG is defined.
+---
+ dart/constraint/BoxedLcpConstraintSolver.cpp | 8 ++------
+ dart/constraint/BoxedLcpConstraintSolver.hpp | 2 --
+ dart/constraint/ConstrainedGroup.cpp         | 2 --
+ dart/constraint/ConstrainedGroup.hpp         | 2 --
+ dart/constraint/DantzigLCPSolver.cpp         | 8 ++------
+ dart/constraint/DantzigLCPSolver.hpp         | 2 --
+ dart/constraint/PGSLCPSolver.cpp             | 8 ++------
+ dart/constraint/PGSLCPSolver.hpp             | 2 --
+ 8 files changed, 6 insertions(+), 28 deletions(-)
+
 diff --git a/dart/constraint/BoxedLcpConstraintSolver.cpp b/dart/constraint/BoxedLcpConstraintSolver.cpp
-index f05e7e8..aff97eb 100644
+index f05e7e8d0a36d..8d9f7ce3506b8 100644
 --- a/dart/constraint/BoxedLcpConstraintSolver.cpp
 +++ b/dart/constraint/BoxedLcpConstraintSolver.cpp
-@@ -240,7 +240,7 @@ void BoxedLcpConstraintSolver::solveConstrainedGroup(ConstrainedGroup& group)
-     }
-   }
+@@ -36,10 +36,8 @@
  
--  DART_ASSERT(isSymmetric(n, mA.data()));
-+  DART_ASSERT(this->isSymmetric(n, mA.data()));
+ #include <cassert>
  
-   // Print LCP formulation
-   //  dtdbg << "Before solve:" << std::endl;
+-#if DART_BUILD_MODE_DEBUG
+-  #include <iomanip>
+-  #include <iostream>
+-#endif
++#include <iomanip>
++#include <iostream>
+ 
+ #include "dart/common/Console.hpp"
+ #include "dart/common/Profile.hpp"
+@@ -318,7 +316,6 @@ void BoxedLcpConstraintSolver::solveConstrainedGroup(ConstrainedGroup& group)
+ }
+ 
+ //==============================================================================
+-#if DART_BUILD_MODE_DEBUG
+ bool BoxedLcpConstraintSolver::isSymmetric(std::size_t n, double* A)
+ {
+   std::size_t nSkip = dPAD(n);
+@@ -457,7 +454,6 @@ void BoxedLcpConstraintSolver::print(
+ 
+   delete[] Ax;
+ }
+-#endif
+ 
+ } // namespace constraint
+ } // namespace dart
+diff --git a/dart/constraint/BoxedLcpConstraintSolver.hpp b/dart/constraint/BoxedLcpConstraintSolver.hpp
+index d1c034393e94c..e996792caf268 100644
+--- a/dart/constraint/BoxedLcpConstraintSolver.hpp
++++ b/dart/constraint/BoxedLcpConstraintSolver.hpp
+@@ -154,7 +154,6 @@ class BoxedLcpConstraintSolver : public ConstraintSolver
+   /// Cache data for boxed LCP formulation
+   Eigen::VectorXi mOffset;
+ 
+-#if DART_BUILD_MODE_DEBUG
+ private:
+   /// Return true if the matrix is symmetric
+   bool isSymmetric(std::size_t n, double* A);
+@@ -173,7 +172,6 @@ class BoxedLcpConstraintSolver : public ConstraintSolver
+       double* b,
+       double* w,
+       int* findex);
+-#endif
+ };
+ 
+ } // namespace constraint
 diff --git a/dart/constraint/ConstrainedGroup.cpp b/dart/constraint/ConstrainedGroup.cpp
-index 41776f0..abfc29c 100644
+index 41776f07d605b..f872f51f24413 100644
 --- a/dart/constraint/ConstrainedGroup.cpp
 +++ b/dart/constraint/ConstrainedGroup.cpp
-@@ -55,7 +55,7 @@ void ConstrainedGroup::addConstraint(const ConstraintBasePtr& _constraint)
- {
-   DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
-   DART_ASSERT(
--      !containConstraint(_constraint)
-+      !this->containConstraint(_constraint)
-       && "Attempted to add a duplicate constraint.");
-   DART_ASSERT(_constraint->isActive());
+@@ -102,14 +102,12 @@ void ConstrainedGroup::removeAllConstraints()
+ }
  
-@@ -87,7 +87,7 @@ void ConstrainedGroup::removeConstraint(const ConstraintBasePtr& _constraint)
+ //==============================================================================
+-#if DART_BUILD_MODE_DEBUG
+ bool ConstrainedGroup::containConstraint(
+     const ConstConstraintBasePtr& _constraint) const
  {
-   DART_ASSERT(_constraint != nullptr && "Attempted to add nullptr.");
-   DART_ASSERT(
--      containConstraint(_constraint)
-+      this->containConstraint(_constraint)
-       && "Attempted to remove not existing constraint.");
+   return std::find(mConstraints.begin(), mConstraints.end(), _constraint)
+          != mConstraints.end();
+ }
+-#endif
  
-   mConstraints.erase(
+ //==============================================================================
+ std::size_t ConstrainedGroup::getTotalDimension() const
+diff --git a/dart/constraint/ConstrainedGroup.hpp b/dart/constraint/ConstrainedGroup.hpp
+index 451ded5141d8d..e39b566724f68 100644
+--- a/dart/constraint/ConstrainedGroup.hpp
++++ b/dart/constraint/ConstrainedGroup.hpp
+@@ -102,10 +102,8 @@ class ConstrainedGroup
+   friend class ConstraintSolver;
+ 
+ private:
+-#if DART_BUILD_MODE_DEBUG
+   /// Return true if _constraint is contained
+   bool containConstraint(const ConstConstraintBasePtr& _constraint) const;
+-#endif
+ 
+   /// List of constraints
+   std::vector<ConstraintBasePtr> mConstraints;
+diff --git a/dart/constraint/DantzigLCPSolver.cpp b/dart/constraint/DantzigLCPSolver.cpp
+index 133c8dd55c3f2..2a415d11bcf53 100644
+--- a/dart/constraint/DantzigLCPSolver.cpp
++++ b/dart/constraint/DantzigLCPSolver.cpp
+@@ -34,10 +34,8 @@
+ 
+ #include "dart/common/Macros.hpp"
+ 
+-#if DART_BUILD_MODE_DEBUG
+-  #include <iomanip>
+-  #include <iostream>
+-#endif
++#include <iomanip>
++#include <iostream>
+ 
+ #include "dart/common/Console.hpp"
+ #include "dart/constraint/ConstrainedGroup.hpp"
+@@ -184,7 +182,6 @@ void DantzigLCPSolver::solve(ConstrainedGroup* _group)
+ }
+ 
+ //==============================================================================
+-#if DART_BUILD_MODE_DEBUG
+ bool DantzigLCPSolver::isSymmetric(std::size_t _n, double* _A)
+ {
+   std::size_t nSkip = dPAD(_n);
+@@ -323,7 +320,6 @@ void DantzigLCPSolver::print(
+ 
+   delete[] Ax;
+ }
+-#endif
+ 
+ } // namespace constraint
+ } // namespace dart
+diff --git a/dart/constraint/DantzigLCPSolver.hpp b/dart/constraint/DantzigLCPSolver.hpp
+index 49a0f7f2d9ce3..e083041d241ff 100644
+--- a/dart/constraint/DantzigLCPSolver.hpp
++++ b/dart/constraint/DantzigLCPSolver.hpp
+@@ -59,7 +59,6 @@ class DantzigLCPSolver : public LCPSolver
+   // Documentation inherited
+   void solve(ConstrainedGroup* _group) override;
+ 
+-#if DART_BUILD_MODE_DEBUG
+ private:
+   /// Return true if the matrix is symmetric
+   bool isSymmetric(std::size_t _n, double* _A);
+@@ -78,7 +77,6 @@ class DantzigLCPSolver : public LCPSolver
+       double* _b,
+       double* w,
+       int* _findex);
+-#endif
+ };
+ 
+ } // namespace constraint
+diff --git a/dart/constraint/PGSLCPSolver.cpp b/dart/constraint/PGSLCPSolver.cpp
+index de165b00896b9..bd5e71186884f 100644
+--- a/dart/constraint/PGSLCPSolver.cpp
++++ b/dart/constraint/PGSLCPSolver.cpp
+@@ -34,10 +34,8 @@
+ 
+ #include "dart/common/Macros.hpp"
+ 
+-#if DART_BUILD_MODE_DEBUG
+-  #include <iomanip>
+-  #include <iostream>
+-#endif
++#include <iomanip>
++#include <iostream>
+ 
+ #include "dart/common/Console.hpp"
+ #include "dart/common/Profile.hpp"
+@@ -182,7 +180,6 @@ void PGSLCPSolver::solve(ConstrainedGroup* _group)
+ }
+ 
+ //==============================================================================
+-#if DART_BUILD_MODE_DEBUG
+ bool PGSLCPSolver::isSymmetric(std::size_t _n, double* _A)
+ {
+   std::size_t nSkip = dPAD(_n);
+@@ -321,7 +318,6 @@ void PGSLCPSolver::print(
+ 
+   delete[] Ax;
+ }
+-#endif
+ 
+ bool solvePGS(
+     int n,
+diff --git a/dart/constraint/PGSLCPSolver.hpp b/dart/constraint/PGSLCPSolver.hpp
+index 66447a100ec01..8bb7bfd082128 100644
+--- a/dart/constraint/PGSLCPSolver.hpp
++++ b/dart/constraint/PGSLCPSolver.hpp
+@@ -58,7 +58,6 @@ class PGSLCPSolver : public LCPSolver
+   // Documentation inherited
+   void solve(ConstrainedGroup* _group) override;
+ 
+-#if DART_BUILD_MODE_DEBUG
+ private:
+   /// Return true if the matrix is symmetric
+   bool isSymmetric(std::size_t _n, double* _A);
+@@ -77,7 +76,6 @@ class PGSLCPSolver : public LCPSolver
+       double* _b,
+       double* w,
+       int* _findex);
+-#endif
+ };
+ 
+ struct PGSOption
+
+From c4b7e36f507f2f653efd2714681c620a37f6a9df Mon Sep 17 00:00:00 2001
+From: Jose Luis Rivero <jrivero@honurobotics.com>
+Date: Wed, 17 Dec 2025 17:03:42 +0100
+Subject: [PATCH 2/3] Fix linting
+
+Signed-off-by: Jose Luis Rivero <jrivero@honurobotics.com>
+---
+ dart/constraint/BoxedLcpConstraintSolver.cpp | 13 ++++++-------
+ dart/constraint/DantzigLCPSolver.cpp         |  9 ++++-----
+ dart/constraint/PGSLCPSolver.cpp             |  9 ++++-----
+ 3 files changed, 14 insertions(+), 17 deletions(-)
+
+diff --git a/dart/constraint/BoxedLcpConstraintSolver.cpp b/dart/constraint/BoxedLcpConstraintSolver.cpp
+index 8d9f7ce3506b8..c8c6c2d36ea9e 100644
+--- a/dart/constraint/BoxedLcpConstraintSolver.cpp
++++ b/dart/constraint/BoxedLcpConstraintSolver.cpp
+@@ -32,14 +32,8 @@
+ 
+ #include "dart/constraint/BoxedLcpConstraintSolver.hpp"
+ 
+-#include "dart/common/Macros.hpp"
+-
+-#include <cassert>
+-
+-#include <iomanip>
+-#include <iostream>
+-
+ #include "dart/common/Console.hpp"
++#include "dart/common/Macros.hpp"
+ #include "dart/common/Profile.hpp"
+ #include "dart/constraint/ConstraintBase.hpp"
+ #include "dart/constraint/DantzigBoxedLcpSolver.hpp"
+@@ -47,6 +41,11 @@
+ #include "dart/external/odelcpsolver/lcp.h"
+ #include "dart/lcpsolver/Lemke.hpp"
+ 
++#include <iomanip>
++#include <iostream>
++
++#include <cassert>
++
+ namespace dart {
+ namespace constraint {
+ 
+diff --git a/dart/constraint/DantzigLCPSolver.cpp b/dart/constraint/DantzigLCPSolver.cpp
+index 2a415d11bcf53..619fd442c8361 100644
+--- a/dart/constraint/DantzigLCPSolver.cpp
++++ b/dart/constraint/DantzigLCPSolver.cpp
+@@ -32,17 +32,16 @@
+ 
+ #include "dart/constraint/DantzigLCPSolver.hpp"
+ 
+-#include "dart/common/Macros.hpp"
+-
+-#include <iomanip>
+-#include <iostream>
+-
+ #include "dart/common/Console.hpp"
++#include "dart/common/Macros.hpp"
+ #include "dart/constraint/ConstrainedGroup.hpp"
+ #include "dart/constraint/ConstraintBase.hpp"
+ #include "dart/external/odelcpsolver/lcp.h"
+ #include "dart/lcpsolver/Lemke.hpp"
+ 
++#include <iomanip>
++#include <iostream>
++
+ namespace dart {
+ namespace constraint {
+ 
+diff --git a/dart/constraint/PGSLCPSolver.cpp b/dart/constraint/PGSLCPSolver.cpp
+index bd5e71186884f..e13b5d41a9576 100644
+--- a/dart/constraint/PGSLCPSolver.cpp
++++ b/dart/constraint/PGSLCPSolver.cpp
+@@ -32,18 +32,17 @@
+ 
+ #include "dart/constraint/PGSLCPSolver.hpp"
+ 
+-#include "dart/common/Macros.hpp"
+-
+-#include <iomanip>
+-#include <iostream>
+-
+ #include "dart/common/Console.hpp"
++#include "dart/common/Macros.hpp"
+ #include "dart/common/Profile.hpp"
+ #include "dart/constraint/ConstrainedGroup.hpp"
+ #include "dart/constraint/ConstraintBase.hpp"
+ #include "dart/external/odelcpsolver/lcp.h"
+ #include "dart/lcpsolver/Lemke.hpp"
+ 
++#include <iomanip>
++#include <iostream>
++
+ namespace dart {
+ namespace constraint {
+ 
+
+From 01e74649bd7e0233ab11b1819d1b0cc818606deb Mon Sep 17 00:00:00 2001
+From: "Jeongseok (JS) Lee" <jslee02@users.noreply.github.com>
+Date: Wed, 17 Dec 2025 14:26:36 -0800
+Subject: [PATCH 3/3] dartpy: fix asserts-enabled build
+
+---
+ python/dartpy/eigen_geometry_pybind.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/python/dartpy/eigen_geometry_pybind.cpp b/python/dartpy/eigen_geometry_pybind.cpp
+index acee79f24e859..d496fe621fb4b 100644
+--- a/python/dartpy/eigen_geometry_pybind.cpp
++++ b/python/dartpy/eigen_geometry_pybind.cpp
+@@ -61,7 +61,7 @@ namespace {
+ 
+ // N.B. Use a loose tolerance, so that we don't have to be super strict with
+ // C++.
+-#if DART_BUILD_MODE_DEBUG
++#ifndef NDEBUG
+ const double kCheckTolerance = 1e-5;
+ #endif
+ 
