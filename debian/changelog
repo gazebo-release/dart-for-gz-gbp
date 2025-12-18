@@ -1,3 +1,9 @@
+dart (6.16.1+ds-1~osrf11~noble) noble; urgency=medium
+
+  * Import 2326 PR patch for NDEBUG
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Thu, 18 Dec 2025 12:28:31 +0100
+
 dart (6.16.1+ds-1~osrf10~noble) noble; urgency=medium
 
   * Add patch for NDEBUG
