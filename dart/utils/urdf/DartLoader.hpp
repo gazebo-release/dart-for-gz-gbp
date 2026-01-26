@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -79,6 +79,8 @@ namespace utils {
  */
 class DartLoader
 {
+  friend struct DartLoaderTestAccess;
+
 public:
   /// \deprecated Deprecated in 6.11. Use RootJointType and Options instead.
   ///

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -80,7 +80,7 @@ protected:
 
 private:
   /// Radius of this Sphere
-  double mRadius;
+  double mRadius{1.0};
 };
 
 } // namespace dynamics

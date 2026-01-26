@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -413,9 +413,14 @@ void BulletCollisionDetector::refreshCollisionObject(CollisionObject* object)
 
 //==============================================================================
 void BulletCollisionDetector::notifyCollisionObjectDestroying(
-    CollisionObject* object)
+    CollisionObject* /*object*/)
 {
-  reclaimBulletCollisionShape(object->getShape());
+  // Do nothing. The BulletCollisionShape will be reclaimed when the
+  // BulletCollisionObject's shared_ptr to it is destroyed, which triggers
+  // BulletCollisionShapeDeleter::operator().
+  //
+  // We cannot safely access object->getShape() here because the underlying
+  // ShapeFrame may have already been destroyed (heap-use-after-free).
 }
 
 //==============================================================================

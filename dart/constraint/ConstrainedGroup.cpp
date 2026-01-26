@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -102,14 +102,12 @@ void ConstrainedGroup::removeAllConstraints()
 }
 
 //==============================================================================
-#if DART_BUILD_MODE_DEBUG
 bool ConstrainedGroup::containConstraint(
     const ConstConstraintBasePtr& _constraint) const
 {
   return std::find(mConstraints.begin(), mConstraints.end(), _constraint)
          != mConstraints.end();
 }
-#endif
 
 //==============================================================================
 std::size_t ConstrainedGroup::getTotalDimension() const

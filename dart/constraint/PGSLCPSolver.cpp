@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -32,19 +32,16 @@
 
 #include "dart/constraint/PGSLCPSolver.hpp"
 
-#include "dart/common/Macros.hpp"
-
-#if DART_BUILD_MODE_DEBUG
-  #include <iomanip>
-  #include <iostream>
-#endif
-
 #include "dart/common/Console.hpp"
+#include "dart/common/Macros.hpp"
 #include "dart/common/Profile.hpp"
 #include "dart/constraint/ConstrainedGroup.hpp"
 #include "dart/constraint/ConstraintBase.hpp"
 #include "dart/external/odelcpsolver/lcp.h"
 #include "dart/lcpsolver/Lemke.hpp"
+
+#include <iomanip>
+#include <iostream>
 
 namespace dart {
 namespace constraint {
@@ -182,7 +179,6 @@ void PGSLCPSolver::solve(ConstrainedGroup* _group)
 }
 
 //==============================================================================
-#if DART_BUILD_MODE_DEBUG
 bool PGSLCPSolver::isSymmetric(std::size_t _n, double* _A)
 {
   std::size_t nSkip = dPAD(_n);
@@ -321,7 +317,6 @@ void PGSLCPSolver::print(
 
   delete[] Ax;
 }
-#endif
 
 bool solvePGS(
     int n,

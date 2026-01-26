@@ -1,12 +1,12 @@
-[project]
+[workspace]
 name = "DART"
-version = "6.16.1"
+version = "6.16.5"
 description = "Dynamic Animation and Robotics Toolkit"
 authors = ["Jeongseok Lee <jslee02@gmail.com>"]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
-[build-dependencies]
+[dependencies]
 benchmark = ">=1.9.3,<2"
 black = ">=25.1.0,<26"
 clang-format = ">=14.0.0,<15"
@@ -28,8 +28,6 @@ sphinx-intl = "*"
 sphinx_rtd_theme = "*"
 sphinx-tabs = "*"
 tracy-profiler-gui = ">=0.11.1,<0.12"
-
-[dependencies]
 assimp = ">=5.4.3,<6"
 bullet-cpp = ">=3.25,<4"
 console_bridge = ">=1.0.2,<2"
@@ -173,6 +171,44 @@ test-all = { cmd = """
     cmake --build build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE -j --target ALL
 """, depends-on = ["config"], env = { BUILD_TYPE = "Release" } }
 
+config-asan = { cmd = """
+    cmake \
+        -G Ninja \
+        -S . \
+        -B build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE \
+        -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+        -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
+        -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
+        -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address" \
+        -DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address" \
+        -DDART_BUILD_DARTPY=OFF \
+        -DDART_BUILD_GUI_OSG=OFF \
+        -DDART_BUILD_PROFILE=OFF \
+        -DDART_USE_SYSTEM_GOOGLEBENCHMARK=ON \
+        -DDART_USE_SYSTEM_GOOGLETEST=ON \
+        -DDART_USE_SYSTEM_IMGUI=ON \
+        -DDART_VERBOSE=$DART_VERBOSE
+""", env = { DART_VERBOSE = "OFF", BUILD_TYPE = "asan" } }
+
+build-asan = { cmd = """
+    cmake --build build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE -j --target tests
+""", depends-on = ["config-asan"], env = { BUILD_TYPE = "asan" } }
+
+test-asan = { cmd = """
+    ctest \
+        --test-dir build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE \
+        --output-on-failure
+""", depends-on = ["build-asan"], env = { BUILD_TYPE = "asan", ASAN_OPTIONS = "detect_leaks=0" } }
+
+# freebsd-* tasks rsync the local repo into the FreeBSD VM and build that copy (pkg installs deps only).
+freebsd-test = { cmd = "python scripts/freebsd.py test", env = { FREEBSD_VM_BUILD_PARALLEL_LEVEL = "1", FREEBSD_VM_CTEST_TIMEOUT = "2400" } }
+freebsd-shell = { cmd = "python scripts/freebsd.py shell" }
+freebsd-stop = { cmd = "python scripts/freebsd.py stop" }
+altlinux-test = { cmd = "python scripts/altlinux.py test" }
+altlinux-shell = { cmd = "python scripts/altlinux.py shell" }
+altlinux-stop = { cmd = "python scripts/altlinux.py stop" }
 config-coverage = { cmd = """
     cmake \
         -G Ninja \
@@ -216,12 +252,12 @@ coverage-report = { cmd = """
 ex = { cmd = """
     cmake \
         --build build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE \
-        --target $EXE \
+        --target {{ example }} \
         --parallel \
-    && ./build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE/bin/$EXE
+    && ./build/$PIXI_ENVIRONMENT_NAME/cpp/$BUILD_TYPE/bin/{{ example }}
 """, depends-on = [
     "config",
-], env = { EXE = "hello_world", BUILD_TYPE = "Release" } }
+], args = [{ arg = "example", default = "hello_world" }], env = { BUILD_TYPE = "Release" } }
 
 ex-atlas-puppet = { cmd = """
     cmake \
@@ -410,10 +446,8 @@ docs-clean = { cmd = """
 # linux-64
 ################################################################################
 
-[target.linux-64.build-dependencies]
-lcov = ">=1.16,<2"
-
 [target.linux-64.dependencies]
+lcov = ">=1.16,<2"
 freeglut = ">=3.2.2,<3.3"
 libgl-devel = ">=1.7.0,<2"
 libglu = ">=9.0.3,<10"
@@ -422,10 +456,8 @@ libglu = ">=9.0.3,<10"
 # osx-64
 ################################################################################
 
-[target.osx-64.build-dependencies]
-git = ">=2.40.0"
-
 [target.osx-64.dependencies]
+git = ">=2.40.0"
 
 [target.osx-64.tasks]
 download-osg = { cmd = """
@@ -456,10 +488,8 @@ install-osg = { cmd = "cmake --install .deps/OpenSceneGraph/build", depends-on =
 # osx-arm64
 ################################################################################
 
-[target.osx-arm64.build-dependencies]
-git = ">=2.40.0"
-
 [target.osx-arm64.dependencies]
+git = ">=2.40.0"
 
 [target.osx-arm64.tasks]
 download-osg = { cmd = """
@@ -696,10 +726,8 @@ tracy = { cmd = "tracy-profiler.exe" }
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
-[feature.gazebo.build-dependencies]
-git = ">=1"
-
 [feature.gazebo.dependencies]
+git = ">=1"
 libgz-cmake4 = ">=4.0.0"
 libgz-plugin3 = ">=3.0.0"
 libgz-math8 = ">=8.0.0"

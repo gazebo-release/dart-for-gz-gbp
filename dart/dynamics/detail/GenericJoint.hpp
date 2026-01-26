@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -317,6 +317,15 @@ void GenericJoint<ConfigSpaceT>::setCommand(size_t index, double command)
 {
   if (index >= getNumDofs())
     GenericJoint_REPORT_OUT_OF_RANGE(setCommand, index);
+
+  // Validate command is finite to prevent NaN/Inf from propagating through
+  // the simulation and causing assertion failures (gz-physics#845)
+  if (!std::isfinite(command)) {
+    dtwarn << "[GenericJoint::setCommand] Non-finite command (" << command
+           << ") passed for Joint [" << this->getName() << "] DOF [" << index
+           << "]. Command ignored.\n";
+    return;
+  }
 
   switch (Joint::mAspectProperties.mActuatorType) {
     case Joint::FORCE:
