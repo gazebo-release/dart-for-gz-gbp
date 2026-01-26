@@ -1,3 +1,13 @@
+dart (6.16.5+ds-1~osrf1~noble) noble; urgency=medium
+
+  * New upstream release 6.16.5
+  * Drop patches fixed upstream:
+    - 0003-fix-NDEBUG.patch
+    - 0008-fix-test-world-6162.patch
+  * Refresh fix-test_ForceDependentSlip-armel.patch for new upstream
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Mon, 26 Jan 2026 17:39:16 +0100
+
 dart (6.16.1+ds-1~osrf12~noble) noble; urgency=medium
 
   * Inject upstream patch for test_world

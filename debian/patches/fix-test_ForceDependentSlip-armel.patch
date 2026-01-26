@@ -10,7 +10,7 @@ Last-Update: 2025-11-10
 
 --- a/tests/integration/test_ForceDependentSlip.cpp
 +++ b/tests/integration/test_ForceDependentSlip.cpp
-@@ -143,7 +143,7 @@
+@@ -145,7 +145,7 @@
  
      if (i > 1000) {
        // The velocity of body1 should stabilize at F_ext * slip = 0.2 m/s
@@ -19,7 +19,7 @@ Last-Update: 2025-11-10
        EXPECT_NEAR(0.0, body1->getLinearVelocity().y(), 2e-5);
  
        // The second box should remain at rest because of friction
-@@ -180,7 +180,7 @@
+@@ -182,7 +182,7 @@
      if (i > 1500) {
        // The velocity of body1 should stabilize at F_ext * slip2 = 0.3 m/s
        EXPECT_NEAR(0.0, body1->getLinearVelocity().x(), 2e-5);
@@ -28,14 +28,14 @@ Last-Update: 2025-11-10
  
        // The second box should remain at rest because of friction
        EXPECT_NEAR(0.0, body2->getLinearVelocity().x(), 2e-5);
-@@ -268,8 +268,8 @@
-       // of the body using (BodyNode::getLinearAcceleration), so we compute it
-       // here via finite difference.
-       auto accel = (body2->getLinearVelocity() - lastVel) / dt;
--      EXPECT_NEAR(mass * accel.x() * slip, spinVel - linVel, 2e-4);
--      EXPECT_NEAR(0.0, body2->getLinearVelocity().y(), 1e-4);
-+      EXPECT_NEAR(mass * accel.x() * slip, spinVel - linVel, 3e-2);
-+      EXPECT_NEAR(0.0, body2->getLinearVelocity().y(), 2e-1);
-     }
+@@ -255,8 +255,8 @@
+   const double extForceX = 1.0;
+   const double extTorqueY = 2.0;
+   const double velocityTol = 1e-3;
+-  const double lateralVelocityTol = 1e-2;
+-  const double slipRelationTol = 2e-3;
++  const double lateralVelocityTol = 2e-1;
++  const double slipRelationTol = 3e-2;
  
-     lastVel = body2->getLinearVelocity();
+   auto lastVel = body2->getLinearVelocity();
+   for (auto i = 0u; i < numSteps; ++i) {
