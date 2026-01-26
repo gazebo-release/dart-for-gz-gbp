@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -37,12 +37,27 @@
 #include "dart/utils/urdf/DartLoader.hpp"
 
 #include <gtest/gtest.h>
+#include <urdf_model/link.h>
 
 #include <iostream>
 
 using namespace dart;
 using dart::common::Uri;
 using dart::utils::DartLoader;
+
+namespace dart::utils {
+struct DartLoaderTestAccess
+{
+  template <class VisualOrCollision>
+  static dart::dynamics::ShapePtr createShape(
+      const VisualOrCollision* vizOrCol,
+      const dart::common::Uri& baseUri,
+      const dart::common::ResourceRetrieverPtr& retriever)
+  {
+    return DartLoader::createShape(vizOrCol, baseUri, retriever);
+  }
+};
+} // namespace dart::utils
 
 //==============================================================================
 TEST(DartLoader, parseSkeleton_NonExistantPathReturnsNull)
@@ -96,6 +111,30 @@ TEST(DartLoader, parseSkeleton_LoadsPrimitiveGeometry)
       nullptr
       != loader.parseSkeleton(
           "dart://sample/urdf/test/primitive_geometry.urdf"));
+}
+
+//==============================================================================
+TEST(DartLoader, createShape_NullGeometryReturnsNull)
+{
+  urdf::Visual visual;
+  common::Uri baseUri;
+  EXPECT_EQ(
+      nullptr,
+      dart::utils::DartLoaderTestAccess::createShape(
+          &visual, baseUri, nullptr));
+}
+
+//==============================================================================
+TEST(DartLoader, createShape_UnknownGeometryTypeReturnsNull)
+{
+  urdf::Visual visual;
+  visual.geometry = std::make_shared<urdf::Geometry>();
+  visual.geometry->type = static_cast<decltype(visual.geometry->type)>(-1);
+  common::Uri baseUri;
+  EXPECT_EQ(
+      nullptr,
+      dart::utils::DartLoaderTestAccess::createShape(
+          &visual, baseUri, nullptr));
 }
 
 //==============================================================================

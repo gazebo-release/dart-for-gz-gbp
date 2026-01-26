@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -340,7 +340,7 @@ public:
   /// \param[in] _isForceLocal True if _force's reference frame is of the parent
   ///                          soft body node. False if _force's reference frame
   ///                          is of the world.
-  void addExtForce(const Eigen::Vector3d& _force, bool _isForceLocal = false);
+  void addExtForce(const Eigen::Vector3d& force, bool isForceLocal = false);
 
   ///
   void clearExtForce();

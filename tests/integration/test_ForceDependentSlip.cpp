@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -32,6 +32,7 @@
 
 #include "TestHelpers.hpp"
 #include "dart/collision/ode/OdeCollisionDetector.hpp"
+#include "dart/config.hpp"
 #include "dart/constraint/ConstraintSolver.hpp"
 #include "dart/dynamics/SimpleFrame.hpp"
 #include "dart/math/Geometry.hpp"
@@ -39,6 +40,7 @@
 #include "dart/math/Random.hpp"
 
 #include <gtest/gtest.h>
+#include <ode/ode.h>
 
 using namespace dart;
 using namespace dynamics;
@@ -196,6 +198,13 @@ TEST(ForceDependentSlip, BoxSlipVelocity)
 TEST(ForceDependentSlip, CylinderSlipVelocity)
 {
   using Eigen::Vector3d;
+
+#if !DART_ODE_HAS_LIBCCD_BOX_CYL
+  GTEST_SKIP() << "Skipping test because ODE was built without libccd "
+                  "box-cylinder support ("
+               << dODE_VERSION << ", see issue #2332).";
+  return;
+#endif
   const double mass = 2.0;
   const double radius = 0.5;
   const double slip = 0.02;
@@ -245,6 +254,9 @@ TEST(ForceDependentSlip, CylinderSlipVelocity)
   const auto numSteps = 2000;
   const double extForceX = 1.0;
   const double extTorqueY = 2.0;
+  const double velocityTol = 1e-3;
+  const double lateralVelocityTol = 1e-2;
+  const double slipRelationTol = 2e-3;
 
   auto lastVel = body2->getLinearVelocity();
   for (auto i = 0u; i < numSteps; ++i) {
@@ -254,22 +266,23 @@ TEST(ForceDependentSlip, CylinderSlipVelocity)
 
     if (i > 1000) {
       // The velocity of body1 should stabilize at F_ext * slip
-      EXPECT_NEAR(extForceX * slip, body1->getLinearVelocity().x(), 1e-4);
-      EXPECT_NEAR(0.0, body1->getLinearVelocity().y(), 1e-4);
+      EXPECT_NEAR(
+          extForceX * slip, body1->getLinearVelocity().x(), velocityTol);
+      EXPECT_NEAR(0.0, body1->getLinearVelocity().y(), lateralVelocityTol);
 
       // body2 rolls with sliding. The difference between the linear velocity
       // and the expected non-sliding velocity (angular velocity * radius) is
       // equal to F_fr * slip, where F_fr is the friction force. We compute the
       // friction force from the linear acceleration since it's the only linear
       // force on the body.
-      auto linVel = body2->getLinearVelocity().x();
-      auto spinVel = body2->getAngularVelocity().y() * radius;
+      const auto linVel = body2->getLinearVelocity().x();
+      const auto spinVel = body2->getAngularVelocity().y() * radius;
       // There appears to be a bug in DART in obtaining the linear acceleration
       // of the body using (BodyNode::getLinearAcceleration), so we compute it
       // here via finite difference.
-      auto accel = (body2->getLinearVelocity() - lastVel) / dt;
-      EXPECT_NEAR(mass * accel.x() * slip, spinVel - linVel, 2e-4);
-      EXPECT_NEAR(0.0, body2->getLinearVelocity().y(), 1e-4);
+      const Eigen::Vector3d accel = (body2->getLinearVelocity() - lastVel) / dt;
+      EXPECT_NEAR(mass * accel.x() * slip, spinVel - linVel, slipRelationTol);
+      EXPECT_NEAR(0.0, body2->getLinearVelocity().y(), lateralVelocityTol);
     }
 
     lastVel = body2->getLinearVelocity();

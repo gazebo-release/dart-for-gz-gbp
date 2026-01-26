@@ -1,4 +1,4 @@
-# Copyright (c) 2011-2025, The DART development contributors
+# Copyright (c) 2011, The DART development contributors
 # All rights reserved.
 #
 # The list of contributors can be found at:
@@ -91,9 +91,9 @@ endif()
 
 # TODO: Fix installing dartpy to site-packages directory
 # Install the pybind module to site-packages directory
-# install(TARGETS ${pybind_module}
-#   LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}"
-# )
+ install(TARGETS ${pybind_module}
+   LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}"
+ )
 
 list(REMOVE_ITEM dartpy_headers
   ${CMAKE_CURRENT_LIST_DIR}/eigen_geometry_pybind.h

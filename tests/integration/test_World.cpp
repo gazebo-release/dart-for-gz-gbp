@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -37,6 +37,7 @@
 #include "dart/dynamics/RevoluteJoint.hpp"
 #include "dart/dynamics/Skeleton.hpp"
 #include "dart/math/Geometry.hpp"
+#include "dart/math/Random.hpp"
 #include "dart/utils/SkelParser.hpp"
 
 #include <gtest/gtest.h>
@@ -185,6 +186,9 @@ TEST(World, AddingAndRemovingSkeletons)
 //==============================================================================
 TEST(World, Cloning)
 {
+  // Seed random generator for deterministic tests
+  Random::setSeed(42);
+
   // Create a list of skel files to test with
   std::vector<common::Uri> fileList;
   fileList.push_back("dart://sample/skel/test/chainwhipa.skel");
@@ -224,10 +228,10 @@ TEST(World, Cloning)
     for (std::size_t j = 1; j < 5; ++j)
       clones.push_back(clones[j - 1]->clone());
 
-#if DART_BUILD_MODE_DEBUG
-    std::size_t numIterations = 3;
-#else
+#if DART_BUILD_MODE_RELEASE
     std::size_t numIterations = 500;
+#else
+    std::size_t numIterations = 3;
 #endif
 
     for (std::size_t j = 0; j < numIterations; ++j) {
@@ -388,4 +392,34 @@ TEST(World, SetNewConstraintSolver)
   world->setConstraintSolver(std::move(solver2));
   EXPECT_TRUE(world->getConstraintSolver()->getSkeletons().size() == 1);
   EXPECT_TRUE(world->getConstraintSolver()->getNumConstraints() == 1);
+}
+
+//==============================================================================
+// Regression test for https://github.com/dartsim/dart/issues/2426
+TEST(World, GetIndexBoundsCheck)
+{
+  auto world = World::create();
+
+  auto skel1 = Skeleton::create("skel1");
+  skel1->createJointAndBodyNodePair<RevoluteJoint>();
+  world->addSkeleton(skel1);
+
+  auto skel2 = Skeleton::create("skel2");
+  skel2->createJointAndBodyNodePair<RevoluteJoint>();
+  world->addSkeleton(skel2);
+
+  EXPECT_EQ(world->getIndex(0), 0);
+  EXPECT_EQ(world->getIndex(1), 1);
+  EXPECT_EQ(world->getIndex(2), 2);
+
+#ifdef NDEBUG
+  // Release mode: DART_ASSERT doesn't abort, so we can test return values
+  EXPECT_EQ(world->getIndex(-1), -1);
+  EXPECT_EQ(world->getIndex(100), -1);
+#else
+  // Debug mode: DART_ASSERT(false) aborts, so use death tests to verify
+  // the error handling code path is exercised (improves coverage)
+  EXPECT_DEATH(world->getIndex(-1), "");
+  EXPECT_DEATH(world->getIndex(100), "");
+#endif
 }

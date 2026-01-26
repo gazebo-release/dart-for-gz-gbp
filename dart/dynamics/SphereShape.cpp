@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2025, The DART development contributors
+ * Copyright (c) 2011, The DART development contributors
  * All rights reserved.
  *
  * The list of contributors can be found at:
@@ -32,8 +32,11 @@
 
 #include "dart/dynamics/SphereShape.hpp"
 
+#include "dart/common/Logging.hpp"
 #include "dart/common/Macros.hpp"
 #include "dart/math/Helpers.hpp"
+
+#include <cmath>
 
 namespace dart {
 namespace dynamics {
@@ -66,7 +69,13 @@ const std::string& SphereShape::getStaticType()
 //==============================================================================
 void SphereShape::setRadius(double radius)
 {
-  DART_ASSERT(radius > 0.0);
+  if (!std::isfinite(radius) || radius <= 0.0) {
+    DART_WARN(
+        "SphereShape::setRadius: Invalid radius '{}'. "
+        "Radius must be a positive finite value. Ignoring request.",
+        radius);
+    return;
+  }
 
   mRadius = radius;
 
