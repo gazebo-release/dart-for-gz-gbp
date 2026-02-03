@@ -1,3 +1,9 @@
+dart (6.16.6+ds-1~osrf1~noble) noble; urgency=medium
+
+  * New upstream version 6.16.6+ds
+
+ -- Jose Luis Rivero <jrivero@osrfoundation.org>  Tue, 03 Feb 2026 17:40:37 +0100
+
 dart (6.16.5+ds-1~osrf1~noble) noble; urgency=medium
 
   * New upstream release 6.16.5
