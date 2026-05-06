@@ -1,29 +1,13 @@
 From: Jose Luis Rivero <jrivero@osrfoundation.org>
-Date: Thu, 14 Sep 2023 14:02:36 +0200
-Subject: Fix eigen name in pkgconfig deps
+Date: Wed, 6 May 2026 12:45:00 +0200
+Subject: Export only public flags in pkg-config
 
-Last-Update: 2023-09-14
 Forwarded: No
+Last-Update: 2026-05-06
 ---
- CMakeLists.txt   | 2 +-
  cmake/dart.pc.in | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0baf317..b6f26b3 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -72,7 +72,7 @@ string(REGEX REPLACE "^<version>([0-9]+)\\.([0-9]+)\\.([0-9]+)</version>$" "\\3"
- set(DART_VERSION "${DART_MAJOR_VERSION}.${DART_MINOR_VERSION}.${DART_PATCH_VERSION}")
- 
- set(DART_PKG_DESC "Dynamic Animation and Robotics Toolkit.")
--set(DART_PKG_EXTERNAL_DEPS "eigen, ccd, fcl, assimp")
-+set(DART_PKG_EXTERNAL_DEPS "eigen3, ccd, fcl, assimp")
- 
- #===============================================================================
- # Build options
-diff --git a/cmake/dart.pc.in b/cmake/dart.pc.in
-index 402c496..31e0a80 100644
 --- a/cmake/dart.pc.in
 +++ b/cmake/dart.pc.in
 @@ -9,4 +9,4 @@ Description: @DART_PKG_DESC@
