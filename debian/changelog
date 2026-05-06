@@ -1,3 +1,10 @@
+dart (6.16.6+ds-2~osrf1~resolute) resolute; urgency=medium
+
+  * Move python module to avoid dh_missing problems
+  * Update pkg-config patch: avoid building flags, remove eigen (not-needed)
+
+ -- Jose Luis Rivero <jrivero@honurobotics.com>  Wed, 06 May 2026 12:47:09 +0200
+
 dart (6.16.6+ds-1~osrf1~resolute) resolute; urgency=medium
 
   * Resolute initial release from master_noble
